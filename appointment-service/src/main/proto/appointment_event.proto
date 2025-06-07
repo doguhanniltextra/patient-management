@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package appointment.events;
+option java_multiple_files = true;
+
+message AppointmentEvent {
+  string patientId = 1;
+  string doctorId = 2;
+  float amount = 3;
+  bool paymentStatus = 4;
+}
+

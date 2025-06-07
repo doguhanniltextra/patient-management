@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  api-gateway:
+    build: .
+    image: api-gateway:latest
+    container_name: api-gateway
+    networks:
+      - patient-management_patient-net
+    ports:
+      - "4004:4004"
+
+networks:
+  patient-management_patient-net:
+    external: true

@@ -1,0 +1,32 @@
+server:
+  port: 4004
+
+### REST CLIENT -> http:localhost:4004/[predicates] such as http:localhost:4004/api/patients
+### API GATEWAY -> http://patient-service:8080/patients
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: patient-service-route
+          uri: http://patient-service:8080
+          predicates:
+            - Path=/api/patients/**
+          filters:
+            - StripPrefix=1
+        - id: api-docs-patient-route
+          uri: http://patient-service:8080
+          predicates:
+            - Path=/api-docs/patients
+          filters:
+            - RewritePath=/api-docs/patients,/v3/api-docs
+        - id: doctor-service-route
+          uri: http://doctor-service:8083
+          predicates:
+            - Path=/api/doctors/**
+          filters:
+            - StripPrefix=1
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG

@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  billing-service:
+    build: .
+    image: billing-service:latest
+    container_name: billing-service
+    networks:
+      - patient-management_patient-net
+    ports:
+      - "8081:8081"
+      - "9001:9001"
+
+networks:
+  patient-management_patient-net:
+    external: true

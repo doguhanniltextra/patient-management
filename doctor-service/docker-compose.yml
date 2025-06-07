@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+  doctor-service:
+    build: .
+    image: doctor-service:latest
+    container_name: doctor-service
+    networks:
+      - patient-management_patient-net
+    ports:
+      - "8083:8083"
+    depends_on:
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-container:3306/doctordb
+      SPRING_DATASOURCE_USERNAME: appuser
+      SPRING_DATASOURCE_PASSWORD: apppass
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-container
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: doctordb
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppass
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - patient-management_patient-net
+
+volumes:
+  mysql-data:
+
+networks:
+  patient-management_patient-net:
+    external: true

@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  postgres-db:
+    image: postgres:15
+    container_name: postgres-db-appointment
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: appointment_database
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - patient-net
+
+  appointment-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: appointment-service  # ← burası eklendi
+    container_name: appointment-service
+    depends_on:
+      - postgres-db
+    ports:
+      - "8084:8084"
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9094
+    volumes:
+      - ./src:/app/src
+    networks:
+      - patient-net
+
+
+volumes:
+  postgres-data:
+
+networks:
+  patient-net:
+    driver: bridge
