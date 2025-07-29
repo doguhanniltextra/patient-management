@@ -23,8 +23,8 @@ public class KafkaProducer {
         AppointmentEvent appointmentEvent = AppointmentEvent
                 .newBuilder()
                 .setAmount(appointment.getAmount())
-                .setDoctorId(appointment.getDoctorId())
-                .setPatientId(appointment.getPatientId())
+                .setDoctorId(String.valueOf(appointment.getDoctorId()))
+                .setPatientId(String.valueOf(appointment.getPatientId()))
                 .setPaymentStatus(appointment.isPaymentStatus())
                 .build();
 
