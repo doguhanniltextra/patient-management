@@ -19,6 +19,15 @@ public class KafkaProducer {
         this.kafkaTemplate = kafkaTemplate;
     }
 
+    /**
+     * Sends an Appointment event message to the Kafka topic "appointment".
+     * <p>
+     * Constructs an {@link AppointmentEvent} protobuf message from the given
+     * {@link Appointment} object, serializes it to a byte array, and sends it asynchronously.
+     * Logs the success or failure of the send operation.
+     *
+     * @param appointment the Appointment object containing event data to send
+     */
     public void sendEvent(Appointment appointment) {
         AppointmentEvent appointmentEvent = AppointmentEvent
                 .newBuilder()
