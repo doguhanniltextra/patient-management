@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Management System - Microservices Architecture</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: #6db33f;
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 400;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .section {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e9ecef;
+        }
+
+        h2 {
+            color: #2d3748;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #6db33f;
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            color: #4a5568;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .overview-item {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 6px;
+            border-left: 4px solid #6db33f;
+        }
+
+        .overview-item h4 {
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .architecture-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .service-card {
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 1.5rem;
+            background: white;
+        }
+
+        .service-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .service-icon {
+            width: 32px;
+            height: 32px;
+            background: #6db33f;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-right: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .database-info {
+            background: #f8f9fa;
+            padding: 0.75rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+            border-left: 3px solid #17a2b8;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+        }
+
+        .port-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .port-table th {
+            background: #6db33f;
+            color: white;
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 500;
+        }
+
+        .port-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .port-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .port-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .validation-flow {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 6px;
+            margin: 1.5rem 0;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: flex-start;
+            margin: 1rem 0;
+            padding: 0.75rem;
+            background: white;
+            border-radius: 4px;
+            border-left: 3px solid #6db33f;
+        }
+
+        .step-number {
+            background: #6db33f;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.75rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .tech-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .tech-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 4px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+        }
+
+        .tech-item strong {
+            color: #2d3748;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .cta-section {
+            background: #2d3748;
+            color: white;
+            text-align: center;
+            padding: 2.5rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .btn-primary {
+            background: #6db33f;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border-color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem 0;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        ul {
+            margin: 1rem 0;
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin: 0.5rem 0;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+
+            .section {
+                padding: 1.5rem;
+            }
+
+            .architecture-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Patient Management System</h1>
+            <p>Microservices-Based Healthcare Management Backend</p>
+        </header>
+
+        <section class="section">
+            <h2>Project Overview</h2>
+            <p>This project is a <strong>microservices-based backend system</strong> for managing appointments,
+                patients, doctors, and billing in a healthcare environment. It follows a modular, scalable design and
+                uses different databases tailored to each service's needs.</p>
+
+            <div class="overview-grid">
+                <div class="overview-item">
+                    <h4>Architecture</h4>
+                    <p>6 independent microservices with API Gateway</p>
+                </div>
+                <div class="overview-item">
+                    <h4>Containerization</h4>
+                    <p>Fully dockerized with Docker Compose</p>
+                </div>
+                <div class="overview-item">
+                    <h4>Event-Driven</h4>
+                    <p>Apache Kafka for service communication</p>
+                </div>
+                <div class="overview-item">
+                    <h4>Multi-Database</h4>
+                    <p>MySQL, PostgreSQL, and MongoDB</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>System Architecture</h2>
+            <p>The system consists of the following microservices, each containerized via Docker:</p>
+
+            <table class="port-table">
+                <thead>
+                    <tr>
+                        <th>Service</th>
+                        <th>Port</th>
+                        <th>Database</th>
+                        <th>Primary Function</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>API Gateway</strong></td>
+                        <td>4004</td>
+                        <td>-</td>
+                        <td>Request routing and management</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Patient Service</strong></td>
+                        <td>8080</td>
+                        <td>MySQL</td>
+                        <td>Patient records management</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Doctor Service</strong></td>
+                        <td>8083</td>
+                        <td>MySQL</td>
+                        <td>Doctor profiles and specializations</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Appointment Service</strong></td>
+                        <td>8084</td>
+                        <td>PostgreSQL</td>
+                        <td>Appointment scheduling and validation</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Billing Service</strong></td>
+                        <td>8081</td>
+                        <td>PostgreSQL</td>
+                        <td>Payment processing and billing</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Analytics Service</strong></td>
+                        <td>8082</td>
+                        <td>MongoDB</td>
+                        <td>Data analytics and reporting</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="section">
+            <h2>Microservices Details</h2>
+            <div class="architecture-grid">
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-icon">👥</div>
+                        <h3>Patient Service</h3>
+                    </div>
+                    <div class="database-info">
+                        <strong>Database:</strong> MySQL | <strong>Port:</strong> 8080
+                    </div>
+                    <p><strong>Responsibilities:</strong> Managing patient records and validations</p>
+                    <div class="code-block">{
+                        "id": Long,
+                        "name": String,
+                        "email": String,
+                        "phone": String,
+                        "registrationDate": Date
+                        }</div>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-icon">👨‍⚕️</div>
+                        <h3>Doctor Service</h3>
+                    </div>
+                    <div class="database-info">
+                        <strong>Database:</strong> MySQL | <strong>Port:</strong> 8083
+                    </div>
+                    <p><strong>Responsibilities:</strong> Managing doctors and their specialties</p>
+                    <div class="code-block">{
+                        "id": Long,
+                        "name": String,
+                        "specialization": ENUM,
+                        "phoneNumber": String,
+                        "email": String,
+                        "available": Boolean,
+                        "gender": ENUM
+                        }</div>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-icon">📅</div>
+                        <h3>Appointment Service</h3>
+                    </div>
+                    <div class="database-info">
+                        <strong>Database:</strong> PostgreSQL | <strong>Port:</strong> 8084
+                    </div>
+                    <p><strong>Responsibilities:</strong> Creating appointments, verifying IDs, notifying other services
+                    </p>
+                    <div class="code-block">{
+                        "patientId": Long,
+                        "doctorId": Long,
+                        "date": Date,
+                        "time": String,
+                        "serviceType": String
+                        }</div>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-icon">💰</div>
+                        <h3>Billing Service</h3>
+                    </div>
+                    <div class="database-info">
+                        <strong>Database:</strong> PostgreSQL | <strong>Port:</strong> 8081
+                    </div>
+                    <p><strong>Responsibilities:</strong> Creating billing records after appointments</p>
+                    <div class="code-block">{
+                        "patientId": Long,
+                        "appointmentId": Long,
+                        "paymentStatus": Boolean,
+                        "paymentType": ENUM
+                        }</div>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-icon">📊</div>
+                        <h3>Analytics Service</h3>
+                    </div>
+                    <div class="database-info">
+                        <strong>Database:</strong> MongoDB | <strong>Port:</strong> 8082
+                    </div>
+                    <p><strong>Responsibilities:</strong> Storing event-based and analytical data (trends, usage stats)
+                    </p>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-icon">🌐</div>
+                        <h3>API Gateway</h3>
+                    </div>
+                    <div class="database-info">
+                        <strong>Port:</strong> 4004
+                    </div>
+                    <p><strong>Responsibilities:</strong> Request routing, load balancing, and API management</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Appointment Validation Flow</h2>
+            <p>When a user tries to create an appointment, the system follows this validation process:</p>
+
+            <div class="validation-flow">
+                <div class="flow-step">
+                    <div class="step-number">1</div>
+                    <div>
+                        <strong>Request Received</strong><br>
+                        The Appointment Service receives the appointment creation request
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">2</div>
+                    <div>
+                        <strong>Patient Validation</strong><br>
+                        Sends GET request to Patient Service to verify if the patientId exists
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">3</div>
+                    <div>
+                        <strong>Doctor Validation</strong><br>
+                        Sends GET request to Doctor Service to verify if the doctorId exists
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">4</div>
+                    <div>
+                        <strong>Appointment Creation</strong><br>
+                        If both validations pass, the appointment is created and stored
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">5</div>
+                    <div>
+                        <strong>Billing Trigger</strong><br>
+                        A billing record is automatically triggered and created
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Technology Stack</h2>
+            <div class="tech-list">
+                <div class="tech-item">
+                    <strong>Spring Boot</strong>
+                    <p>Microservices Framework</p>
+                </div>
+                <div class="tech-item">
+                    <strong>Docker</strong>
+                    <p>Containerization</p>
+                </div>
+                <div class="tech-item">
+                    <strong>Apache Kafka</strong>
+                    <p>Event Streaming</p>
+                </div>
+                <div class="tech-item">
+                    <strong>MySQL</strong>
+                    <p>Relational Database</p>
+                </div>
+                <div class="tech-item">
+                    <strong>PostgreSQL</strong>
+                    <p>ACID Compliance</p>
+                </div>
+                <div class="tech-item">
+                    <strong>MongoDB</strong>
+                    <p>Document Database</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Key Features</h2>
+            <ul>
+                <li><strong>Event-Driven Architecture:</strong> Uses Apache Kafka for loose coupling between services
+                </li>
+                <li><strong>Database Optimization:</strong> Each service uses the most appropriate database technology
+                </li>
+                <li><strong>Scalable Design:</strong> Independent services can be scaled based on demand</li>
+                <li><strong>Docker Integration:</strong> Complete containerization for easy deployment</li>
+                <li><strong>Real-time Validation:</strong> Cross-service validation ensures data integrity</li>
+                <li><strong>Analytics Support:</strong> Built-in analytics for healthcare insights</li>
+            </ul>
+        </section>
+
+        <section class="cta-section">
+            <h2>View Project</h2>
+            <p>Explore the complete source code and documentation for this microservices architecture</p>
+            <div class="cta-buttons">
+                <a href="https://github.com/doguhanniltextra/patient-management" class="btn btn-primary"
+                    target="_blank">View on GitHub</a>
+                <a href="mailto:doguhannilt@gmail.com" class="btn btn-secondary">Contact Developer</a>
+            </div>
+        </section>
+
+
+    </div>
+</body>
+
+</html>
