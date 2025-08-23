@@ -12,29 +12,32 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     networks:
-      - patient-net
+      - patient-network
 
   appointment-service:
     build:
       context: .
       dockerfile: Dockerfile
-    image: appointment-service  # ← burası eklendi
+    image: appointment-service
     container_name: appointment-service
     depends_on:
       - postgres-db
     ports:
       - "8084:8084"
     environment:
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9094
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-db-appointment:5432/appointment_database
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
     volumes:
       - ./src:/app/src
     networks:
-      - patient-net
+      - patient-network
 
 
 volumes:
   postgres-data:
 
 networks:
-  patient-net:
-    driver: bridge
+  patient-network:
+    external: true

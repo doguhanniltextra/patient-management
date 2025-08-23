@@ -1,14 +1,21 @@
 package com.project.service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 
+import com.project.dto.AppointmentDTO;
+import com.project.dto.AppointmentKafkaResponseDto;
 import com.project.exception.CustomNotFoundException;
 import com.project.kafka.KafkaProducer;
 import com.project.utils.IdValidation;
 
+import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 
@@ -25,13 +32,13 @@ public class AppointmentService {
     private final AppointmentRepository appointmentRepository;
     private final IdValidation idValidation;
     private static final Logger log = LoggerFactory.getLogger(AppointmentService.class);
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     public AppointmentService(KafkaProducer kafkaProducer, AppointmentRepository appointmentRepository , IdValidation idValidation) {
         this.kafkaProducer = kafkaProducer;
         this.appointmentRepository = appointmentRepository;
         this.idValidation = idValidation;
     }
-
 
     public Appointment createAppointment(Appointment appointment) {
 
@@ -50,12 +57,10 @@ public class AppointmentService {
             throw new CustomNotFoundException("Doctor not found: " + doctorId);
         }
 
-        log.info("Kafka Process Starting");
-        kafkaProducer.sendEvent(appointment);
-
         log.info("Save Appointment");
         return appointmentRepository.save(appointment);
     }
+
     public ResponseEntity<Appointment> updateAppointment(Appointment appointment) {
         log.info("Update Appointment -> {}", appointment.getId());
         Appointment existingAppointment = appointmentRepository.findById(appointment.getId()).orElse(null);
@@ -77,6 +82,25 @@ public class AppointmentService {
     public void deleteAppointment(UUID id) {
         log.info("Delete Appointment ->  {}", id);
         appointmentRepository.deleteById(id);
+    }
+
+    public void updatePaymentStatus(UUID id, boolean status) {
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Appointment not found: " + id));
+
+        appointment.setPaymentStatus(status);
+        appointmentRepository.save(appointment);
+
+        AppointmentKafkaResponseDto appointmentDTO = new AppointmentKafkaResponseDto(
+                appointment.getDoctorId().toString(),
+                appointment.getPatientId().toString(),
+                appointment.getAmount(),
+                status
+        );
+
+        if (status) {
+            kafkaProducer.sendEvent(appointmentDTO);
+        }
     }
 
     public List<Appointment> getAllAppointments() {

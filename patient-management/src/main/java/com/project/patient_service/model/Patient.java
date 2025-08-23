@@ -30,7 +30,7 @@ public class Patient {
     @NotNull
     private LocalDate registeredDate;
 
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 

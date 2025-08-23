@@ -1,10 +1,12 @@
-package com.project.patient_service.dto;
+package com.project.patient_service.dto.response;
 
-public class PatientResponseDTO {
+import java.time.LocalDate;
+
+public class GetPatientControllerResponseDto {
     private String id;
     private String name;
     private String address;
-    private String dateOfBirth;
+    private LocalDate dateOfBirth;
     private String email;
 
     public String getEmail() {
@@ -39,11 +41,11 @@ public class PatientResponseDTO {
         this.address = address;
     }
 
-    public String getDateOfBirth() {
+    public LocalDate getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(String dateOfBirth) {
+    public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 }

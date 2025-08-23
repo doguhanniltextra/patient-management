@@ -24,21 +24,28 @@ public class IdValidation {
 
     public boolean checkPatientExists(UUID patientId) {
         try {
-            ResponseEntity<Void> response =
-                    restTemplate.getForEntity(PATIENT_SERVICE_URL + patientId, Void.class);
+            System.out.println("Calling: " + PATIENT_SERVICE_URL + patientId);
+            ResponseEntity<Object> response =
+                    restTemplate.getForEntity(PATIENT_SERVICE_URL + patientId, Object.class);
+            System.out.println("Response: " + response.getStatusCode());
+            return response.getStatusCode().is2xxSuccessful();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public boolean checkDoctorExists(UUID doctorId) {
+        try {
+            ResponseEntity<Object> response =
+                    restTemplate.getForEntity(DOCTOR_SERVICE_URL + doctorId, Object.class);
             return response.getStatusCode().is2xxSuccessful();
         } catch (HttpClientErrorException.NotFound e) {
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }
 
-    public boolean checkDoctorExists(UUID doctorId) {
-        try {
-            ResponseEntity<Void> response =
-                    restTemplate.getForEntity(DOCTOR_SERVICE_URL + doctorId, Void.class);
-            return response.getStatusCode().is2xxSuccessful();
-        } catch (HttpClientErrorException.NotFound e) {
-            return false;
-        }
-    }
 }
+

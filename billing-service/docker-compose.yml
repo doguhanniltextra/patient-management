@@ -6,11 +6,14 @@ services:
     image: billing-service:latest
     container_name: billing-service
     networks:
-      - patient-management_patient-net
+      - patient-network
     ports:
       - "8081:8081"
       - "9001:9001"
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+
 
 networks:
-  patient-management_patient-net:
+  patient-network:
     external: true

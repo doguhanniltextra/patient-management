@@ -10,6 +10,7 @@ public class AppointmentResponseDTO {
         dto.setAmount(appointment.getAmount());
         dto.setPaymentStatus(appointment.isPaymentStatus());
         dto.setServiceDate(appointment.getServiceDate());
+        dto.setServiceType(appointment.getServiceType());
         return dto;
     }
 }

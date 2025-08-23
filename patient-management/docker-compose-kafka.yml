@@ -19,9 +19,8 @@ services:
       KAFKA_HEARTBEAT_INTERVAL_MS: 3000
       KAFKA_SESSION_TIMEOUT_MS: 30000
     networks:
-      - patient-net
+      - patient-network
 
 networks:
-  patient-net:
+  patient-network:
     external: true
-    name: patient-management_patient-net

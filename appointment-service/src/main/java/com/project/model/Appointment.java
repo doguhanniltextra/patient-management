@@ -23,6 +23,8 @@ public class Appointment {
     @NotNull
     private String serviceDate;
     @NotNull
+    private String serviceDateEnd;
+    @NotNull
     private ServiceType serviceType;
     @NotNull
     private float amount;
@@ -30,6 +32,15 @@ public class Appointment {
     private boolean paymentStatus;
     @NotNull
     private PaymentType paymentType;
+
+
+    public String getServiceDateEnd() {
+        return serviceDateEnd;
+    }
+
+    public void setServiceDateEnd(String serviceDateEnd) {
+        this.serviceDateEnd = serviceDateEnd;
+    }
 
     public @NotNull UUID getPatientId() {
         return patientId;

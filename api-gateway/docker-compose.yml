@@ -6,10 +6,10 @@ services:
     image: api-gateway:latest
     container_name: api-gateway
     networks:
-      - patient-management_patient-net
+      - patient-network
     ports:
       - "4004:4004"
 
 networks:
-  patient-management_patient-net:
+  patient-network:
     external: true

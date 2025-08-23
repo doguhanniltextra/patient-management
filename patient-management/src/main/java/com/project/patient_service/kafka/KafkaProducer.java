@@ -1,48 +1,44 @@
 package com.project.patient_service.kafka;
 
-import com.google.common.util.concurrent.ListenableFuture;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.patient_service.dto.request.KafkaPatientRequestDto;
 import com.project.patient_service.model.Patient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
-import patient.events.PatientEvent;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class KafkaProducer {
     private static final Logger log = LoggerFactory.getLogger(KafkaProducer.class);
-    private final KafkaTemplate<String, byte[]> kafkaTemplate;
+    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public KafkaProducer(KafkaTemplate<String, byte[]> kafkaTemplate) {
+
+    public KafkaProducer(KafkaTemplate<String, String> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void sendEvent(Patient patient) {
-        PatientEvent patientEvent = PatientEvent
-                .newBuilder()
-                .setPatientId(patient.getId().toString())
-                .setName(patient.getName())
-                .setEmail(patient.getEmail())
-                .setEventType(String.valueOf(EventType.PATIENT_CREATED))
-                .build();
+    public void sendEvent(KafkaPatientRequestDto kafkaPatientRequestDto) {
+        try {
+            log.info("KAFKA: Kafka -PATIENT- Triggered");
+            Map<String, Object> event = new HashMap<>();
+            event.put("patientId", kafkaPatientRequestDto.getId().toString());
+            event.put("name", kafkaPatientRequestDto.getName());
+            event.put("email", kafkaPatientRequestDto.getEmail());
+            event.put("eventType", "PATIENT_CREATED");
 
-        log.info("SendEvent Active");
+            log.info("KAFKA: kafka -PATIENT-{}", event);
 
-        CompletableFuture<SendResult<String, byte[]>> future = kafkaTemplate.send("patient", patientEvent.toByteArray());
+            String json = objectMapper.writeValueAsString(event);
 
-        future.whenComplete((result, ex) -> {
-            if (ex == null) {
-                log.info("Message sent successfully to Kafka, partition: {}, offset: {}",
-                        result.getRecordMetadata().partition(),
-                        result.getRecordMetadata().offset());
-            } else {
-                log.error("Error sending message to Kafka", ex);
-            }
-        });
+            kafkaTemplate.send("patient", json);
+            log.info("Sent JSON message to Kafka: {}", json);
+        } catch (Exception e) {
+            log.error("Failed to send message", e);
+        }
     }
 }
-

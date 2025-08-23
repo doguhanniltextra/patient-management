@@ -2,7 +2,6 @@
 
 # Stop and remove all containers
 echo "Stopping and removing all containers..."
-docker-compose down
 docker stop $(docker ps -aq)
 docker rm $(docker ps -aq)
 
@@ -42,7 +41,7 @@ popd
 
 # API GATEWAY
 echo "API Gateway Starting"
-push ./api-gateway
+pushd ./api-gateway
 docker-compose up --build -d
 popd
 

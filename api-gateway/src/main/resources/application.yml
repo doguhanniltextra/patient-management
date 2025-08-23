@@ -26,6 +26,12 @@ spring:
             - Path=/api/doctors/**
           filters:
             - StripPrefix=1
+        - id: appointment-service-route
+          uri: http://appointment-service:8084
+          predicates:
+            - Path=/api/appointments/**
+          filters:
+            - StripPrefix=1
 
 logging:
   level:

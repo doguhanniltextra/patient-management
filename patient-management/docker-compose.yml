@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   postgres-db:
     image: postgres:15
@@ -12,7 +10,7 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     networks:
-      - patient-net
+      - patient-network
 
   patient-service:
     build:
@@ -25,17 +23,15 @@ services:
       - "8080:8080"
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      BILLING_SERVICE_ADDRESS: billing-service
-      BILLING_SERVICE_GRPC_PORT: 9001
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     volumes:
       - ./src:/app/src
     networks:
-      - patient-net
+      - patient-network
 
 volumes:
   postgres-data:
 
 networks:
-  patient-net:
-    driver: bridge
+  patient-network:
+    external: true

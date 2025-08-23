@@ -6,7 +6,7 @@ services:
     image: doctor-service:latest
     container_name: doctor-service
     networks:
-      - patient-management_patient-net
+      - patient-network
     ports:
       - "8083:8083"
     depends_on:
@@ -29,11 +29,11 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
     networks:
-      - patient-management_patient-net
+      - patient-network
 
 volumes:
   mysql-data:
 
 networks:
-  patient-management_patient-net:
+  patient-network:
     external: true
