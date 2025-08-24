@@ -1,36 +1,41 @@
+version: "3.8"
+
 services:
   postgres-db:
     image: postgres:15
-    container_name: postgres-db
+    container_name: postgres-db-auth
     restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: patient_database
+      POSTGRES_DB: auth_database
     volumes:
-      - postgres-patient-data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
     networks:
       - patient-network
 
-  patient-service:
+  auth-service:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: patient-service
+    image: auth-service
+    container_name: auth-service
     depends_on:
       - postgres-db
     ports:
-      - "8080:8080"
+      - "8089:8089"
     environment:
-      SPRING_PROFILES_ACTIVE: prod
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-db-auth:5432/auth_database
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
     volumes:
       - ./src:/app/src
     networks:
       - patient-network
 
+
 volumes:
-  postgres-patient-data:
+  postgres-data:
 
 networks:
   patient-network:

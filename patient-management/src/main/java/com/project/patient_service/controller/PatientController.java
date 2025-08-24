@@ -48,7 +48,7 @@ public class PatientController {
                 .map(patient -> {
                     GetPatientControllerResponseDto getPatientControllerResponseDto1 = new GetPatientControllerResponseDto();
                     getPatientControllerResponseDto1.setAddress(patient.getAddress());
-                    getPatientControllerResponseDto1.setId(patient.getId());
+                    getPatientControllerResponseDto1.setId(String.valueOf(patient.getId()));
                     getPatientControllerResponseDto1.setName(patient.getName());
                     getPatientControllerResponseDto1.setEmail(patient.getEmail());
                     getPatientControllerResponseDto1.setDateOfBirth(patient.getDateOfBirth());

@@ -32,6 +32,13 @@ spring:
             - Path=/api/appointments/**
           filters:
             - StripPrefix=1
+        - id: auth-service-route
+          uri: http://auth-service:8089
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - StripPrefix=1
+            - SetRequestHeader=Content-Type, application/json
 
 logging:
   level:

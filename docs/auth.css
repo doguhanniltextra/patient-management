@@ -1,0 +1,202 @@
+        .service-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    max-width: 1200px;
+    position: relative;
+}
+
+.service {
+    background: rgba(100,186,51, 1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    position: relative;
+    transition: all 0.3s ease;
+    min-height: 200px;
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.service:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 255, 255, 0.3);
+}
+
+.service-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    filter: drop-shadow(0 0 10px currentColor);
+}
+
+.user { color: #00ff88; }
+.gateway { color: #ff6b6b; }
+.auth { color: #4ecdc4; }
+.database { color: #ffe66d; }
+
+.service-name {
+    color: white;
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.service-desc {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.request-path {
+    position: absolute;
+    height: 4px;
+    background: linear-gradient(90deg, #00ff88, #4ecdc4);
+    border-radius: 2px;
+    opacity: 0;
+    box-shadow: 0 0 10px #00ff88;
+}
+
+
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 12px 0;
+}
+
+.btn {
+    background: rgba(100,186,51, 0.8);
+    border: 1px solid rgba(26, 66, 207, 1);
+    color: white;
+    padding: 12px 25px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.status {
+    position: block;
+    top: 20px;
+    bottom: 30px;
+    gap:15px;
+    background: rgba(100,186,51, 0.8);
+    backdrop-filter: blur(20px);
+    color: white;
+    padding: 15px 30px;
+    margin: 30px;
+    border-radius: 25px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+}
+
+.response-text {
+    position: absolute;
+    color: #black;
+    padding: 8px 15px;
+    font-size: 0.9rem;
+    font-weight: 800;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+}
+
+.particles {
+    position: static;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    animation: float 6s infinite ease-in-out;
+      display: none;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0; }
+    50% { transform: translateY(-20px) rotate(180deg); opacity: 1; }
+}
+
+.glow-effect {
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    from { box-shadow: 0 0 20px rgba(0, 255, 255, 0.5); }
+    to { box-shadow: 0 0 40px rgba(0, 255, 255, 0.8); }
+}
+
+
+
+.jwt-token {
+    position: absolute;
+    background: rgba(255, 230, 109, 0.8);
+    border: 1px solid #ffe66d;
+    color: #white;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-family: 'Courier New', monospace;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.3s ease;
+}
+            .tech-list{
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+          }
+
+          .tech-list li{
+            display: flex;
+            align-items: center;
+            gap: 10px; /* icon ile yazı arası boşluk */
+            background: #6db33f;
+            color: #FFFFFF;
+            border-radius: 8px;
+            padding: 10px 16px;
+            transition: transform .2s, box-shadow .2s;
+          }
+
+          .tech-list li:hover{
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+          }
+
+          .icon{
+            color: #FFFFF;
+            font-weight: bold;
+            flex-shrink: 0;
+          }
+          * {
+              margin: 0;
+              padding: 0;
+              box-sizing: border-box;
+          }

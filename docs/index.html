@@ -5,344 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient Management System - Microservices Architecture</title>
-    <style>
-                    .tech-list{
-                    list-style: none;
-                    padding: 0;
-                    margin: 0;
-                    display: flex;
-                    flex-direction: column;
-                    gap: 10px;
-                    font-family: 'Segoe UI', Tahoma, sans-serif;
-                  }
-
-                  .tech-list li{
-                    display: flex;
-                    align-items: center;
-                    gap: 10px; /* icon ile yazı arası boşluk */
-                    background: #6db33f;
-                    color: #FFFFFF;
-                    border-radius: 8px;
-                    padding: 10px 16px;
-                    transition: transform .2s, box-shadow .2s;
-                  }
-
-                  .tech-list li:hover{
-                    transform: translateX(5px);
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-                  }
-
-                  .icon{
-                    color: #FFFFF;
-                    font-weight: bold;
-                    flex-shrink: 0; /* ikon küçülmesin */
-                  }
-                  * {
-                      margin: 0;
-                      padding: 0;
-                      box-sizing: border-box;
-                  }
-
-                  body {
-                      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                      line-height: 1.6;
-                      color: #333;
-                      background-color: #f8f9fa;
-                  }
-
-                  .container {
-                      max-width: 1200px;
-                      margin: 0 auto;
-                      padding: 0 20px;
-                  }
-
-                  header {
-                      background: #6db33f;
-                      color: white;
-                      padding: 3rem 0;
-                      text-align: center;
-                      margin-bottom: 2rem;
-                  }
-
-                  header h1 {
-                      font-size: 2.5rem;
-                      margin-bottom: 0.5rem;
-                      font-weight: 400;
-                  }
-
-                  header p {
-                      font-size: 1.1rem;
-                      opacity: 0.9;
-                      font-weight: 300;
-                  }
-
-                  .section {
-                      background: white;
-                      border-radius: 8px;
-                      padding: 2rem;
-                      margin-bottom: 2rem;
-                      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                      border: 1px solid #e9ecef;
-                  }
-
-                  h2 {
-                      color: #2d3748;
-                      font-size: 1.8rem;
-                      margin-bottom: 1.5rem;
-                      border-bottom: 2px solid #6db33f;
-                      padding-bottom: 0.5rem;
-                  }
-
-                  h3 {
-                      color: #4a5568;
-                      font-size: 1.3rem;
-                      margin-bottom: 1rem;
-                  }
-
-                  .overview-grid {
-                      display: grid;
-                      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                      gap: 1.5rem;
-                      margin: 2rem 0;
-                  }
-
-                  .overview-item {
-                      background: #f8f9fa;
-                      padding: 1.5rem;
-                      border-radius: 6px;
-                      border-left: 4px solid #6db33f;
-                  }
-
-                  .overview-item h4 {
-                      color: #2d3748;
-                      margin-bottom: 0.5rem;
-                  }
-
-                  .architecture-grid {
-                      display: grid;
-                      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-                      gap: 1.5rem;
-                      margin: 2rem 0;
-                  }
-
-                  .service-card {
-                      border: 1px solid #e9ecef;
-                      border-radius: 6px;
-                      padding: 1.5rem;
-                      background: white;
-                  }
-
-                  .service-header {
-                      display: flex;
-                      align-items: center;
-                      margin-bottom: 1rem;
-                  }
-
-                  .service-icon {
-                      width: 32px;
-                      height: 32px;
-                      background: #6db33f;
-                      border-radius: 4px;
-                      display: flex;
-                      align-items: center;
-                      justify-content: center;
-                      color: white;
-                      margin-right: 0.75rem;
-                      font-size: 0.9rem;
-                  }
-
-                  .database-info {
-                      background: #f8f9fa;
-                      padding: 0.75rem;
-                      border-radius: 4px;
-                      margin: 1rem 0;
-                      font-size: 0.9rem;
-                      border-left: 3px solid #17a2b8;
-                  }
-
-                  .code-block {
-                      background: #2d3748;
-                      color: #e2e8f0;
-                      padding: 1rem;
-                      border-radius: 4px;
-                      margin: 1rem 0;
-                      font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
-                      font-size: 0.85rem;
-                      overflow-x: auto;
-                  }
-
-                  .port-table {
-                      width: 100%;
-                      border-collapse: collapse;
-                      margin: 1.5rem 0;
-                      background: white;
-                      border: 1px solid #dee2e6;
-                      border-radius: 6px;
-                      overflow: hidden;
-                  }
-
-                  .port-table th {
-                      background: #6db33f;
-                      color: white;
-                      padding: 0.75rem;
-                      text-align: left;
-                      font-weight: 500;
-                  }
-
-                  .port-table td {
-                      padding: 0.75rem;
-                      border-bottom: 1px solid #dee2e6;
-                  }
-
-                  .port-table tr:last-child td {
-                      border-bottom: none;
-                  }
-
-                  .port-table tr:nth-child(even) {
-                      background: #f8f9fa;
-                  }
-
-                  .validation-flow {
-                      background: #f8f9fa;
-                      padding: 1.5rem;
-                      border-radius: 6px;
-                      margin: 1.5rem 0;
-                  }
-
-                  .flow-step {
-                      display: flex;
-                      align-items: flex-start;
-                      margin: 1rem 0;
-                      padding: 0.75rem;
-                      background: white;
-                      border-radius: 4px;
-                      border-left: 3px solid #6db33f;
-                  }
-
-                  .step-number {
-                      background: #6db33f;
-                      color: white;
-                      width: 24px;
-                      height: 24px;
-                      border-radius: 50%;
-                      display: flex;
-                      align-items: center;
-                      justify-content: center;
-                      margin-right: 0.75rem;
-                      font-size: 0.8rem;
-                      font-weight: 600;
-                      flex-shrink: 0;
-                  }
-
-                  .tech-list {
-                      display: grid;
-                      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                      gap: 1rem;
-                      margin: 1.5rem 0;
-                  }
-
-                  .tech-item {
-                      background: #f8f9fa;
-                      padding: 1rem;
-                      border-radius: 4px;
-                      text-align: center;
-                      border: 1px solid #e9ecef;
-                  }
-
-                  .tech-item strong {
-                      color: #2d3748;
-                      display: block;
-                      margin-bottom: 0.25rem;
-                  }
-
-                  .cta-section {
-                      background: #2d3748;
-                      color: white;
-                      text-align: center;
-                      padding: 2.5rem;
-                      border-radius: 8px;
-                      margin: 2rem 0;
-                  }
-
-                  .cta-buttons {
-                      display: flex;
-                      justify-content: center;
-                      gap: 1rem;
-                      margin-top: 1.5rem;
-                      flex-wrap: wrap;
-                  }
-
-                  .btn {
-                      display: inline-block;
-                      padding: 0.75rem 1.5rem;
-                      border-radius: 4px;
-                      text-decoration: none;
-                      font-weight: 500;
-                      transition: all 0.2s ease;
-                      border: 1px solid transparent;
-                  }
-
-                  .btn-primary {
-                      background: #6db33f;
-                      color: white;
-                  }
-
-                  .btn-secondary {
-                      background: transparent;
-                      color: white;
-                      border-color: white;
-                  }
-
-                  .btn:hover {
-                      opacity: 0.9;
-                      transform: translateY(-1px);
-                  }
-
-                  .footer {
-                      text-align: center;
-                      padding: 2rem 0;
-                      color: #6c757d;
-                      font-size: 0.9rem;
-                  }
-
-                  ul {
-                      margin: 1rem 0;
-                      padding-left: 1.5rem;
-                  }
-
-                  li {
-                      margin: 0.5rem 0;
-                  }
-
-                  @media (max-width: 768px) {
-                      header h1 {
-                          font-size: 2rem;
-                      }
-
-                      .section {
-                          padding: 1.5rem;
-                      }
-
-                      .architecture-grid {
-                          grid-template-columns: 1fr;
-                      }
-
-                      .cta-buttons {
-                          flex-direction: column;
-                          align-items: center;
-                      }
-                  }
-    </style>
+    <link rel="stylesheet" href="auth.css">
+    <link rel="stylesheet" href="main.css">
+    <script src="main.js"></script>
 </head>
-
 <body>
     <div class="container">
-
         <header>
             <h1>Patient Management System</h1>
             <p>Microservices-Based Healthcare Management Backend</p>
         </header>
-
         <section class="section">
             <h2>Project Overview</h2>
             <p>This project is a <strong>microservices-based backend system</strong> for managing appointments,
@@ -368,7 +40,6 @@
                 </div>
             </div>
         </section>
-
         <section class="section">
             <h2>System Architecture</h2>
             <p>The system consists of the following microservices, each containerized via Docker:</p>
@@ -422,7 +93,6 @@
                 </tbody>
             </table>
         </section>
-
         <section class="section">
             <h2>Microservices Details</h2>
             <div class="architecture-grid">
@@ -547,7 +217,57 @@
                 </div>
             </div>
         </section>
+        <section class="section">
+            <h2>How Authenticaton And Authorization Works?</h2>
+            <div class="particles" id="particles"></div>
 
+            <div class="status" id="status">Ready to authenticate...</div>
+
+            <div class="container">
+
+                <div class="service-container">
+
+                    <!-- User -->
+                    <div class="service" id="user">
+                        <div class="service-icon user">👤</div>
+                        <div class="service-name">User</div>
+                        <div class="service-desc">Makes request to protected resource</div>
+                        <div class="response-text" id="userResponse">Sending request...</div>
+                    </div>
+
+                    <!-- API Gateway -->
+                    <div class="service" id="gateway">
+                        <div class="service-icon gateway">🌐</div>
+                        <div class="service-name">API Gateway</div>
+                        <div class="service-desc">Routes requests & handles authentication</div>
+                        <div class="response-text" id="gatewayResponse">Routing to auth...</div>
+                    </div>
+
+                    <!-- Auth Service -->
+                    <div class="service" id="auth">
+                        <div class="service-icon auth">🔐</div>
+                        <div class="service-name">Auth Service</div>
+                        <div class="service-desc">Handles login/register & JWT generation</div>
+                        <div class="response-text" id="authResponse">Generating JWT...</div>
+                        <div class="jwt-token" id="jwtToken">eyJhbGciOiJIUzI1NiJ9.eyJzdWI...</div>
+                    </div>
+
+                    <!-- Database -->
+                    <div class="service" id="database">
+                        <div class="service-icon database">🗄️</div>
+                        <div class="service-name">Database</div>
+                        <div class="service-desc">Stores user credentials & data</div>
+                        <div class="response-text" id="dbResponse">User validated ✓</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn" onclick="startAnimation()">🚀 Start Authentication</button>
+                <button class="btn" onclick="resetAnimation()">🔄 Reset</button>
+                <button class="btn" onclick="showRegisterFlow()">📝 Register Flow</button>
+            </div>
+        </section>
         <section class="section">
             <h2>Appointment Validation Flow</h2>
             <p>When a user tries to create an appointment, the system follows this validation process:</p>
@@ -590,7 +310,6 @@
                 </div>
             </div>
         </section>
-
         <section class="section">
             <h2>Billing - Invoice Flow</h2>
             <p>When a user create an appointment, the system follows this process for billing:</p>
@@ -628,7 +347,6 @@
                 </div>
             </div>
         </section>
-
         <section class="section">
             <h2>Api Gateway Flow</h2>
             <p>When a user request to an endpoint, the system follows this process for Api Gateway:</p>
@@ -682,7 +400,6 @@
                 </div>
             </div>
         </section>
-
         <section class="section">
             <h2>Technology Stack</h2>
             <div class="tech-list">
@@ -712,7 +429,17 @@
                 </div>
             </div>
         </section>
+        <section class="section">
+            <h2>Postman Collection</h2>
+            <p>Test all API endpoints with this ready-to-use Postman collection. Import the collection into your Postman to explore requests, headers, and sample responses.</p>
 
+            <div class="cta-buttons">
+
+                <a href="https://www.postman.com/spacecraft-astronaut-67997412/workspace/patient-management/folder/32076392-560c6040-1ca9-429b-8294-c26a30e2127d?action=share&creator=32076392&ctx=documentation" class="btn btn-primary" target="_blank">Open Postman Collection</a>
+            </div>
+
+    </pre>
+        </section>
         <section class="section">
             <h2>Key Features</h2>
             <ul>
@@ -730,7 +457,6 @@
                 <li><strong>High Availability:</strong> Independent services with container orchestration allow for fault tolerance and minimal downtime.</li>
             </ul>
         </section>
-
         <section class="cta-section">
             <h2>View Project</h2>
             <p>Explore the complete source code and documentation for this microservices architecture</p>
@@ -740,8 +466,6 @@
                 <a href="mailto:doguhannilt@gmail.com" class="btn btn-secondary">Contact Developer</a>
             </div>
         </section>
-
     </div>
 </body>
-
 </html>

@@ -1,9 +1,10 @@
 package com.project.patient_service.dto.response;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 public class GetPatientServiceResponseDto {
-    private String id;
+    private UUID id;
     private String name;
     private String address;
     private LocalDate dateOfBirth;
@@ -17,11 +18,11 @@ public class GetPatientServiceResponseDto {
         this.email = email;
     }
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

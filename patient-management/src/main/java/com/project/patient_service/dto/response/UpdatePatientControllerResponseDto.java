@@ -6,8 +6,12 @@ public class UpdatePatientControllerResponseDto {
     private String id;
     private String name;
     private String address;
-    private String dateOfBirth;
+    private LocalDate dateOfBirth;
     private String email;
+
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
 
     public String getEmail() {
         return email;
@@ -39,10 +43,6 @@ public class UpdatePatientControllerResponseDto {
 
     public void setAddress(String address) {
         this.address = address;
-    }
-
-    public String getDateOfBirth() {
-        return dateOfBirth;
     }
 
     public void setDateOfBirth(LocalDate dateOfBirth) {

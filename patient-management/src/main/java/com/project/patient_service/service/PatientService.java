@@ -70,14 +70,14 @@ public class PatientService {
 
         // KAFKA DTO
         KafkaPatientRequestDto kafkaPatientRequestDto = new KafkaPatientRequestDto();
-        kafkaPatientRequestDto.setId(UUID.fromString(newPatient.getId()));
+        kafkaPatientRequestDto.setId(UUID.fromString(String.valueOf(newPatient.getId())));
         kafkaPatientRequestDto.setEmail(newPatient.getEmail());
         kafkaPatientRequestDto.setName(newPatient.getName());
         kafkaProducer.sendEvent(kafkaPatientRequestDto);
 
         // RESPONSE DTO
         UpdatePatientServiceResponseDto updatePatientServiceResponseDto = new UpdatePatientServiceResponseDto();
-        updatePatientServiceResponseDto.setId(patient.getId());
+        updatePatientServiceResponseDto.setId(String.valueOf(patient.getId()));
         updatePatientServiceResponseDto.setName(patient.getName());
         updatePatientServiceResponseDto.setEmail(patient.getEmail());
         updatePatientServiceResponseDto.setAddress(patient.getAddress());
