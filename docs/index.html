@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="main.css">
     <script src="main.js"></script>
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -54,42 +55,48 @@
                     </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td><strong>API Gateway</strong></td>
-                    <td>4004</td>
-                    <td>-</td>
-                    <td>Request routing and management</td>
-                </tr>
-                <tr>
-                    <td><strong>Patient Service</strong></td>
-                    <td>8080</td>
-                    <td>MySQL</td>
-                    <td>Patient records management</td>
-                </tr>
-                <tr>
-                    <td><strong>Billing Service</strong></td>
-                    <td>8081</td>
-                    <td>PostgreSQL</td>
-                    <td>Payment processing and billing</td>
-                </tr>
-                <tr>
-                    <td><strong>Analytics Service</strong></td>
-                    <td>8082</td>
-                    <td>MongoDB</td>
-                    <td>Data analytics and reporting</td>
-                </tr>
-                <tr>
-                    <td><strong>Doctor Service</strong></td>
-                    <td>8083</td>
-                    <td>MySQL</td>
-                    <td>Doctor profiles and specializations</td>
-                </tr>
-                <tr>
-                    <td><strong>Appointment Service</strong></td>
-                    <td>8084</td>
-                    <td>PostgreSQL</td>
-                    <td>Appointment scheduling and validation</td>
-                </tr>
+                    <tr>
+                        <td><strong>API Gateway</strong></td>
+                        <td>4004</td>
+                        <td>-</td>
+                        <td>Request routing and management</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Patient Service</strong></td>
+                        <td>8080</td>
+                        <td>MySQL</td>
+                        <td>Patient records management</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Billing Service</strong></td>
+                        <td>8081</td>
+                        <td>PostgreSQL</td>
+                        <td>Payment processing and billing</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Analytics Service</strong></td>
+                        <td>8082</td>
+                        <td>MongoDB</td>
+                        <td>Data analytics and reporting</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Doctor Service</strong></td>
+                        <td>8083</td>
+                        <td>MySQL</td>
+                        <td>Doctor profiles and specializations</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Appointment Service</strong></td>
+                        <td>8084</td>
+                        <td>PostgreSQL</td>
+                        <td>Appointment scheduling and validation</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Auth Service</strong></td>
+                        <td>8089</td>
+                        <td>PostgreSQL</td>
+                        <td>Auth process</td>
+                    </tr>
                 </tbody>
             </table>
         </section>
@@ -104,7 +111,10 @@
                     <div class="database-info">
                         <strong>Database:</strong> Postgresql | <strong>Port:</strong> 8080
                     </div>
-                    <p><strong>Responsibility:</strong> This microservice is responsible for managing endpoints about patient records. The relationship between Kafka and Patient Service sends an event to the Analytics Service. The database of this microservice is PostgresSQL and it runs simultaneously with the microservice, thanks to docker-compose. </p>
+                    <p><strong>Responsibility:</strong> This microservice is responsible for managing endpoints about
+                        patient records. The relationship between Kafka and Patient Service sends an event to the
+                        Analytics Service. The database of this microservice is PostgresSQL and it runs simultaneously
+                        with the microservice, thanks to docker-compose. </p>
                     <div class="code-block">{
                         "id": UUID,
                         "name": String,
@@ -123,7 +133,10 @@
                     <div class="database-info">
                         <strong>Database:</strong> MySQL | <strong>Port:</strong> 8083
                     </div>
-                    <p><strong>Responsibilities:</strong> This microservice is responsible for managing endpoints about doctor records. The database of that microservice is MySQL. The reason beyond this database selection, it's generally optimized for read-heavy operations and offers slightly better performance in that context. </p>
+                    <p><strong>Responsibilities:</strong> This microservice is responsible for managing endpoints about
+                        doctor records. The database of that microservice is MySQL. The reason beyond this database
+                        selection, it's generally optimized for read-heavy operations and offers slightly better
+                        performance in that context. </p>
                     <div class="code-block">{
                         "id": UUID,
                         "name": String,
@@ -147,7 +160,13 @@
                     <div class="database-info">
                         <strong>Database:</strong> PostgreSQL | <strong>Port:</strong> 8084
                     </div>
-                    <p><strong>Responsibilities:</strong> This microservice is responsible for managing appointments, verifying IDs, notifying other services with Kafka. The database of this microservice is PostgresSQL. It also has two services. One of the services is managing appointment process. With the help of Rest Template, this service verify the Patient ID and Doctor ID to create an appointment. Also, if any patient's payment process is successful then Kafka triggers an event for The Billing Service. The second service of this microservice is <code>Cleanup Service</code>, manages deleting outdated appointments every day.
+                    <p><strong>Responsibilities:</strong> This microservice is responsible for managing appointments,
+                        verifying IDs, notifying other services with Kafka. The database of this microservice is
+                        PostgresSQL. It also has two services. One of the services is managing appointment process. With
+                        the help of Rest Template, this service verify the Patient ID and Doctor ID to create an
+                        appointment. Also, if any patient's payment process is successful then Kafka triggers an event
+                        for The Billing Service. The second service of this microservice is
+                        <code>Cleanup Service</code>, manages deleting outdated appointments every day.
                     </p>
                     <div class="code-block">{
                         "patientId": UUID,
@@ -169,7 +188,9 @@
                     <div class="database-info">
                         <strong>Database:</strong> PostgreSQL | <strong>Port:</strong> 8081
                     </div>
-                    <p><strong>Responsibilities:</strong> This microservice is responsible for creating billing records after appointments. It creates an invoice for a patient with invoice-generator API, and it stores invoice instances <i>(PDF)</i> on Billing Service image.</p>
+                    <p><strong>Responsibilities:</strong> This microservice is responsible for creating billing records
+                        after appointments. It creates an invoice for a patient with invoice-generator API, and it
+                        stores invoice instances <i>(PDF)</i> on Billing Service image.</p>
 
                     <div class="code-block">{
                         "patientId": Long,
@@ -192,13 +213,33 @@
 
                 <div class="service-card">
                     <div class="service-header">
+                        <div class="service-icon">📊</div>
+                        <h3>Auth Service</h3>
+                    </div>
+                    <div class="database-info">
+                        <strong>Database:</strong> PostgreSQL | <strong>Port:</strong> 8089
+                    </div>
+                   <p><strong>Responsibilities:</strong> This microservice is responsible for creating auth records. It generates an <strong>JWT</strong> token for accessing other endpoints<p>
+                     <div class="code-block">{
+                        "Name": String,
+                        "Email": String,
+                        "Password": String,
+                        "RegisterDate": LocalDate 
+                        }</div>
+                
+                </div>
+
+
+                <div class="service-card">
+                    <div class="service-header">
                         <div class="service-icon">🌐</div>
                         <h3>API Gateway</h3>
                     </div>
                     <div class="database-info">
                         <strong>Port:</strong> 4004
                     </div>
-                    <p><strong>Responsibilities:</strong> This microservice is responsible for managing request routing, and API management.</p>
+                    <p><strong>Responsibilities:</strong> This microservice is responsible for managing request routing,
+                        and API management.</p>
                 </div>
 
                 <div class="service-card">
@@ -341,7 +382,7 @@
                     <div>
                         <strong>Result</strong><br>
                         <div style="text-align: center;">
-                            <img src="invoice_screenshot.png" alt="Instance" width="300" height="400"/>
+                            <img src="invoice_screenshot.png" alt="Instance" width="300" height="400" />
                         </div>
                     </div>
                 </div>
@@ -364,7 +405,8 @@
                     <div>
                         <strong>Predicate Check</strong><br>
                         Gateway checks the <code>Path</code> predicates to determine the correct microservice
-                        (<code>patient-service</code>, <code>doctor-service</code>, <code>appointment-service</code>, etc.).
+                        (<code>patient-service</code>, <code>doctor-service</code>, <code>appointment-service</code>,
+                        etc.).
                     </div>
                 </div>
                 <div class="flow-step">
@@ -431,30 +473,45 @@
         </section>
         <section class="section">
             <h2>Postman Collection</h2>
-            <p>Test all API endpoints with this ready-to-use Postman collection. Import the collection into your Postman to explore requests, headers, and sample responses.</p>
+            <p>Test all API endpoints with this ready-to-use Postman collection. Import the collection into your Postman
+                to explore requests, headers, and sample responses.</p>
 
             <div class="cta-buttons">
 
-                <a href="https://www.postman.com/spacecraft-astronaut-67997412/workspace/patient-management/folder/32076392-560c6040-1ca9-429b-8294-c26a30e2127d?action=share&creator=32076392&ctx=documentation" class="btn btn-primary" target="_blank">Open Postman Collection</a>
+                <a href="https://www.postman.com/spacecraft-astronaut-67997412/workspace/patient-management/folder/32076392-560c6040-1ca9-429b-8294-c26a30e2127d?action=share&creator=32076392&ctx=documentation"
+                    class="btn btn-primary" target="_blank">Open Postman Collection</a>
             </div>
 
-    </pre>
+            </pre>
         </section>
         <section class="section">
             <h2>Key Features</h2>
             <ul>
-                <li><strong>Event-Driven Architecture:</strong> Apache Kafka enables asynchronous communication between microservices for loose coupling and real-time notifications.</li>
-                <li><strong>Database Optimization:</strong> Each service uses the most appropriate database technology: MySQL for read-heavy operations, PostgreSQL for transactional data, and MongoDB for analytical/event data.</li>
-                <li><strong>Scalable Microservices:</strong> Independent services can be scaled individually based on workload, improving performance and resilience.</li>
-                <li><strong>API Gateway Management:</strong> Centralized request routing, path-based predicates, and filter mechanisms such as StripPrefix and RewritePath simplify client interactions.</li>
-                <li><strong>Automated Billing & PDF Generation:</strong> Billing Service creates invoices automatically after appointment completion, storing PDFs efficiently.</li>
-                <li><strong>Real-Time Validation:</strong> Appointment Service validates patients and doctors using REST APIs before scheduling to ensure data integrity.</li>
-                <li><strong>Containerization with Docker:</strong> Each service runs in its own container, enabling consistent environments and simplified deployment through Docker Compose.</li>
-                <li><strong>Logging & Monitoring:</strong> SLF4J logging ensures traceability and monitoring across services for debugging and analytics.</li>
-                <li><strong>Analytics & Reporting:</strong> Analytics Service collects event-driven data for trends, usage statistics, and reporting, using MongoDB.</li>
-                <li><strong>Multi-Database Architecture:</strong> Supports multiple database systems tailored to service requirements, improving efficiency and maintainability.</li>
-                <li><strong>Secure & Maintainable Code:</strong> Clear separation of concerns, modular microservices, and RESTful endpoints ensure maintainable and testable backend code.</li>
-                <li><strong>High Availability:</strong> Independent services with container orchestration allow for fault tolerance and minimal downtime.</li>
+                <li><strong>Event-Driven Architecture:</strong> Apache Kafka enables asynchronous communication between
+                    microservices for loose coupling and real-time notifications.</li>
+                <li><strong>Database Optimization:</strong> Each service uses the most appropriate database technology:
+                    MySQL for read-heavy operations, PostgreSQL for transactional data, and MongoDB for analytical/event
+                    data.</li>
+                <li><strong>Scalable Microservices:</strong> Independent services can be scaled individually based on
+                    workload, improving performance and resilience.</li>
+                <li><strong>API Gateway Management:</strong> Centralized request routing, path-based predicates, and
+                    filter mechanisms such as StripPrefix and RewritePath simplify client interactions.</li>
+                <li><strong>Automated Billing & PDF Generation:</strong> Billing Service creates invoices automatically
+                    after appointment completion, storing PDFs efficiently.</li>
+                <li><strong>Real-Time Validation:</strong> Appointment Service validates patients and doctors using REST
+                    APIs before scheduling to ensure data integrity.</li>
+                <li><strong>Containerization with Docker:</strong> Each service runs in its own container, enabling
+                    consistent environments and simplified deployment through Docker Compose.</li>
+                <li><strong>Logging & Monitoring:</strong> SLF4J logging ensures traceability and monitoring across
+                    services for debugging and analytics.</li>
+                <li><strong>Analytics & Reporting:</strong> Analytics Service collects event-driven data for trends,
+                    usage statistics, and reporting, using MongoDB.</li>
+                <li><strong>Multi-Database Architecture:</strong> Supports multiple database systems tailored to service
+                    requirements, improving efficiency and maintainability.</li>
+                <li><strong>Secure & Maintainable Code:</strong> Clear separation of concerns, modular microservices,
+                    and RESTful endpoints ensure maintainable and testable backend code.</li>
+                <li><strong>High Availability:</strong> Independent services with container orchestration allow for
+                    fault tolerance and minimal downtime.</li>
             </ul>
         </section>
         <section class="cta-section">
@@ -468,4 +525,5 @@
         </section>
     </div>
 </body>
+
 </html>
