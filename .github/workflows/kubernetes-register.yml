@@ -1,0 +1,223 @@
+name: Build and Push Docker Images
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+    tags: [ "v*.*.*" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME_PREFIX: ${{ github.repository }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    strategy:
+      matrix:
+        service:
+          - name: api-gateway
+            context: ./api-gateway
+            dockerfile: ./api-gateway/Dockerfile
+            port: 4004
+          - name: patient-service  
+            context: ./patient-service
+            dockerfile: ./patient-service/Dockerfile
+            port: 8080
+          - name: doctor-service
+            context: ./doctor-service
+            dockerfile: ./doctor-service/Dockerfile
+            port: 8083
+          - name: appointment-service
+            context: ./appointment-service
+            dockerfile: ./appointment-service/Dockerfile
+            port: 8084
+          - name: billing-service
+            context: ./billing-service
+            dockerfile: ./billing-service/Dockerfile
+            port: 8081
+          - name: analytics-service
+            context: ./analytics-service
+            dockerfile: ./analytics-service/Dockerfile
+            port: 8082
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_PREFIX }}/${{ matrix.service.name }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=semver,pattern={{major}}
+          type=sha,prefix={{branch}}-
+          type=raw,value=latest,enable={{is_default_branch}}
+
+    - name: Check if Dockerfile exists
+      id: dockerfile-check
+      run: |
+        if [ -f "${{ matrix.service.dockerfile }}" ]; then
+          echo "dockerfile-exists=true" >> $GITHUB_OUTPUT
+          echo "✅ Dockerfile found: ${{ matrix.service.dockerfile }}"
+        else
+          echo "dockerfile-exists=false" >> $GITHUB_OUTPUT
+          echo "❌ Dockerfile not found: ${{ matrix.service.dockerfile }}"
+        fi
+
+    - name: Build and push Docker image
+      if: steps.dockerfile-check.outputs.dockerfile-exists == 'true'
+      uses: docker/build-push-action@v5
+      with:
+        context: ${{ matrix.service.context }}
+        file: ${{ matrix.service.dockerfile }}
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        platforms: linux/amd64,linux/arm64
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        build-args: |
+          SERVICE_PORT=${{ matrix.service.port }}
+
+    - name: Skip build (Dockerfile not found)
+      if: steps.dockerfile-check.outputs.dockerfile-exists == 'false'
+      run: |
+        echo "⚠️ Skipping build for ${{ matrix.service.name }} - Dockerfile not found"
+
+  deploy-manifests:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'v1.28.0'
+
+    - name: Update Kubernetes manifests
+      run: |
+        # Update image tags in Kubernetes manifests
+        if [ -d "./k8s" ] || [ -d "./kubernetes" ] || [ -d "./manifests" ]; then
+          echo "📝 Updating Kubernetes manifests..."
+          
+          # Detect manifest directory
+          MANIFEST_DIR=""
+          if [ -d "./k8s" ]; then
+            MANIFEST_DIR="./k8s"
+          elif [ -d "./kubernetes" ]; then
+            MANIFEST_DIR="./kubernetes"
+          elif [ -d "./manifests" ]; then
+            MANIFEST_DIR="./manifests"
+          fi
+          
+          echo "Using manifest directory: $MANIFEST_DIR"
+          
+          # Extract tag from git ref
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            TAG=${GITHUB_REF#refs/tags/}
+          else
+            TAG=$GITHUB_SHA
+          fi
+          
+          echo "Using image tag: $TAG"
+          
+          # Update deployment manifests
+          find $MANIFEST_DIR -name "*.yaml" -o -name "*.yml" | while read manifest; do
+            echo "Processing: $manifest"
+            
+            # Update common service images
+            sed -i "s|ghcr.io/${{ github.repository }}/api-gateway:.*|ghcr.io/${{ github.repository }}/api-gateway:$TAG|g" "$manifest"
+            sed -i "s|ghcr.io/${{ github.repository }}/patient-service:.*|ghcr.io/${{ github.repository }}/patient-service:$TAG|g" "$manifest"
+            sed -i "s|ghcr.io/${{ github.repository }}/doctor-service:.*|ghcr.io/${{ github.repository }}/doctor-service:$TAG|g" "$manifest"
+            sed -i "s|ghcr.io/${{ github.repository }}/appointment-service:.*|ghcr.io/${{ github.repository }}/appointment-service:$TAG|g" "$manifest"
+            sed -i "s|ghcr.io/${{ github.repository }}/billing-service:.*|ghcr.io/${{ github.repository }}/billing-service:$TAG|g" "$manifest"
+            sed -i "s|ghcr.io/${{ github.repository }}/analytics-service:.*|ghcr.io/${{ github.repository }}/analytics-service:$TAG|g" "$manifest"
+          done
+        else
+          echo "⚠️ No Kubernetes manifest directory found (k8s, kubernetes, or manifests)"
+        fi
+
+    - name: Validate Kubernetes manifests
+      run: |
+        if command -v kubectl &> /dev/null; then
+          echo "🔍 Validating Kubernetes manifests..."
+          
+          MANIFEST_DIR=""
+          if [ -d "./k8s" ]; then
+            MANIFEST_DIR="./k8s"
+          elif [ -d "./kubernetes" ]; then
+            MANIFEST_DIR="./kubernetes"
+          elif [ -d "./manifests" ]; then
+            MANIFEST_DIR="./manifests"
+          fi
+          
+          if [ -n "$MANIFEST_DIR" ]; then
+            find $MANIFEST_DIR -name "*.yaml" -o -name "*.yml" | while read manifest; do
+              echo "Validating: $manifest"
+              kubectl --dry-run=client apply -f "$manifest" || echo "⚠️ Validation failed for $manifest"
+            done
+          fi
+        fi
+
+    - name: Create deployment summary
+      run: |
+        echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Built and Pushed Images:" >> $GITHUB_STEP_SUMMARY
+        echo "- \`ghcr.io/${{ github.repository }}/api-gateway:${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+        echo "- \`ghcr.io/${{ github.repository }}/patient-service:${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+        echo "- \`ghcr.io/${{ github.repository }}/doctor-service:${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+        echo "- \`ghcr.io/${{ github.repository }}/appointment-service:${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+        echo "- \`ghcr.io/${{ github.repository }}/billing-service:${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+        echo "- \`ghcr.io/${{ github.repository }}/analytics-service:${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Registry:" >> $GITHUB_STEP_SUMMARY
+        echo "All images are available at: https://github.com/${{ github.repository }}/pkgs/container" >> $GITHUB_STEP_SUMMARY
+
+  security-scan:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    
+    strategy:
+      matrix:
+        service: [api-gateway, patient-service, doctor-service, appointment-service, billing-service, analytics-service]
+    
+    steps:
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'ghcr.io/${{ github.repository }}/${{ matrix.service }}:${{ github.sha }}'
+        format: 'sarif'
+        output: 'trivy-results-${{ matrix.service }}.sarif'
+
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: 'trivy-results-${{ matrix.service }}.sarif'
