@@ -1,0 +1,143 @@
+name: Build and Push Auth Service
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "master", "develop" ]
+    paths:
+      - 'auth-service/**'
+      - '.github/workflows/auth-service.yml'
+    tags: [ "v*.*.*" ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}/auth-service
+
+jobs:
+  build-auth-service:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=semver,pattern={{major}}
+          type=sha,prefix={{branch}}-
+          type=raw,value=latest,enable={{is_default_branch}}
+
+    - name: Check if Auth Service Dockerfile exists
+      id: dockerfile-check
+      run: |
+        AUTH_DOCKERFILE=""
+        AUTH_CONTEXT=""
+        
+        # Possible locations for auth service
+        if [ -f "./auth-service/Dockerfile" ]; then
+          AUTH_DOCKERFILE="./auth-service/Dockerfile"
+          AUTH_CONTEXT="./auth-service"
+        elif [ -f "./authentication-service/Dockerfile" ]; then
+          AUTH_DOCKERFILE="./authentication-service/Dockerfile"
+          AUTH_CONTEXT="./authentication-service"
+        elif [ -f "./auth/Dockerfile" ]; then
+          AUTH_DOCKERFILE="./auth/Dockerfile"
+          AUTH_CONTEXT="./auth"
+        elif [ -f "./Dockerfile" ] && [ -d "./auth-service" ]; then
+          AUTH_DOCKERFILE="./Dockerfile"
+          AUTH_CONTEXT="./auth-service"
+        fi
+        
+        if [ -n "$AUTH_DOCKERFILE" ]; then
+          echo "dockerfile-exists=true" >> $GITHUB_OUTPUT
+          echo "auth-dockerfile=$AUTH_DOCKERFILE" >> $GITHUB_OUTPUT
+          echo "auth-context=$AUTH_CONTEXT" >> $GITHUB_OUTPUT
+          echo "✅ Auth Service Dockerfile found: $AUTH_DOCKERFILE"
+          echo "📁 Context: $AUTH_CONTEXT"
+        else
+          echo "dockerfile-exists=false" >> $GITHUB_OUTPUT
+          echo "❌ Auth Service Dockerfile not found in expected locations:"
+          echo "   - ./auth-service/Dockerfile"
+          echo "   - ./authentication-service/Dockerfile" 
+          echo "   - ./auth/Dockerfile"
+          echo ""
+          echo "📂 Current directory structure:"
+          find . -name "Dockerfile" -type f | head -10
+        fi
+
+    - name: Build and push Auth Service Docker image
+      if: steps.dockerfile-check.outputs.dockerfile-exists == 'true'
+      uses: docker/build-push-action@v5
+      with:
+        context: ${{ steps.dockerfile-check.outputs.auth-context }}
+        file: ${{ steps.dockerfile-check.outputs.auth-dockerfile }}
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        platforms: linux/amd64,linux/arm64
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        build-args: |
+          SERVICE_PORT=8085
+
+    - name: Skip build (Auth Service Dockerfile not found)
+      if: steps.dockerfile-check.outputs.dockerfile-exists == 'false'
+      run: |
+        echo "⚠️ Auth Service Dockerfile bulunamadı!"
+        echo ""
+        echo "🔍 Auth service için şu konumları kontrol edin:"
+        echo "   - ./auth-service/Dockerfile"
+        echo "   - ./authentication-service/Dockerfile"
+        echo "   - ./auth/Dockerfile"
+        echo ""
+        echo "📁 Mevcut proje yapısı:"
+        ls -la
+        echo ""
+        echo "🏗️ Dockerfile'lar:"
+        find . -name "Dockerfile" -type f 2>/dev/null || echo "Hiç Dockerfile bulunamadı"
+
+    - name: Create build summary
+      run: |
+        echo "## 🔐 Auth Service Build Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        if [ "${{ steps.dockerfile-check.outputs.dockerfile-exists }}" == "true" ]; then
+          echo "### ✅ Build Successful!" >> $GITHUB_STEP_SUMMARY
+          echo "- **Image**: \`ghcr.io/${{ github.repository }}/auth-service:${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Dockerfile**: \`${{ steps.dockerfile-check.outputs.auth-dockerfile }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Context**: \`${{ steps.dockerfile-check.outputs.auth-context }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🎯 **Next Steps:**" >> $GITHUB_STEP_SUMMARY
+          echo "1. Image artık GitHub Container Registry'de mevcut" >> $GITHUB_STEP_SUMMARY
+          echo "2. Kubernetes deployment'larınızda kullanabilirsiniz" >> $GITHUB_STEP_SUMMARY
+          echo "3. \`docker run ghcr.io/${{ github.repository }}/auth-service:latest\` ile test edebilirsiniz" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "### ❌ Build Failed" >> $GITHUB_STEP_SUMMARY
+          echo "**Reason**: Auth Service Dockerfile bulunamadı" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🛠️ **Çözüm:**" >> $GITHUB_STEP_SUMMARY
+          echo "1. Auth service klasörünüzde Dockerfile oluşturun" >> $GITHUB_STEP_SUMMARY
+          echo "2. Veya mevcut Dockerfile'ın konumunu kontrol edin" >> $GITHUB_STEP_SUMMARY
+          echo "3. Workflow'u manuel olarak tekrar çalıştırın" >> $GITHUB_STEP_SUMMARY
+        fi
