@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: patient-service
+  namespace: patient-management
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: patient-service
+  template:
+    metadata:
+      labels:
+        app: patient-service
+    spec:
+      containers:
+      - name: patient-service
+        image: patient-service:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: prod
+        - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+          value: kafka:9092
+        - name: SPRING_DATASOURCE_URL
+          value: jdbc:postgresql://postgres-service:5432/patient_database
+        - name: SPRING_DATASOURCE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: postgres-patient-management-secret
+              key: POSTGRES_USER
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-patient-management-secret
+              key: POSTGRES_PASSWORD
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: patient-service
+  namespace: patient-management
+spec:
+  selector:
+    app: patient-service
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP

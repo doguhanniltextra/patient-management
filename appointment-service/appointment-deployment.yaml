@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appointment-service
+  namespace: patient-management
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: appointment-service
+  template:
+    metadata:
+      labels:
+        app: appointment-service
+    spec:
+      containers:
+        - name: appointment-service
+          image: appointment-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8084
+          env:
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              value: kafka:9092
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgres-appointment:5432/appointment_database
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-appointment-secret
+                  key: POSTGRES_USER
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-appointment-secret
+                  key: POSTGRES_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: appointment-service
+  namespace: patient-management
+spec:
+  selector:
+    app: appointment-service
+  ports:
+    - protocol: TCP
+      port: 8084
+      targetPort: 8084
+  type: ClusterIP

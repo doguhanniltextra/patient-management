@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-appointment-secret
+  namespace: patient-management
+type: Opaque
+stringData:
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-appointment
+  namespace: patient-management
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-appointment
+  template:
+    metadata:
+      labels:
+        app: postgres-appointment
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: appointment_database
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-appointment-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-appointment-secret
+                  key: POSTGRES_PASSWORD
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgres-appointment-data
+      volumes:
+        - name: postgres-appointment-data
+          emptyDir: {}   # Gerçekte PVC kullanılmalı
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-appointment
+  namespace: patient-management
+spec:
+  selector:
+    app: postgres-appointment
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+  type: ClusterIP

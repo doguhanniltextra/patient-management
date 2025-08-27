@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-auth
+  namespace: patient-management
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-auth
+  template:
+    metadata:
+      labels:
+        app: postgres-auth
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:15
+        ports:
+        - containerPort: 5432
+        envFrom:
+        - secretRef:
+            name: postgres-auth-secret
+        volumeMounts:
+        - name: postgres-auth-data
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: postgres-auth-data
+        persistentVolumeClaim:
+          claimName: postgres-auth-pvc
+
+---
+# Postgres PVC
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-auth-pvc
+  namespace: patient-management
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+
+---
+# Postgres Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-auth
+  namespace: patient-management
+spec:
+  selector:
+    app: postgres-auth
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+  type: ClusterIP

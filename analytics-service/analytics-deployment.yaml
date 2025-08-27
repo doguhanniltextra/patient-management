@@ -1,0 +1,46 @@
+# analytics-service Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: analytics-service
+  namespace: patient-management
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: analytics-service
+  template:
+    metadata:
+      labels:
+        app: analytics-service
+    spec:
+      containers:
+        - name: analytics-service
+          image: analytics-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8082
+            - containerPort: 9002
+          env:
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              value: kafka:9092
+---
+# analytics-service Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: analytics-service
+  namespace: patient-management
+spec:
+  selector:
+    app: analytics-service
+  ports:
+    - name: http-port
+      protocol: TCP
+      port: 8082
+      targetPort: 8082
+    - name: grpc-port
+      protocol: TCP
+      port: 9002
+      targetPort: 9002
+  type: ClusterIP

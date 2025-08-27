@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: doctor-service
+  namespace: patient-management
+spec: 
+  replicas: 1
+  selector:
+    matchLabels:
+      app: doctor-service
+  template:
+    metadata:
+      labels:
+        app: doctor-service
+    spec:
+      containers:
+      - name: doctor-service
+        image: doctor-service:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8083
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: prod
+        - name: SPRING_DATASOURCE_URL
+          value: jdbc:mysql://mysql-doctor-service:3306/doctor_database
+        - name: SPRING_DATASOURCE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mysql-doctor-secret
+              key: MYSQL_USER
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-doctor-secret
+              key: MYSQL_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: doctor-service
+  namespace: patient-management
+spec:
+  selector:
+    app: doctor-service
+  ports:
+    - protocol: TCP
+      port: 8083
+      targetPort: 8083
+  type: ClusterIP
