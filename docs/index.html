@@ -443,6 +443,100 @@
             </div>
         </section>
         <section class="section">
+            <h2>DevOps & Deployment Workflow</h2>
+            <p>From code to production: Complete CI/CD pipeline with containerization and Kubernetes orchestration</p>
+
+            <div class="validation-flow">
+                <div class="flow-step">
+                    <div class="step-number">1</div>
+                    <div>
+                        <strong>Code Push to GitHub</strong><br>
+                        Developer pushes code changes to main branch, triggering automated workflow
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">2</div>
+                    <div>
+                        <strong>Docker Image Build</strong><br>
+                        GitHub Actions builds Docker images for all 6 microservices simultaneously
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">3</div>
+                    <div>
+                        <strong>Container Registry Push</strong><br>
+                        Built images are pushed to GitHub Container Registry with proper versioning
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">4</div>
+                    <div>
+                        <strong>Kubernetes Manifest Update</strong><br>
+                        Deployment manifests are automatically updated with new image tags
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">5</div>
+                    <div>
+                        <strong>Production Deployment</strong><br>
+                        Ready for deployment to any cloud provider (AWS ECS, GCP, Azure) in under 15 minutes
+                    </div>
+                </div>
+            </div>
+
+            <div class="deployment-details" style="margin-top: 2rem; padding: 1.5rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #28a745;">
+                <h3 style="color: #28a745; margin-bottom: 1rem;">🚀 Production-Ready Features</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                    <div>
+                        <strong>✅ Multi-Platform Images</strong><br>
+                        <small>Linux AMD64 & ARM64 support</small>
+                    </div>
+                    <div>
+                        <strong>✅ Health Checks</strong><br>
+                        <small>Readiness & Liveness probes configured</small>
+                    </div>
+                    <div>
+                        <strong>✅ Resource Management</strong><br>
+                        <small>CPU & Memory limits defined</small>
+                    </div>
+                    <div>
+                        <strong>✅ Secret Management</strong><br>
+                        <small>Database credentials securely managed</small>
+                    </div>
+                    <div>
+                        <strong>✅ Persistent Storage</strong><br>
+                        <small>Database data persistence with PVCs</small>
+                    </div>
+                    <div>
+                        <strong>✅ Service Discovery</strong><br>
+                        <small>Internal service communication configured</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tech-stack" style="margin-top: 2rem;">
+                <h3 style="color: #0066cc;">🛠️ DevOps Technology Stack</h3>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem;">
+                    <span style="background: #2188ff; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.9rem;">Docker</span>
+                    <span style="background: #326ce5; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.9rem;">Kubernetes</span>
+                    <span style="background: #2088ff; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.9rem;">GitHub Actions</span>
+                    <span style="background: #24292e; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.9rem;">GitHub Container Registry</span>
+                    <span style="background: #ff9900; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.9rem;">AWS ECS Ready</span>
+                    <span style="background: #4285f4; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.9rem;">Google Cloud Run Ready</span>
+                    <span style="background: #0078d4; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.9rem;">Azure Container Ready</span>
+                </div>
+            </div>
+
+            <div style="margin-top: 2rem; padding: 1rem; background: #e3f2fd; border-radius: 8px; border-left: 4px solid #2196f3;">
+                <p style="margin: 0; color: #1565c0;">
+                    <strong>💡 Deployment Impact:</strong>
+                    What previously took hours of manual setup and configuration now takes less than 15 minutes
+                    to deploy to any major cloud provider. The entire microservices ecosystem is containerized,
+                    orchestrated, and ready for horizontal scaling.
+                </p>
+            </div>
+        </section>
+        <section class="section">
             <h2>Technology Stack</h2>
             <div class="tech-list">
                 <div class="tech-item">
