@@ -14,6 +14,7 @@ The system is composed of the following microservices, all containerized with Do
 
 * **API Gateway**
 * **Doctor Service**
+* **Auth Service**
 * **Patient Service**
 * **Appointment Service**
 * **Billing Service**
@@ -31,6 +32,7 @@ All services run independently in Docker containers. Ports:
 | ------------------- | ---- |
 | API Gateway         | 4004 |
 | Patient Service     | 8080 |
+| Auth Service        | 8089 |
 | Doctor Service      | 8083 |
 | Appointment Service | 8084 |
 | Billing Service     | 8081 |
