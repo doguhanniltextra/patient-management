@@ -16,6 +16,7 @@
             <h1>Patient Management System</h1>
             <p>Microservices-Based Healthcare Management Backend</p>
         </header>
+
         <section class="section">
             <h2>Project Overview</h2>
             <p>This project is a <strong>microservices-based backend system</strong> for managing appointments,
@@ -41,6 +42,7 @@
                 </div>
             </div>
         </section>
+
         <section class="section">
             <h2>System Architecture</h2>
             <p>The system consists of the following microservices, each containerized via Docker:</p>
@@ -100,6 +102,7 @@
                 </tbody>
             </table>
         </section>
+
         <section class="section">
             <h2>Microservices Details</h2>
             <div class="architecture-grid">
@@ -226,9 +229,7 @@
                         "Password": String,
                         "RegisterDate": LocalDate 
                         }</div>
-                
                 </div>
-
 
                 <div class="service-card">
                     <div class="service-header">
@@ -258,6 +259,7 @@
                 </div>
             </div>
         </section>
+
         <section class="section">
             <h2>How Authenticaton And Authorization Works?</h2>
             <div class="particles" id="particles"></div>
@@ -309,6 +311,7 @@
                 <button class="btn" onclick="showRegisterFlow()">📝 Register Flow</button>
             </div>
         </section>
+
         <section class="section">
             <h2>Appointment Validation Flow</h2>
             <p>When a user tries to create an appointment, the system follows this validation process:</p>
@@ -351,6 +354,7 @@
                 </div>
             </div>
         </section>
+
         <section class="section">
             <h2>Billing - Invoice Flow</h2>
             <p>When a user create an appointment, the system follows this process for billing:</p>
@@ -388,6 +392,7 @@
                 </div>
             </div>
         </section>
+
         <section class="section">
             <h2>Api Gateway Flow</h2>
             <p>When a user request to an endpoint, the system follows this process for Api Gateway:</p>
@@ -442,6 +447,62 @@
                 </div>
             </div>
         </section>
+
+        <section class="section">
+            <h2>Api Gateway Flow</h2>
+            <p>When a user request to an endpoint, the system follows this process for Api Gateway:</p>
+
+            <div class="validation-flow">
+                <div class="flow-step">
+                    <div class="step-number">1</div>
+                    <div>
+                        <strong>Client Request → API Gateway</strong><br>
+                        User sends a request (e.g. <code>http://localhost:4004/api/patients</code>) to API Gateway.
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">2</div>
+                    <div>
+                        <strong>Predicate Check</strong><br>
+                        Gateway checks the <code>Path</code> predicates to determine the correct microservice
+                        (<code>patient-service</code>, <code>doctor-service</code>, <code>appointment-service</code>,
+                        etc.).
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">3</div>
+                    <div>
+                        <strong>Apply Filters</strong><br>
+                        Defined filters are applied (e.g. <code>StripPrefix</code>, <code>RewritePath</code>)
+                        to adjust the request before forwarding.
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">4</div>
+                    <div>
+                        <strong>Forward to Target Service</strong><br>
+                        The modified request is forwarded to the target microservice
+                        (e.g. <code>patient-service:8080</code>).
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">5</div>
+                    <div>
+                        <strong>Service Processes Request</strong><br>
+                        The microservice executes business logic and returns a response.
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">6</div>
+                    <div>
+                        <strong>Response Returned</strong><br>
+                        API Gateway sends the response back to the client,
+                        so the user still communicates via <code>http://localhost:4004</code>.
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section class="section">
             <h2>DevOps & Deployment Workflow</h2>
             <p>From code to production: Complete CI/CD pipeline with containerization and Kubernetes orchestration</p>
@@ -536,35 +597,17 @@
                 </p>
             </div>
         </section>
+
         <section class="section">
-            <h2>Technology Stack</h2>
+            <h2>FIGMA - WEB STRUCTURE</h2>
             <div class="tech-list">
                 <div class="tech-item">
-                    <strong>Spring Boot</strong>
-                    <p>Microservices Framework</p>
-                </div>
-                <div class="tech-item">
-                    <strong>Docker</strong>
-                    <p>Containerization</p>
-                </div>
-                <div class="tech-item">
-                    <strong>Apache Kafka</strong>
-                    <p>Event Streaming</p>
-                </div>
-                <div class="tech-item">
-                    <strong>MySQL</strong>
-                    <p>Relational Database</p>
-                </div>
-                <div class="tech-item">
-                    <strong>PostgreSQL</strong>
-                    <p>ACID Compliance</p>
-                </div>
-                <div class="tech-item">
-                    <strong>MongoDB</strong>
-                    <p>Document Database</p>
-                </div>
+                    <strong>Figma File</strong>
+                    <a href="https://www.figma.com/design/y5UNrbgDNnFM1QQfQ6Yk8R/Patient-Management?node-id=0-1&t=G91X426URT09Onq7-1"
+                       class="btn btn-primary" target="_blank">Open Figma Folder</a>                </div>
             </div>
         </section>
+
         <section class="section">
             <h2>Postman Collection</h2>
             <p>Test all API endpoints with this ready-to-use Postman collection. Import the collection into your Postman
@@ -578,6 +621,7 @@
 
             </pre>
         </section>
+
         <section class="section">
             <h2>Key Features</h2>
             <ul>
@@ -608,6 +652,7 @@
                     fault tolerance and minimal downtime.</li>
             </ul>
         </section>
+
         <section class="cta-section">
             <h2>View Project</h2>
             <p>Explore the complete source code and documentation for this microservices architecture</p>
@@ -617,6 +662,7 @@
                 <a href="mailto:doguhannilt@gmail.com" class="btn btn-secondary">Contact Developer</a>
             </div>
         </section>
+        
     </div>
 </body>
 
