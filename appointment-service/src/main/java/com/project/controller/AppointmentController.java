@@ -2,6 +2,8 @@ package com.project.controller;
 
 import com.project.dto.AppointmentResponseDTO;
 import com.project.dto.AppointmentUpdateDtoResponse;
+import com.project.dto.request.CreateAppointmentServiceRequestDto;
+import com.project.dto.response.CreateAppointmentServiceResponseDto;
 import com.project.utils.IdValidation;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,16 +32,34 @@ public class AppointmentController {
 
     @PostMapping("/")
     public ResponseEntity<AppointmentDTO> createAppointment(@RequestBody Appointment appointment) {
-        Appointment createdAppointment = appointmentService.createAppointment(appointment);
-        AppointmentDTO appointmentDTO = appointmentResponseDTO.toDTO(createdAppointment);
+
+
+        CreateAppointmentServiceRequestDto requestDto = new CreateAppointmentServiceRequestDto();
+        requestDto.setId(appointment.getId());
+        requestDto.setDoctorId(appointment.getDoctorId());
+        requestDto.setPatientId(appointment.getPatientId());
+        requestDto.setAmount(appointment.getAmount());
+        requestDto.setServiceDate(appointment.getServiceDate());
+        requestDto.setServiceType(appointment.getServiceType());
+        requestDto.setPaymentStatus(appointment.isPaymentStatus());
+        requestDto.setServiceDateEnd(appointment.getServiceDateEnd());
+
+        // Servis çağrısı → Response DTO dönüyor
+        CreateAppointmentServiceResponseDto responseDto = appointmentService.createAppointment(requestDto);
+
+        // Response DTO → Controller DTO mapping
+        AppointmentDTO appointmentDTO = appointmentResponseDTO.toDTO(responseDto);
+
         return ResponseEntity.ok(appointmentDTO);
     }
+
+
 
     @PutMapping("/{id}")
     public ResponseEntity<AppointmentDTO> updateAppointment(@PathVariable UUID id, @RequestBody Appointment appointment) {
         appointment.setId(id);
         Appointment updatedAppointment = appointmentService.updateAppointment(appointment).getBody();
-        AppointmentDTO appointmentDTO = appointmentResponseDTO.toDTO(updatedAppointment);
+        AppointmentDTO appointmentDTO = appointmentResponseDTO.toUpdateResponseDTO(updatedAppointment);
         return ResponseEntity.ok(appointmentDTO);
     }
 

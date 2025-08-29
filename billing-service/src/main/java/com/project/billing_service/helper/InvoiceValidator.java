@@ -1,0 +1,63 @@
+package com.project.billing_service.helper;
+
+import com.project.billing_service.service.InvoiceService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
+
+@Component
+public class InvoiceValidator {
+    private static final Logger log = LoggerFactory.getLogger(InvoiceService.class);
+
+    public  void createFailedToSaveInvoicePDFError(Path invoicePath, ResponseEntity<byte[]> response) {
+        try {
+            Files.write(invoicePath, response.getBody());
+            log.info("PDF is crated");
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save invoice PDF", e);
+        }
+    }
+
+    public  void createCannotCreateInvoiceDirectoryError(Path invoiceDir) {
+        if (!Files.exists(invoiceDir)) {
+            try {
+                Files.createDirectories(invoiceDir);
+            } catch (IOException e) {
+                throw new RuntimeException("Cannot create invoice directory", e);
+            }
+        }
+    }
+
+    public  void createInvoiceGenerationError(ResponseEntity<byte[]> response) {
+        if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
+            throw new RuntimeException("Invoice generation failed");
+        }
+    }
+
+    public  Map<String, Object> getStringObjectMapForItem(double amount) {
+        Map<String, Object> item = new HashMap<>();
+        item.put("name", "Medical Service");
+        item.put("quantity", 1);
+        item.put("unit_cost", amount);
+        item.put("notes","Thanks for purchasing!");
+        return item;
+    }
+
+    public  Map<String, Object> getStringObjectMapForBody(String doctorName, String patientName, String invoiceNumber) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("from", doctorName);
+        body.put("to", patientName);
+        body.put("number", invoiceNumber);
+        body.put("date", LocalDate.now().toString());
+        body.put("due_date", LocalDate.now().plusDays(7).toString());
+        return body;
+    }
+}

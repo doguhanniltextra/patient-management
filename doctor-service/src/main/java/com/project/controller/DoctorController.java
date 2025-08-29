@@ -10,6 +10,8 @@ import com.project.dto.request.CreateDoctorControllerRequestDto;
 import com.project.dto.request.CreateDoctorServiceRequestDto;
 import com.project.exception.EmailIsNotUniqueException;
 import com.project.exception.IdIsValidException.IdIsValidException;
+import com.project.helper.DoctorMapper;
+import com.project.helper.DoctorValidator;
 import com.project.model.Doctor;
 import com.project.service.DoctorService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,9 +32,14 @@ import java.util.UUID;
 public class DoctorController {
 
     private final DoctorService doctorService;
+    private final DoctorMapper doctorMapper;
+    private final DoctorValidator doctorValidator;
 
-    public DoctorController(DoctorService doctorService) {
+
+    public DoctorController(DoctorService doctorService, DoctorMapper doctorMapper, DoctorValidator doctorValidator) {
         this.doctorService = doctorService;
+        this.doctorMapper = doctorMapper;
+        this.doctorValidator = doctorValidator;
     }
 
     @GetMapping
@@ -62,40 +69,18 @@ public class DoctorController {
         return ResponseEntity.ok().body(updateDoctorControllerResponseDto);
     }
 
-    private static UpdateDoctorControllerResponseDto getUpdateDoctorControllerResponseDto(UpdateDoctorServiceResponseDto updated_doctor) {
-        UpdateDoctorControllerResponseDto updateDoctorControllerResponseDto = new UpdateDoctorControllerResponseDto();
-        updateDoctorControllerResponseDto.setId(updated_doctor.getId());
-        updateDoctorControllerResponseDto.setName(updated_doctor.getName());
-        updateDoctorControllerResponseDto.setNumber(updated_doctor.getNumber());
-        updateDoctorControllerResponseDto.setEmail(updated_doctor.getEmail());
-        updateDoctorControllerResponseDto.setSpecialization(updated_doctor.getSpecialization());
-        updateDoctorControllerResponseDto.setYearsOfExperience(updated_doctor.getYearsOfExperience());
+    private static UpdateDoctorControllerResponseDto getUpdateDoctorControllerResponseDto(UpdateDoctorServiceResponseDto updateDoctorServiceResponseDto) {
+        UpdateDoctorControllerResponseDto updateDoctorControllerResponseDto = DoctorMapper.getDoctorControllerResponseDto(updateDoctorServiceResponseDto);
         return updateDoctorControllerResponseDto;
     }
-
 
     @PostMapping
     @Operation(summary = "Create A Doctor")
     public ResponseEntity<CreateDoctorControllerResponseDto> createDoctor(@Valid @RequestBody CreateDoctorControllerRequestDto createDoctorControllerRequestDto) throws IdIsValidException, EmailIsNotUniqueException {
-       
-        CreateDoctorServiceRequestDto createDoctorServiceRequestDto = new CreateDoctorServiceRequestDto();
-        createDoctorServiceRequestDto.setId(createDoctorControllerRequestDto.getId());
-        createDoctorServiceRequestDto.setName(createDoctorControllerRequestDto.getName());
-        createDoctorServiceRequestDto.setEmail(createDoctorControllerRequestDto.getEmail());
-        createDoctorServiceRequestDto.setNumber(createDoctorControllerRequestDto.getNumber());
-        createDoctorServiceRequestDto.setNumber(createDoctorControllerRequestDto.getNumber());
-        createDoctorServiceRequestDto.setSpecialization(createDoctorControllerRequestDto.getSpecialization());
-        createDoctorServiceRequestDto.setYearsOfExperience(createDoctorControllerRequestDto.getYearsOfExperience());
-        createDoctorServiceRequestDto.setHospitalName(createDoctorControllerRequestDto.getHospitalName());
-        createDoctorServiceRequestDto.setDepartment(createDoctorControllerRequestDto.getDepartment());
-        createDoctorServiceRequestDto.setLicenseNumber(createDoctorControllerRequestDto.getLicenseNumber());
-        createDoctorServiceRequestDto.setAvailable(createDoctorControllerRequestDto.isAvailable());
-        createDoctorServiceRequestDto.setPatientCount(createDoctorControllerRequestDto.getPatientCount());
-       
+
+        CreateDoctorServiceRequestDto createDoctorServiceRequestDto = doctorMapper.getCreateDoctorServiceRequestDto(createDoctorControllerRequestDto);
         CreateDoctorServiceResponseDto createdDoctor = doctorService.createDoctor(createDoctorServiceRequestDto);
-
         CreateDoctorControllerResponseDto createDoctorControllerResponseDto = getCreateDoctorControllerResponseDto(createdDoctor);
-
 
         return ResponseEntity.ok().body(createDoctorControllerResponseDto);
     }

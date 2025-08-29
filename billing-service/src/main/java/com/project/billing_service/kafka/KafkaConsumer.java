@@ -27,17 +27,22 @@ public class KafkaConsumer {
             log.info("Received Appointment: {}", appointment);
 
             String invoiceNumber = appointment.getPatientId().substring(0, 8) + "-" + appointment.getDoctorId().substring(0, 8);
-            Path invoicePath = invoiceService.generateInvoice(
-                    "Dr. " + appointment.getDoctorId(),
-                    "Patient " + appointment.getPatientId(),
-                    appointment.getAmount(),
-                    invoiceNumber
-            );
+            Path invoicePath = getPath(appointment, invoiceNumber);
 
             log.info("Invoice generated at: {}", invoicePath.toAbsolutePath());
 
         } catch (Exception e) {
             log.error("Failed to parse Appointment JSON or generate invoice", e);
         }
+    }
+
+    private Path getPath(AppointmentDTO appointment, String invoiceNumber) {
+        Path invoicePath = invoiceService.generateInvoice(
+                "Dr. " + appointment.getDoctorId(),
+                "Patient " + appointment.getPatientId(),
+                appointment.getAmount(),
+                invoiceNumber
+        );
+        return invoicePath;
     }
 }

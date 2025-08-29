@@ -1,5 +1,6 @@
 package com.project.service;
 
+import com.project.helper.AppointmentValidator;
 import com.project.model.Appointment;
 import com.project.repository.AppointmentRepository;
 import jakarta.transaction.Transactional;
@@ -14,11 +15,13 @@ import java.util.List;
 public class AppointmentCleanupService {
 
     private final AppointmentRepository appointmentRepository;
+    private final AppointmentValidator appointmentValidator;
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-    public AppointmentCleanupService(AppointmentRepository appointmentRepository) {
+    public AppointmentCleanupService(AppointmentRepository appointmentRepository, AppointmentValidator appointmentValidator) {
         this.appointmentRepository = appointmentRepository;
+        this.appointmentValidator = appointmentValidator;
     }
 
     // Runs every day at 06:00 AM
@@ -26,19 +29,9 @@ public class AppointmentCleanupService {
     @Transactional
     public void cleanOutdatedAppointments() {
         List<Appointment> allAppointments = appointmentRepository.findAll();
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = appointmentValidator.getLocalDateTime();
 
-        List<Appointment> outdated = allAppointments.stream()
-                .filter(a -> {
-                    try {
-                        LocalDateTime endDate = LocalDateTime.parse(a.getServiceDateEnd(), formatter);
-                        return endDate.isBefore(now);
-                    } catch (Exception e) {
-
-                        return false;
-                    }
-                })
-                .toList();
+        List<Appointment> outdated = appointmentValidator.getAppointments(allAppointments, now, formatter);
 
         if (!outdated.isEmpty()) {
             appointmentRepository.deleteAll(outdated);
