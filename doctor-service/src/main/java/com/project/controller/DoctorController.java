@@ -10,6 +10,7 @@ import com.project.dto.response.CreateDoctorControllerResponseDto;
 import com.project.dto.response.CreateDoctorServiceResponseDto;
 import com.project.dto.request.CreateDoctorControllerRequestDto;
 import com.project.dto.request.CreateDoctorServiceRequestDto;
+import com.project.exception.DoctorNotFoundException;
 import com.project.exception.EmailIsNotUniqueException;
 import com.project.exception.IdIsValidException.IdIsValidException;
 import com.project.helper.DoctorMapper;
@@ -54,7 +55,7 @@ public class DoctorController {
 
     @PutMapping(Endpoints.DOCTOR_CONTROLLER_UPDATE_DOCTOR)
     @Operation(summary = SwaggerMessages.UPDATE_DOCTOR)
-    public ResponseEntity<UpdateDoctorControllerResponseDto> updateDoctor(@PathVariable UUID id, @Validated({Default.class}) @RequestBody UpdateDoctorControllerRequestDto updateDoctorControllerRequestDto) {
+    public ResponseEntity<UpdateDoctorControllerResponseDto> updateDoctor(@PathVariable UUID id, @Validated({Default.class}) @RequestBody UpdateDoctorControllerRequestDto updateDoctorControllerRequestDto) throws DoctorNotFoundException {
 
         UpdateDoctorServiceRequestDto updateDoctorServiceRequestDto = new UpdateDoctorServiceRequestDto();
         updateDoctorServiceRequestDto.setEmail(updateDoctorControllerRequestDto.getEmail());
