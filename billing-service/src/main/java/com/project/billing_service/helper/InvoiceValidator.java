@@ -1,5 +1,6 @@
 package com.project.billing_service.helper;
 
+import com.project.billing_service.constants.LogMessages;
 import com.project.billing_service.service.InvoiceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +23,7 @@ public class InvoiceValidator {
             Files.write(invoicePath, response.getBody());
             log.info("PDF is crated");
         } catch (IOException e) {
-            throw new RuntimeException("Failed to save invoice PDF", e);
+            throw new RuntimeException(LogMessages.FAILED_TO_SAVE_INVOICE_PDF, e);
         }
     }
 
@@ -31,14 +32,14 @@ public class InvoiceValidator {
             try {
                 Files.createDirectories(invoiceDir);
             } catch (IOException e) {
-                throw new RuntimeException("Cannot create invoice directory", e);
+                throw new RuntimeException(LogMessages.FAILED_TO_CREATE_INVOICE_DIR, e);
             }
         }
     }
 
     public  void createInvoiceGenerationError(ResponseEntity<byte[]> response) {
         if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
-            throw new RuntimeException("Invoice generation failed");
+            throw new RuntimeException(LogMessages.FAILED_TO_CREATE_INVOICE_GENERATION);
         }
     }
 

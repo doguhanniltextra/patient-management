@@ -27,7 +27,7 @@ public class AppointmentCleanupService {
     // Runs every day at 06:00 AM
     @Scheduled(cron = "0 0 6 * * ?")
     @Transactional
-    public void cleanOutdatedAppointments() {
+    public void cleanOutDatedAppointments() {
         List<Appointment> allAppointments = appointmentRepository.findAll();
         LocalDateTime now = appointmentValidator.getLocalDateTime();
 

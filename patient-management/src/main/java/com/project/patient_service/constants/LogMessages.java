@@ -1,0 +1,19 @@
+package com.project.patient_service.constants;
+
+public class LogMessages {
+    // Controller
+    public static final String CONTROLLER_GET_TRIGGERED = "PATIENT: CONTROLLER - GET - TRIGGERED";
+    public static final String CONTROLLER_CREATE_TRIGGERED = "PATIENT: CONTROLLER - CREATE - TRIGGERED";
+    public static final String CONTROLLER_UPDATE_TRIGGERED = "PATIENT: CONTROLLER - UPDATE - TRIGGERED";
+    public static final String CONTROLLER_DELETE_TRIGGERED = "PATIENT: CONTROLLER - DELETE - TRIGGERED";
+    public static final String CONTROLLER_FIND_BY_ID_TRIGGERED = "PATIENT: CONTROLLER - FIND_BY_ID - TRIGGERED";
+    public static final String CONTROLLER_FIND_BY_EMAIL_TRIGGERED = "PATIENT: CONTROLLER - FIND_BY_EMAIL - TRIGGERED";
+
+    // Service
+    public static final String SERVICE_CREATE_TRIGGERED = "PATIENT: SERVICE - CREATE - TRIGGERED";
+    public static final String SERVICE_CREATE_KAFKA_ERROR = "PATIENT: SERVICE - CREATE - KAFKA_PUBLISH - ERROR";
+    public static final String SERVICE_UPDATE_TRIGGERED = "PATIENT: SERVICE - UPDATE - TRIGGERED";
+    public static final String SERVICE_DELETE_TRIGGERED = "PATIENT: SERVICE - DELETE - TRIGGERED";
+    public static final String SERVICE_FIND_BY_ID_TRIGGERED = "PATIENT: SERVICE - FIND_BY_ID - TRIGGERED";
+    public static final String SERVICE_FIND_BY_EMAIL_TRIGGERED = "PATIENT: SERVICE - FIND_BY_EMAIL - TRIGGERED";
+}

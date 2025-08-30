@@ -1,5 +1,6 @@
 package com.project.auth_service.helper;
 
+import com.project.auth_service.constants.LogMessages;
 import com.project.auth_service.dto.LoginRequestDto;
 import com.project.auth_service.dto.RegisterRequestDto;
 import com.project.auth_service.entity.User;
@@ -15,7 +16,7 @@ public class AuthValidator {
 
     public ResponseEntity<String> checkIfUsernameAlreadyExistsOrNotForRegisterMethod(RegisterRequestDto registerRequestDto, UserRepository userRepository) {
         if(userRepository.existsByName(registerRequestDto.getName())) {
-            return ResponseEntity.badRequest().body("Username already exists");
+            return ResponseEntity.badRequest().body(LogMessages.USERNAME_ALREADY_EXISTS);
         }
         return null;
     }
@@ -31,14 +32,14 @@ public class AuthValidator {
 
     public ResponseEntity<String> CheckIfUsernameOrPasswordIsInvalidForPasswordEncoderForLoginMethod(LoginRequestDto loginRequestDto, User user, PasswordEncoder passwordEncoder) {
         if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(LogMessages.CHECK_IF_USERNAME_OR_PASSWORD_IS_INVALID);
         }
         return null;
     }
 
     public static ResponseEntity<String> checkIfUsernameOrPasswordIsEmptyForLoginMethod(User user) {
         if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(LogMessages.CHECK_IF_USERNAME_OR_PASSWORD_IS_EMPTY);
         }
         return null;
     }

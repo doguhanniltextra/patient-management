@@ -44,6 +44,19 @@ public class AppointmentMapper {
         existingAppointment.setPaymentType(appointment.getPaymentType());
     }
 
+    public static CreateAppointmentServiceRequestDto getCreateAppointmentServiceRequestDto(Appointment appointment) {
+        CreateAppointmentServiceRequestDto requestDto = new CreateAppointmentServiceRequestDto();
+        requestDto.setId(appointment.getId());
+        requestDto.setDoctorId(appointment.getDoctorId());
+        requestDto.setPatientId(appointment.getPatientId());
+        requestDto.setAmount(appointment.getAmount());
+        requestDto.setServiceDate(appointment.getServiceDate());
+        requestDto.setServiceType(appointment.getServiceType());
+        requestDto.setPaymentStatus(appointment.isPaymentStatus());
+        requestDto.setServiceDateEnd(appointment.getServiceDateEnd());
+        return requestDto;
+    }
+
 
 
 }

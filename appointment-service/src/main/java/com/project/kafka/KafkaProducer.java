@@ -1,6 +1,9 @@
 package com.project.kafka;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.constants.KafkaEndpoints;
+import com.project.constants.LogMessages;
 import com.project.dto.AppointmentKafkaResponseDto;
 
 import org.slf4j.Logger;
@@ -22,10 +25,10 @@ public class KafkaProducer {
     public void sendEvent(AppointmentKafkaResponseDto appointment) {
         try {
             String json = objectMapper.writeValueAsString(appointment);
-            kafkaTemplate.send("appointment-payment-updated", json);
-            log.info("Sent JSON message to Kafka: {}", json);
-        } catch (Exception e) {
-            log.error("Failed to send message", e);
+            kafkaTemplate.send(KafkaEndpoints.KAFKA_SEND_EVENT_APPOINTMENT, json);
+            log.info(LogMessages.KAFKA_SEND_EVENT_TRIGGERED);
+        } catch (JsonProcessingException e) {
+            log.error(LogMessages.KAFKA_SEND_EVENT_ERROR, e);
         }
     }
 }

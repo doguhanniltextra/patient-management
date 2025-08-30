@@ -1,5 +1,7 @@
 package com.project.controller;
 
+import com.project.constants.Endpoints;
+import com.project.constants.SwaggerMessages;
 import com.project.dto.UpdateDoctorControllerRequestDto;
 import com.project.dto.UpdateDoctorControllerResponseDto;
 import com.project.dto.UpdateDoctorServiceRequestDto;
@@ -27,8 +29,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/doctors")
-@Tag(name = "Doctor", description = "API for managing Doctors")
+@RequestMapping(Endpoints.DOCTOR_CONTROLLER_REQUEST)
+@Tag(name = SwaggerMessages.DOCTOR_CONTROLLER_NAME, description = SwaggerMessages.DOCTOR_CONTROLLER_DESCRIPTION)
 public class DoctorController {
 
     private final DoctorService doctorService;
@@ -43,15 +45,15 @@ public class DoctorController {
     }
 
     @GetMapping
-    @Operation(summary = "Get All Doctors")
+    @Operation(summary = SwaggerMessages.GET_DOCTORS )
     public ResponseEntity<List<Doctor>> getDoctors() {
         List<Doctor> doctors = doctorService.getDoctors();
         return ResponseEntity.ok().body(doctors);
     }
     
 
-    @PutMapping("/{id}")
-    @Operation(summary = "Update A Doctor")
+    @PutMapping(Endpoints.DOCTOR_CONTROLLER_UPDATE_DOCTOR)
+    @Operation(summary = SwaggerMessages.UPDATE_DOCTOR)
     public ResponseEntity<UpdateDoctorControllerResponseDto> updateDoctor(@PathVariable UUID id, @Validated({Default.class}) @RequestBody UpdateDoctorControllerRequestDto updateDoctorControllerRequestDto) {
 
         UpdateDoctorServiceRequestDto updateDoctorServiceRequestDto = new UpdateDoctorServiceRequestDto();
@@ -75,7 +77,7 @@ public class DoctorController {
     }
 
     @PostMapping
-    @Operation(summary = "Create A Doctor")
+    @Operation(summary = SwaggerMessages.CREATE_DOCTOR)
     public ResponseEntity<CreateDoctorControllerResponseDto> createDoctor(@Valid @RequestBody CreateDoctorControllerRequestDto createDoctorControllerRequestDto) throws IdIsValidException, EmailIsNotUniqueException {
 
         CreateDoctorServiceRequestDto createDoctorServiceRequestDto = doctorMapper.getCreateDoctorServiceRequestDto(createDoctorControllerRequestDto);
@@ -96,14 +98,15 @@ public class DoctorController {
     }
 
 
-    @DeleteMapping("/{id}")
-    @Operation(summary = "Delete A Doctor")
+    @DeleteMapping(Endpoints.DOCTOR_CONTROLLER_DELETE_DOCTOR)
+    @Operation(summary = SwaggerMessages.DELETE_DOCTOR)
     public ResponseEntity<Void> deleteDoctor(@PathVariable UUID id) {
         doctorService.deleteDoctor(id);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/find/{id}")
+    @GetMapping(Endpoints.DOCTOR_CONTROLLER_FIND_DOCTOR_BY_ID)
+    @Operation(summary = SwaggerMessages.FIND_DOCTOR_BY_ID)
     public ResponseEntity<Doctor> findDoctorById(@PathVariable UUID id) {
         Optional<Doctor> currentId = doctorService.findDoctorById(id);
         if (currentId.isPresent()) {

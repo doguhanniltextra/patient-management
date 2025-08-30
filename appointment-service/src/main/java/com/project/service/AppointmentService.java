@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 
+import com.project.constants.LogMessages;
 import com.project.dto.AppointmentDTO;
 import com.project.dto.AppointmentKafkaResponseDto;
 import com.project.dto.request.CreateAppointmentServiceRequestDto;
@@ -18,6 +19,7 @@ import com.project.kafka.KafkaProducer;
 import com.project.utils.IdValidation;
 
 import jakarta.transaction.Transactional;
+import org.apache.juli.logging.Log;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -50,44 +52,45 @@ public class AppointmentService {
 
     public CreateAppointmentServiceResponseDto createAppointment(CreateAppointmentServiceRequestDto createAppointmentServiceRequestDto) {
 
-        log.info("Appointment starting -> {}", createAppointmentServiceRequestDto);
+        log.info(LogMessages.SERVICE_CREATE_SAVING, createAppointmentServiceRequestDto);
         UUID patientId = createAppointmentServiceRequestDto.getPatientId();
         UUID doctorId = createAppointmentServiceRequestDto.getDoctorId();
 
         AppointmentValidator.Result result = new AppointmentValidator.Result(patientId, doctorId);
 
-        log.info("Id Validation - Check Patient Exists - {}", createAppointmentServiceRequestDto.getPatientId());
+        log.info(LogMessages.SERVICE_CREATE_VALIDATE_PATIENT, createAppointmentServiceRequestDto.getPatientId());
         appointmentValidator.checkPatientExistsOrNotForCreateAppointment(result.patientId());
 
-        log.info("Id Validation - Check Doctor Exists - {}", createAppointmentServiceRequestDto.getDoctorId());
+        log.info(LogMessages.SERVICE_CREATE_VALIDATE_DOCTOR, createAppointmentServiceRequestDto.getDoctorId());
         appointmentValidator.checkDoctorExistsOrNotForCreateAppointment(result.doctorId());
 
         Appointment appointment = appointmentMapper.getAppointment(createAppointmentServiceRequestDto);
         CreateAppointmentServiceResponseDto appointmentServiceResponseDto = appointmentMapper.getCreateAppointmentServiceResponseDto(createAppointmentServiceRequestDto);
 
-        log.info("Save Appointment");
         appointmentRepository.save(appointment);
 
         return appointmentServiceResponseDto;
     }
 
     public ResponseEntity<Appointment> updateAppointment(Appointment appointment) {
-        log.info("Update Appointment -> {}", appointment.getId());
+        log.info(LogMessages.SERVICE_UPDATE_STARTING, appointment.getId());
         Appointment existingAppointment = appointmentRepository.findById(appointment.getId()).orElse(null);
         if (existingAppointment != null) {
             appointmentMapper.updateAppointmentExtracted(appointment, existingAppointment);
-            log.info("Update ended");
+            log.info(LogMessages.SERVICE_UPDATE_ENDED);
             return ResponseEntity.ok().body(appointmentRepository.save(existingAppointment));
         }
         return ResponseEntity.badRequest().build(); 
     }
 
     public void deleteAppointment(UUID id) {
-        log.info("Delete Appointment ->  {}", id);
+        log.info(LogMessages.SERVICE_DELETE_TRIGGERED, id);
         appointmentRepository.deleteById(id);
     }
 
     public void updatePaymentStatus(UUID id, boolean status) {
+        log.info(LogMessages.SERVICE_UPDATE_PAYMENT_STATUS_TRIGGERED);
+
         Appointment appointment = appointmentValidator.getAppointmentForUpdatePaymentStatus(id, appointmentRepository);
 
         appointment.setPaymentStatus(status);
@@ -98,6 +101,7 @@ public class AppointmentService {
     }
 
     public List<Appointment> getAllAppointments() {
+        log.info(LogMessages.SERVICE_GET_ALL_TRIGGERED);
         return appointmentRepository.findAll();
     }
     

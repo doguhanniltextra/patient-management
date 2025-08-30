@@ -1,5 +1,8 @@
 package com.project.patient_service.controller;
 
+import com.project.patient_service.constants.Endpoints;
+import com.project.patient_service.constants.LogMessages;
+import com.project.patient_service.constants.SwaggerMessages;
 import com.project.patient_service.dto.response.*;
 import com.project.patient_service.dto.request.UpdatePatientServiceRequestDto;
 import com.project.patient_service.dto.request.UpdatePatientControllerRequestDto;
@@ -24,8 +27,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/patients")
-@Tag(name = "Patient", description = "API for managing Patients")
+@RequestMapping(Endpoints.PATIENT_CONTROLLER_REQUEST)
+@Tag(name = SwaggerMessages.PATIENT_CONTROLLER_NAME, description = SwaggerMessages.PATIENT_CONTROLLER_DESCRIPTION)
 public class PatientController {
 
     private static final Logger log = LoggerFactory.getLogger(PatientController.class);
@@ -40,9 +43,9 @@ public class PatientController {
     }
 
     @GetMapping
-    @Operation(summary = "Get All Patients")
+    @Operation(summary = SwaggerMessages.GET_PATIENTS)
     public ResponseEntity<List<GetPatientControllerResponseDto>> getPatients() {
-        log.info("PATIENT: Get Patients Controller Triggered");
+        log.info(LogMessages.CONTROLLER_GET_TRIGGERED);
         List<GetPatientServiceResponseDto> patients = patientService.getPatients();
 
         List<GetPatientControllerResponseDto> result = userMapper.getGetPatientControllerResponseDtos(patients);
@@ -51,9 +54,9 @@ public class PatientController {
     }
 
     @PostMapping
-    @Operation(summary = "Create A Patient")
+    @Operation(summary = SwaggerMessages.CREATE_PATIENT)
     public ResponseEntity<CreatePatientServiceResponseDto> createPatient(@Valid @RequestBody CreatePatientControllerRequestDto createPatientControllerRequestDto){
-        log.info("PATIENT: Create Patient Controller Triggered");
+        log.info(LogMessages.CONTROLLER_CREATE_TRIGGERED);
 
         CreatePatientServiceRequestDto createPatientServiceRequestDto = userMapper.getCreatePatientServiceRequestDto(createPatientControllerRequestDto);
         CreatePatientServiceResponseDto createPatientServiceResponseDto = patientService.createPatient(createPatientServiceRequestDto);
@@ -61,10 +64,10 @@ public class PatientController {
         return ResponseEntity.ok().body(createPatientServiceResponseDto);
     }
 
-    @PutMapping("/{id}")
-    @Operation(summary = "Update A Patient")
+    @PutMapping(Endpoints.PATIENT_CONTROLLER_UPDATE_PATIENT)
+    @Operation(summary = SwaggerMessages.UPDATE_PATIENT)
     public ResponseEntity<UpdatePatientControllerResponseDto> updatePatient(@PathVariable UUID id, @Validated({Default.class}) @RequestBody UpdatePatientControllerRequestDto updatePatientControllerRequestDto) {
-        log.info("PATIENT: Update Patient Controller Triggered");
+        log.info(LogMessages.CONTROLLER_UPDATE_TRIGGERED);
 
         UpdatePatientServiceRequestDto updatePatientServiceRequestDto = userMapper.getUpdatePatientServiceRequestDto(updatePatientControllerRequestDto);
         UpdatePatientServiceResponseDto updatePatient = patientService.updatePatient(id, updatePatientServiceRequestDto);
@@ -73,26 +76,26 @@ public class PatientController {
         return ResponseEntity.ok().body(updatePatientControllerResponseDto);
     }
 
-    @DeleteMapping("/{id}")
-    @Operation(summary = "Delete A Patient")
+    @DeleteMapping(Endpoints.PATIENT_CONTROLLER_DELETE_PATIENT)
+    @Operation(summary = SwaggerMessages.DELETE_PATIENT)
     public ResponseEntity<Void> deletePatient(@PathVariable UUID id) {
-        log.info("PATIENT: Delete Patient Controller Triggered");
+        log.info(LogMessages.CONTROLLER_DELETE_TRIGGERED);
         patientService.deletePatient(id);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/find/{id}")
-    @Operation(summary = "Find A Patient By Id")
+    @GetMapping(Endpoints.PATIENT_CONTROLLER_FIND_PATIENT_BY_ID)
+    @Operation(summary = SwaggerMessages.FIND_PATIENT_BY_ID)
     public ResponseEntity<Patient> findPatientById(@PathVariable UUID id) {
-        log.info("PATIENT: Find Patient By Id Controller Triggered");
+        log.info(LogMessages.CONTROLLER_FIND_BY_ID_TRIGGERED);
         Optional<Patient> currentId = patientService.findPatientById(id);
         return userValidator.getPatientResponseEntity(currentId);
     }
 
-    @GetMapping("/find/email/{email}")
-    @Operation(summary = "Find A Patient By Email")
+    @GetMapping(Endpoints.PATIENT_CONTROLLER_FIND_PATIENT_BY_EMAIL)
+    @Operation(summary = SwaggerMessages.FIND_PATIENT_BY_EMAIL)
     public ResponseEntity<Boolean> findPatientByEmail(@PathVariable String email) {
-        log.info("PATIENT: Find Patient By Email Controller Triggered");
+        log.info(LogMessages.CONTROLLER_FIND_BY_EMAIL_TRIGGERED);
         boolean patientByEmail = userValidator.isPatientByEmail(email, patientService);
         return userValidator.getBooleanResponseEntity(patientByEmail);
     }

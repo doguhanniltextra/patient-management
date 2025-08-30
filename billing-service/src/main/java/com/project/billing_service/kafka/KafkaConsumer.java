@@ -1,6 +1,8 @@
 package com.project.billing_service.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.billing_service.constants.KafkaTopics;
+import com.project.billing_service.constants.LogMessages;
 import com.project.billing_service.dto.AppointmentDTO;
 import com.project.billing_service.service.InvoiceService;
 import org.slf4j.Logger;
@@ -20,19 +22,18 @@ public class KafkaConsumer {
         this.invoiceService = invoiceService;
     }
 
-    @KafkaListener(topics = "appointment-payment-updated", groupId = "appointment-group")
-    public void listen(String message) {
+    @KafkaListener(topics = KafkaTopics.APPOINTMENT_PAYMENT_UPDATED, groupId = KafkaTopics.APPOINTMENT_GROUP)    public void listen(String message) {
         try {
             AppointmentDTO appointment = objectMapper.readValue(message, AppointmentDTO.class);
-            log.info("Received Appointment: {}", appointment);
+            log.info(LogMessages.LISTENER_RECEIVED_MESSAGE, appointment);
 
             String invoiceNumber = appointment.getPatientId().substring(0, 8) + "-" + appointment.getDoctorId().substring(0, 8);
             Path invoicePath = getPath(appointment, invoiceNumber);
 
-            log.info("Invoice generated at: {}", invoicePath.toAbsolutePath());
+            log.info(LogMessages.INVOICE_GENERATED, invoicePath.toAbsolutePath());
 
         } catch (Exception e) {
-            log.error("Failed to parse Appointment JSON or generate invoice", e);
+            log.error(LogMessages.FAILED_TO_PARSE_OR_GENERATE_INVOICE, e);
         }
     }
 

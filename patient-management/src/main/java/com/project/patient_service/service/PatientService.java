@@ -1,5 +1,6 @@
 package com.project.patient_service.service;
 
+import com.project.patient_service.constants.LogMessages;
 import com.project.patient_service.dto.response.CreatePatientServiceResponseDto;
 import com.project.patient_service.dto.response.GetPatientServiceResponseDto;
 import com.project.patient_service.dto.request.KafkaPatientRequestDto;
@@ -49,14 +50,13 @@ public class PatientService {
         Patient patient = userValidator.getPatientForCreatePatient(patientRequestDTO);
 
         Patient newPatient = patientRepository.save(patient);
-        log.info("PATIENT: Patient ID -> {}",
-                newPatient.getId());
+        log.info(LogMessages.SERVICE_CREATE_TRIGGERED, newPatient.getId());
 
         try {
             KafkaPatientRequestDto kafkaDto = userMapper.getKafkaPatientRequestDto(newPatient);
             kafkaProducer.sendEvent(kafkaDto);
         } catch (KafkaException e) {
-            log.warn("Event publishing failed for patient {}, but patient created successfully", newPatient.getId());
+            log.warn(LogMessages.SERVICE_CREATE_KAFKA_ERROR, newPatient.getId());
         }
         CreatePatientServiceResponseDto createPatientServiceResponseDto = userMapper.getCreatePatientServiceResponseDto(patient);
         return createPatientServiceResponseDto;
@@ -66,32 +66,28 @@ public class PatientService {
         Patient patient = userValidator.getPatientForUpdateMethod(id, patientRepository);
 
         userValidator.checkEmailIsExistsOrNotForUpdatePatient(id, updatePatientServiceRequestDto, patientRepository);
-        log.info("PATIENT: Update service triggered");
+        log.info(LogMessages.SERVICE_UPDATE_TRIGGERED);
 
         userMapper.getUpdatePatientRequestDto(updatePatientServiceRequestDto, patient);
-        log.info("PATIENT: Patient ID -> {}" , patient.getId());
 
         Patient updatedPatient = patientRepository.save(patient);
-        log.info("PATIENT: Update service is done");
 
         UpdatePatientServiceResponseDto updatePatientServiceResponseDto = userMapper.getUpdatePatientServiceResponseDto(updatedPatient);
         return updatePatientServiceResponseDto;
     }
 
     public void deletePatient(UUID id) {
-        log.info("PATIENT: Delete service triggered");
+        log.info(LogMessages.SERVICE_DELETE_TRIGGERED);
         patientRepository.deleteById(id);
-        log.info("PATIENT: Delete service is done");
-
     }
 
     public Optional<Patient> findPatientById(UUID id) {
-        log.info("PATIENT: Find Patient -ID- service triggered");
+        log.info(LogMessages.SERVICE_FIND_BY_ID_TRIGGERED);
         return patientRepository.findById(id);
     }
 
     public boolean findPatientByEmail(String email) {
-        log.info("PATIENT: Find Patient -EMAIL- service triggered");
+        log.info(LogMessages.SERVICE_FIND_BY_EMAIL_TRIGGERED);
         return patientRepository.existsByEmail(email);
     }
 }

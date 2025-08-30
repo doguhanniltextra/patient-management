@@ -4,6 +4,7 @@ import com.project.dto.UpdateDoctorServiceRequestDto;
 import com.project.dto.UpdateDoctorServiceResponseDto;
 import com.project.dto.response.CreateDoctorServiceResponseDto;
 import com.project.dto.request.CreateDoctorServiceRequestDto;
+import com.project.exception.DoctorNotFoundException;
 import com.project.exception.EmailIsNotUniqueException;
 import com.project.exception.PatientLimitException;
 import com.project.helper.DoctorMapper;
@@ -33,7 +34,7 @@ public class DoctorService {
         this.doctorValidator = doctorValidator;
     }
 
-    public UpdateDoctorServiceResponseDto updateDoctor(UUID id, UpdateDoctorServiceRequestDto updateDoctorServiceRequestDto) {
+    public UpdateDoctorServiceResponseDto updateDoctor(UUID id, UpdateDoctorServiceRequestDto updateDoctorServiceRequestDto) throws DoctorNotFoundException {
         Optional<Doctor> optionalDoctor = doctorRepository.findById(id);
 
         if (optionalDoctor.isPresent()) {
@@ -43,7 +44,7 @@ public class DoctorService {
             UpdateDoctorServiceResponseDto updateDoctorServiceResponseDto = doctorMapper.getUpdateDoctorServiceResponseDto(existingDoctor);
             return updateDoctorServiceResponseDto;
         } else {
-            throw new EntityNotFoundException("Doctor with id " + id + " not found.");
+            throw new DoctorNotFoundException("Doctor with id " + id + " not found.");
         }
     }
 
@@ -66,6 +67,8 @@ public class DoctorService {
     public List<Doctor> getDoctors() {
         return doctorRepository.findAll();
     }
+
+    
     // MAINTAINING
     public void increasePatientNumber(UUID id) throws PatientLimitException {
         Optional<Doctor> byId = doctorRepository.findById(id);
