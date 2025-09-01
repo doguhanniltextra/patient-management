@@ -1,0 +1,75 @@
+  /* Navbar */
+  .navbar {
+      background: #6db33f;
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      padding: 0.75rem 0;
+  }
+
+  .navbar-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+  }
+
+  .logo {
+      font-size: 1.5rem;
+      font-weight: 600;
+  }
+
+  /* Hamburger */
+  .hamburger {
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      gap: 4px;
+  }
+
+  .hamburger span {
+      width: 25px;
+      height: 3px;
+      background: white;
+      border-radius: 2px;
+  }
+
+  /* Overlay menu */
+  .nav-links {
+      position: fixed;
+      top: 0;
+      right: -100%;
+      width: 300px;
+      height: 100%;
+      background: #6db33f;
+      flex-direction: column;
+      padding: 1rem 1rem;
+      display: flex;
+      transition: right 0.3s ease;
+      overflow-y: auto;
+      z-index: 999;
+  }
+
+  .nav-links li {
+      list-style: none;
+  }
+
+  .nav-links li a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      display: block;
+      padding: 0.5rem 0;
+      transition: opacity 0.2s;
+  }
+
+  .nav-links li a:hover {
+      opacity: 0.8;
+  }
+
+  .nav-links.active {
+      right: 0;
+  }

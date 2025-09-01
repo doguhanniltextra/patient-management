@@ -7,10 +7,36 @@
     <title>Patient Management System - Microservices Architecture</title>
     <link rel="stylesheet" href="auth.css">
     <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="navbar.css">
     <script src="main.js"></script>
 </head>
 
 <body>
+<nav class="navbar">
+    <div class="container navbar-container">
+        <ul class="nav-links">
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#architecture">System Architecture</a></li>
+            <li><a href="#microservices-details">Project's Microservice Details</a></li>
+            <li><a href="#how-auth-and-autho-works">How Auth Flow Works?</a></li>
+            <li><a href="#appointment-validation-flow">Appointment Validation Flow?</a></li>
+            <li><a href="#devops-deployment-flow">Devops & Deployment Flow?</a></li>
+            <li><a href="#api-gateway-flow">Api Gateway Flow?</a></li>
+            <li><a href="#billing-validation-flow">Billing Invoice Flow?</a></li>
+            <li><a href="#postman-collection">Postman Collection</a></li>
+            <li><a href="#key-features">Key Features</a></li>
+            <li><a href="#why-this">Why?</a></li>
+            <li><a href="#figma">Figma</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+</nav>
+
     <div class="container">
 
         <header>
@@ -18,7 +44,8 @@
             <p>Microservices-Based Healthcare Management Backend</p>
         </header>
 
-        <section class="section">
+        <!-- Overview -->
+        <section class="section" id="overview">
             <h2>Project Overview</h2>
             <p>This project is a <strong>microservices-based backend system</strong> for managing appointments,
                 patients, doctors, and billing in a healthcare environment. It follows a modular, scalable design and
@@ -44,7 +71,8 @@
             </div>
         </section>
 
-        <section class="section">
+        <!-- System Architecture -->
+        <section class="section" id="architecture">
             <h2>System Architecture</h2>
             <p>The system consists of the following microservices, each containerized via Docker:</p>
 
@@ -104,7 +132,8 @@
             </table>
         </section>
 
-        <section class="section">
+        <!-- Microservices Details -->
+        <section class="section" id="microservices-details">
             <h2>Microservices Details</h2>
             <div class="architecture-grid">
                 <div class="service-card">
@@ -223,12 +252,14 @@
                     <div class="database-info">
                         <strong>Database:</strong> PostgreSQL | <strong>Port:</strong> 8089
                     </div>
-                   <p><strong>Responsibilities:</strong> This microservice is responsible for creating auth records. It generates an <strong>JWT</strong> token for accessing other endpoints<p>
-                     <div class="code-block">{
+                    <p><strong>Responsibilities:</strong> This microservice is responsible for creating auth records. It
+                        generates an <strong>JWT</strong> token for accessing other endpoints
+                    <p>
+                    <div class="code-block">{
                         "Name": String,
                         "Email": String,
                         "Password": String,
-                        "RegisterDate": LocalDate 
+                        "RegisterDate": LocalDate
                         }</div>
                 </div>
 
@@ -261,8 +292,99 @@
             </div>
         </section>
 
-        <section class="section">
-            <h2>How Authenticaton And Authorization Works?</h2>
+        <!-- Why This ... Tool/Framework/Design? -->
+        <section class="section" id="why-this">
+            <h2>Why This ... Tool/Framework/Design?</h2>
+            <div class="architecture-grid">
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-icon">?</div>
+                        <h3>Why Microservice Design?</h3>
+                    </div>
+                    <p>I chose a microservice architecture to achieve <strong>loose coupling, scalability, and
+                            independent deployments</strong>. Each service is responsible for a specific domain
+                        (patients, doctors, appointments, billing, authentication), which makes the system modular and
+                        easier to maintain.
+
+                        This design also allows services to use different databases and technologies depending on their
+                        requirements, rather than being restricted to a single stack. In addition, microservices enable
+                        fault isolation — if one service fails, the others can continue functioning, improving the
+                        system’s reliability</p>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-icon">?</div>
+                        <h3>Why PostgreSQL (and MySQL)?</h3>
+                    </div>
+                    <p>Each microservice has its own database to respect the loose coupling principle. I used PostgreSQL
+                        for the Patient Service because of its powerful relational features, JSONB support, and advanced
+                        querying capabilities, which fit patient data well. On the other hand, I chose MySQL for the
+                        Doctor Service since it is lightweight and efficient for handling structured data with high
+                        read/write operations.</p>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-icon">?</div>
+                        <h3>Why Kafka?</h3>
+                    </div>
+                    <p>I used Apache Kafka for asynchronous, event-driven communication between services. Instead of
+                        relying only on HTTP calls, Kafka enabled me to build a scalable and fault-tolerant data
+                        pipeline. Producers generate events (such as patient updates or logs), and consumers process
+                        them independently, which reduces coupling and improves system resilience.</p>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-icon">?</div>
+                        <h3>Why Docker & Kubernetes?</h3>
+                    </div>
+                    <p>Docker allowed me to containerize services and databases, ensuring they run consistently across
+                        environments. Volumes were used to persist user data. Kubernetes provided orchestration features
+                        such as service discovery, load balancing, scaling, and persistent storage management, making
+                        deployments production-ready and easier to maintain.</p>
+                </div>
+
+
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-icon">?</div>
+                        <h3>Why API Gateway?</h3>
+                    </div>
+                    <p>I implemented an API Gateway to act as the single entry point for all requests. This simplified
+                        routing, authentication, and abstraction, since clients do not need to know individual service
+                        endpoints. It also centralized security and cross-cutting concerns like logging and request
+                        filtering, improving both usability and maintainability.</p>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-icon">?</div>
+                        <h3>Why CI/CD with GitHub Actions?</h3>
+                    </div>
+                    <p>I set up GitHub Actions to automate build, test, and deployment pipelines. This reduced
+                        deployment time to under 15 minutes and ensured multi-platform Docker images could be pushed and
+                        deployed to cloud providers (AWS, GCP, Azure). The CI/CD pipeline improved reliability,
+                        minimized human error, and made the project more production-ready.</p>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-icon">?</div>
+                        <h3>Why JWT Authentication?</h3>
+                    </div>
+                    <p>I chose JWT (JSON Web Tokens) because it enables stateless and lightweight authentication, which
+                        is ideal in a microservices architecture. Tokens are passed with each request, so services can
+                        validate user identity without maintaining server-side sessions.</p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- How Authentication And Authorization Works? -->
+        <section class="section" id="how-auth-and-autho-works">
+            <h2>How Authentication And Authorization Works?</h2>
             <div class="particles" id="particles"></div>
 
             <div class="status" id="status">Ready to authenticate...</div>
@@ -313,7 +435,8 @@
             </div>
         </section>
 
-        <section class="section">
+        <!-- Appointment Validation Flow -->
+        <section class="section" id="appointment-validation-flow">
             <h2>Appointment Validation Flow</h2>
             <p>When a user tries to create an appointment, the system follows this validation process:</p>
 
@@ -356,7 +479,8 @@
             </div>
         </section>
 
-        <section class="section">
+        <!-- Billing Validation Flow -->
+        <section class="section" id="billing-validation-flow">
             <h2>Billing - Invoice Flow</h2>
             <p>When a user create an appointment, the system follows this process for billing:</p>
 
@@ -394,7 +518,8 @@
             </div>
         </section>
 
-        <section class="section">
+        <!-- Api Gateway Flow -->
+        <section class="section" id="api-gateway-flow">
             <h2>Api Gateway Flow</h2>
             <p>When a user request to an endpoint, the system follows this process for Api Gateway:</p>
 
@@ -449,62 +574,8 @@
             </div>
         </section>
 
-        <section class="section">
-            <h2>Api Gateway Flow</h2>
-            <p>When a user request to an endpoint, the system follows this process for Api Gateway:</p>
-
-            <div class="validation-flow">
-                <div class="flow-step">
-                    <div class="step-number">1</div>
-                    <div>
-                        <strong>Client Request → API Gateway</strong><br>
-                        User sends a request (e.g. <code>http://localhost:4004/api/patients</code>) to API Gateway.
-                    </div>
-                </div>
-                <div class="flow-step">
-                    <div class="step-number">2</div>
-                    <div>
-                        <strong>Predicate Check</strong><br>
-                        Gateway checks the <code>Path</code> predicates to determine the correct microservice
-                        (<code>patient-service</code>, <code>doctor-service</code>, <code>appointment-service</code>,
-                        etc.).
-                    </div>
-                </div>
-                <div class="flow-step">
-                    <div class="step-number">3</div>
-                    <div>
-                        <strong>Apply Filters</strong><br>
-                        Defined filters are applied (e.g. <code>StripPrefix</code>, <code>RewritePath</code>)
-                        to adjust the request before forwarding.
-                    </div>
-                </div>
-                <div class="flow-step">
-                    <div class="step-number">4</div>
-                    <div>
-                        <strong>Forward to Target Service</strong><br>
-                        The modified request is forwarded to the target microservice
-                        (e.g. <code>patient-service:8080</code>).
-                    </div>
-                </div>
-                <div class="flow-step">
-                    <div class="step-number">5</div>
-                    <div>
-                        <strong>Service Processes Request</strong><br>
-                        The microservice executes business logic and returns a response.
-                    </div>
-                </div>
-                <div class="flow-step">
-                    <div class="step-number">6</div>
-                    <div>
-                        <strong>Response Returned</strong><br>
-                        API Gateway sends the response back to the client,
-                        so the user still communicates via <code>http://localhost:4004</code>.
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="section">
+        <!-- DevOps & Deployment Flow -->
+        <section class="section" id="devops-deployment-flow">
             <h2>DevOps & Deployment Workflow</h2>
             <p>From code to production: Complete CI/CD pipeline with containerization and Kubernetes orchestration</p>
 
@@ -546,50 +617,34 @@
                 </div>
             </div>
 
-            <div class="deployment-details" style="margin-top: 2rem; padding: 1.5rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #28a745;">
-                <h3 style="color: #28a745; margin-bottom: 1rem;">🚀 Production-Ready Features</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
-                    <div>
-                        <strong>✅ Multi-Platform Images</strong><br>
-                        <small>Linux AMD64 & ARM64 support</small>
-                    </div>
-                    <div>
-                        <strong>✅ Health Checks</strong><br>
-                        <small>Readiness & Liveness probes configured</small>
-                    </div>
-                    <div>
-                        <strong>✅ Resource Management</strong><br>
-                        <small>CPU & Memory limits defined</small>
-                    </div>
-                    <div>
-                        <strong>✅ Secret Management</strong><br>
-                        <small>Database credentials securely managed</small>
-                    </div>
-                    <div>
-                        <strong>✅ Persistent Storage</strong><br>
-                        <small>Database data persistence with PVCs</small>
-                    </div>
-                    <div>
-                        <strong>✅ Service Discovery</strong><br>
-                        <small>Internal service communication configured</small>
-                    </div>
-                </div>
-            </div>
 
             <div class="tech-stack" style="margin-top: 2rem;">
                 <h3 style="color: #0066cc;">🛠️ DevOps Technology Stack</h3>
                 <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem;">
-                    <span style="background: #2188ff; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.9rem;">Docker</span>
-                    <span style="background: #326ce5; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.9rem;">Kubernetes</span>
-                    <span style="background: #2088ff; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.9rem;">GitHub Actions</span>
-                    <span style="background: #24292e; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.9rem;">GitHub Container Registry</span>
-                    <span style="background: #ff9900; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.9rem;">AWS ECS Ready</span>
-                    <span style="background: #4285f4; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.9rem;">Google Cloud Run Ready</span>
-                    <span style="background: #0078d4; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.9rem;">Azure Container Ready</span>
+                    <span
+                        style="background: #2188ff; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.9rem;">Docker</span>
+                    <span
+                        style="background: #326ce5; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.9rem;">Kubernetes</span>
+                    <span
+                        style="background: #2088ff; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.9rem;">GitHub
+                        Actions</span>
+                    <span
+                        style="background: #24292e; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.9rem;">GitHub
+                        Container Registry</span>
+                    <span
+                        style="background: #ff9900; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.9rem;">AWS
+                        ECS Ready</span>
+                    <span
+                        style="background: #4285f4; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.9rem;">Google
+                        Cloud Run Ready</span>
+                    <span
+                        style="background: #0078d4; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.9rem;">Azure
+                        Container Ready</span>
                 </div>
             </div>
 
-            <div style="margin-top: 2rem; padding: 1rem; background: #e3f2fd; border-radius: 8px; border-left: 4px solid #2196f3;">
+            <div
+                style="margin-top: 2rem; padding: 1rem; background: #e3f2fd; border-radius: 8px; border-left: 4px solid #2196f3;">
                 <p style="margin: 0; color: #1565c0;">
                     <strong>💡 Deployment Impact:</strong>
                     What previously took hours of manual setup and configuration now takes less than 15 minutes
@@ -599,17 +654,20 @@
             </div>
         </section>
 
-        <section class="section">
+        <!-- Example Figma Web Structure -->
+        <section class="section" id="figma">
             <h2>FIGMA - WEB STRUCTURE</h2>
             <div class="tech-list">
                 <div class="tech-item">
                     <strong>Figma File</strong>
                     <a href="https://www.figma.com/design/y5UNrbgDNnFM1QQfQ6Yk8R/Patient-Management?node-id=0-1&t=G91X426URT09Onq7-1"
-                       class="btn btn-primary" target="_blank">Open Figma Folder</a>                </div>
+                        class="btn btn-primary" target="_blank">Open Figma Folder</a>
+                </div>
             </div>
         </section>
 
-        <section class="section">
+        <!-- Postman Collection -->
+        <section class="section" id="postman-collection">
             <h2>Postman Collection</h2>
             <p>Test all API endpoints with this ready-to-use Postman collection. Import the collection into your Postman
                 to explore requests, headers, and sample responses.</p>
@@ -623,7 +681,8 @@
             </pre>
         </section>
 
-        <section class="section">
+        <!-- Key Features -->
+        <section class="section" id="key-features">
             <h2>Key Features</h2>
             <ul>
                 <li><strong>Event-Driven Architecture:</strong> Apache Kafka enables asynchronous communication between
@@ -654,7 +713,8 @@
             </ul>
         </section>
 
-        <section class="cta-section">
+        <!-- Contact -->
+        <section class="cta-section" id="contact">
             <h2>View Project</h2>
             <p>Explore the complete source code and documentation for this microservices architecture</p>
             <div class="cta-buttons">
@@ -666,5 +726,4 @@
 
     </div>
 </body>
-
 </html>
