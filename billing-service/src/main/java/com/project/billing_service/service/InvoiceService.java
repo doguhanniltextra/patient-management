@@ -24,10 +24,11 @@ import java.util.Map;
         private final RestTemplate restTemplate;
         private final InvoiceValidator invoiceValidator;
 
-        private final String API_URL = "https://invoice-generator.com";
-
         @Value("${invoice.api.key}")
         private String apiKey;
+
+        @Value("${invoice.api.url}")
+        private String API_URL;
 
         public InvoiceService(RestTemplate restTemplate, InvoiceValidator invoiceValidator) {
             this.restTemplate = restTemplate;

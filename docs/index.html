@@ -4,31 +4,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patient Management System - Microservices Architecture</title>
-    <link rel="stylesheet" href="auth.css">
+    <title>Patient Management System | Documentation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="auth.css">
     <link rel="stylesheet" href="navbar.css">
-    <script src="main.js"></script>
+    <script src="main.js" defer></script>
 </head>
 
 <body>
 <nav class="navbar">
-    <div class="container navbar-container">
-        <ul class="nav-links">
-            <li><a href="#overview">Overview</a></li>
-            <li><a href="#architecture">System Architecture</a></li>
-            <li><a href="#microservices-details">Project's Microservice Details</a></li>
-            <li><a href="#how-auth-and-autho-works">How Auth Flow Works?</a></li>
-            <li><a href="#appointment-validation-flow">Appointment Validation Flow?</a></li>
-            <li><a href="#devops-deployment-flow">Devops & Deployment Flow?</a></li>
-            <li><a href="#api-gateway-flow">Api Gateway Flow?</a></li>
-            <li><a href="#billing-validation-flow">Billing Invoice Flow?</a></li>
-            <li><a href="#postman-collection">Postman Collection</a></li>
-            <li><a href="#key-features">Key Features</a></li>
-            <li><a href="#why-this">Why?</a></li>
-            <li><a href="#figma">Figma</a></li>
-            <li><a href="#contact">Contact</a></li>
-        </ul>
+    <div class="navbar-container">
+        <div class="logo-group">
+            <span class="logo-icon">🏥</span>
+            <span class="logo-text">Patient Management System</span>
+        </div>
         <div class="hamburger">
             <span></span>
             <span></span>
@@ -37,693 +29,414 @@
     </div>
 </nav>
 
-    <div class="container">
+<div class="app-layout">
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="#overview" class="nav-item">Overview</a></li>
+                <li><a href="#architecture" class="nav-item">System Architecture</a></li>
+                <li><a href="#microservices-details" class="nav-item">Microservices Details</a></li>
+                <li><hr class="nav-divider"></li>
+                <li><span class="nav-label">Flow Diagrams</span></li>
+                <li><a href="#how-auth-and-autho-works" class="nav-item">Auth Flow</a></li>
+                <li><a href="#appointment-validation-flow" class="nav-item">Appointment Flow</a></li>
+                <li><a href="#billing-validation-flow" class="nav-item">Invoice Flow</a></li>
+                <li><a href="#api-gateway-flow" class="nav-item">API Gateway Flow</a></li>
+                <li><hr class="nav-divider"></li>
+                <li><a href="#devops-deployment-flow" class="nav-item">Deployment</a></li>
+                <li><a href="#postman-collection" class="nav-item">API Reference</a></li>
+                <li><a href="#key-features" class="nav-item">Core Features</a></li>
+                <li><a href="#why-this" class="nav-item">Design Philosophy</a></li>
+               
+            </ul>
+        </nav>
+    </aside>
 
-        <header>
-            <h1>Patient Management System</h1>
-            <p>Microservices-Based Healthcare Management Backend</p>
+    <main class="main-content">
+        <header class="doc-header">
+            <h1>Documentation</h1>
+            <p>Enterprise microservices architecture for healthcare management systems.</p>
         </header>
 
         <!-- Overview -->
-        <section class="section" id="overview">
+        <section class="doc-section" id="overview">
             <h2>Project Overview</h2>
-            <p>This project is a <strong>microservices-based backend system</strong> for managing appointments,
-                patients, doctors, and billing in a healthcare environment. It follows a modular, scalable design and
-                uses different databases tailored to each service's needs.</p>
+            <p class="section-desc">This modular backend system manages healthcare entities like appointments, patients, and billing. It leverages a modern, distributed architecture to ensure high availability and data integrity.</p>
 
-            <div class="overview-grid">
-                <div class="overview-item">
-                    <h4>Architecture</h4>
-                    <p>6 independent microservices with API Gateway</p>
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="card-icon">🏗️</div>
+                    <h4>Distributed Nodes</h4>
+                    <p>7 specialized microservices coupled with an edge API Gateway.</p>
                 </div>
-                <div class="overview-item">
-                    <h4>Containerization</h4>
-                    <p>Fully dockerized with Docker Compose</p>
+                <div class="info-card">
+                    <div class="card-icon">📦</div>
+                    <h4>Infrastructure</h4>
+                    <p>Full container orchestration via Docker and Compose.</p>
                 </div>
-                <div class="overview-item">
-                    <h4>Event-Driven</h4>
-                    <p>Apache Kafka for service communication</p>
+                <div class="info-card">
+                    <div class="card-icon">⚡</div>
+                    <h4>Event Pipeline</h4>
+                    <p>Asynchronous synchronization using Apache Kafka.</p>
                 </div>
-                <div class="overview-item">
-                    <h4>Multi-Database</h4>
-                    <p>MySQL, PostgreSQL, and MongoDB</p>
+                <div class="info-card">
+                    <div class="card-icon">💾</div>
+                    <h4>Data Persistence</h4>
+                    <p>PostgreSQL (Relational) and MongoDB (Document) hybrid stack.</p>
                 </div>
             </div>
         </section>
 
         <!-- System Architecture -->
-        <section class="section" id="architecture">
+        <section class="doc-section" id="architecture">
             <h2>System Architecture</h2>
-            <p>The system consists of the following microservices, each containerized via Docker:</p>
+            <p class="section-desc">Global routing and service port assignments across the ecosystem.</p>
 
-            <table class="port-table">
-                <thead>
-                    <tr>
-                        <th>Service</th>
-                        <th>Port</th>
-                        <th>Database</th>
-                        <th>Primary Function</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>API Gateway</strong></td>
-                        <td>4004</td>
-                        <td>-</td>
-                        <td>Request routing and management</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Patient Service</strong></td>
-                        <td>8080</td>
-                        <td>MySQL</td>
-                        <td>Patient records management</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Billing Service</strong></td>
-                        <td>8081</td>
-                        <td>PostgreSQL</td>
-                        <td>Payment processing and billing</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Analytics Service</strong></td>
-                        <td>8082</td>
-                        <td>MongoDB</td>
-                        <td>Data analytics and reporting</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Doctor Service</strong></td>
-                        <td>8083</td>
-                        <td>MySQL</td>
-                        <td>Doctor profiles and specializations</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Appointment Service</strong></td>
-                        <td>8084</td>
-                        <td>PostgreSQL</td>
-                        <td>Appointment scheduling and validation</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Auth Service</strong></td>
-                        <td>8089</td>
-                        <td>PostgreSQL</td>
-                        <td>Auth process</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Service Identifier</th>
+                            <th>Host Port</th>
+                            <th>Storage Engine</th>
+                            <th>Core Responsibility</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="badge badge-primary">API Gateway</span></td>
+                            <td><code>4004</code></td>
+                            <td>N/A</td>
+                            <td>Global routing & Load balancing</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-secondary">Patient Service</span></td>
+                            <td><code>8080</code></td>
+                            <td>PostgreSQL</td>
+                            <td>Identity & Health records</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-secondary">Billing Service</span></td>
+                            <td><code>8081</code></td>
+                            <td>PostgreSQL</td>
+                            <td>Transactional billing & PDFs</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-info">Analytics Service</span></td>
+                            <td><code>8082</code></td>
+                            <td>MongoDB</td>
+                            <td>BI & Event aggregation</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-secondary">Doctor Service</span></td>
+                            <td><code>8083</code></td>
+                            <td>PostgreSQL</td>
+                            <td>Directory & Availability</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-secondary">Appointment Svc</span></td>
+                            <td><code>8084</code></td>
+                            <td>PostgreSQL</td>
+                            <td>Scheduling & Orchestration</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-secondary">Auth Service</span></td>
+                            <td><code>8089</code></td>
+                            <td>PostgreSQL</td>
+                            <td>IAM & JWT Provisioning</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </section>
 
         <!-- Microservices Details -->
-        <section class="section" id="microservices-details">
+        <section class="doc-section" id="microservices-details">
             <h2>Microservices Details</h2>
-            <div class="architecture-grid">
-                <div class="service-card">
-                    <div class="service-header">
-                        <div class="service-icon">👥</div>
-                        <h3>Patient Service</h3>
+            <div class="service-details-grid">
+                <div class="detail-card">
+                    <div class="detail-card-header">
+                        <span class="service-id">👥 Patient Service</span>
                     </div>
-                    <div class="database-info">
-                        <strong>Database:</strong> Postgresql | <strong>Port:</strong> 8080
+                    <div class="card-meta">
+                        <code>POSTGRESQL</code> • <code>PORT 8080</code>
                     </div>
-                    <p><strong>Responsibility:</strong> This microservice is responsible for managing endpoints about
-                        patient records. The relationship between Kafka and Patient Service sends an event to the
-                        Analytics Service. The database of this microservice is PostgresSQL and it runs simultaneously
-                        with the microservice, thanks to docker-compose. </p>
-                    <div class="code-block">{
-                        "id": UUID,
-                        "name": String,
-                        "email": String,
-                        "address": String,
-                        "dateOfBirth": LocalDate,
-                        "registeredDate" LocalDate,
-                        }</div>
+                    <p>Centralized authority for patient demographic data. It functions as the source of truth for patient identity and provides event triggers for lifestyle and attendance analytics.</p>
+                    <pre class="code-snipp"><code>{
+  "id": "UUID",
+  "name": "String",
+  "email": "String",
+  "registeredDate": "LocalDate"
+}</code></pre>
                 </div>
 
-                <div class="service-card">
-                    <div class="service-header">
-                        <div class="service-icon">👨‍⚕️</div>
-                        <h3>Doctor Service</h3>
+                <div class="detail-card">
+                    <div class="detail-card-header">
+                        <span class="service-id">👨‍⚕️ Doctor Service</span>
                     </div>
-                    <div class="database-info">
-                        <strong>Database:</strong> MySQL | <strong>Port:</strong> 8083
+                    <div class="card-meta">
+                        <code>POSTGRESQL</code> • <code>PORT 8083</code>
                     </div>
-                    <p><strong>Responsibilities:</strong> This microservice is responsible for managing endpoints about
-                        doctor records. The database of that microservice is MySQL. The reason beyond this database
-                        selection, it's generally optimized for read-heavy operations and offers slightly better
-                        performance in that context. </p>
-                    <div class="code-block">{
-                        "id": UUID,
-                        "name": String,
-                        "yearsOfExperience": Integer,
-                        "hospitalName": String,
-                        "department": String,
-                        "licenseNumber" Integer,
-                        "specialization": ENUM,
-                        "Number": String,
-                        "email": String,
-                        "available": Boolean,
-                        "gender": ENUM
-                        }</div>
+                    <p>Manages professional profiles, departmental mapping, and license verification. It ensures all practicing entities within the system are valid and authorized.</p>
+                    <pre class="code-snipp"><code>{
+  "id": "UUID",
+  "specialization": "ENUM",
+  "available": "Boolean",
+  "license": "String"
+}</code></pre>
                 </div>
 
-                <div class="service-card">
-                    <div class="service-header">
-                        <div class="service-icon">📅</div>
-                        <h3>Appointment Service</h3>
+                <div class="detail-card">
+                    <div class="detail-card-header">
+                        <span class="service-id">📅 Appointment Service</span>
                     </div>
-                    <div class="database-info">
-                        <strong>Database:</strong> PostgreSQL | <strong>Port:</strong> 8084
+                    <div class="card-meta">
+                        <code>POSTGRESQL</code> • <code>PORT 8084</code>
                     </div>
-                    <p><strong>Responsibilities:</strong> This microservice is responsible for managing appointments,
-                        verifying IDs, notifying other services with Kafka. The database of this microservice is
-                        PostgresSQL. It also has two services. One of the services is managing appointment process. With
-                        the help of Rest Template, this service verify the Patient ID and Doctor ID to create an
-                        appointment. Also, if any patient's payment process is successful then Kafka triggers an event
-                        for The Billing Service. The second service of this microservice is
-                        <code>Cleanup Service</code>, manages deleting outdated appointments every day.
-                    </p>
-                    <div class="code-block">{
-                        "patientId": UUID,
-                        "doctorId": UUID,
-                        "serviceDate": String,
-                        "serviceDateEnd": String,
-                        "serviceType": ServiceType,
-                        "amount": float,
-                        "paymentStatus": boolean,
-                        "PaymentType": paymentType
-                        }</div>
+                    <p>The system's orchestrator. It verifies patient/doctor availability via cross-calls and initiates the billing lifecycle upon successful booking.</p>
+                    <pre class="code-snipp"><code>{
+  "patientId": "UUID",
+  "doctorId": "UUID",
+  "amount": "Float",
+  "paymentStatus": "Boolean"
+}</code></pre>
                 </div>
 
-                <div class="service-card">
-                    <div class="service-header">
-                        <div class="service-icon">💰</div>
-                        <h3>Billing Service</h3>
+                <div class="detail-card">
+                    <div class="detail-card-header">
+                        <span class="service-id">💰 Billing Service</span>
                     </div>
-                    <div class="database-info">
-                        <strong>Database:</strong> PostgreSQL | <strong>Port:</strong> 8081
+                    <div class="card-meta">
+                        <code>POSTGRESQL</code> • <code>PORT 8081</code>
                     </div>
-                    <p><strong>Responsibilities:</strong> This microservice is responsible for creating billing records
-                        after appointments. It creates an invoice for a patient with invoice-generator API, and it
-                        stores invoice instances <i>(PDF)</i> on Billing Service image.</p>
-
-                    <div class="code-block">{
-                        "patientId": Long,
-                        "appointmentId": Long,
-                        "paymentStatus": Boolean,
-                        "paymentType": ENUM
-                        }</div>
-                </div>
-
-                <div class="service-card">
-                    <div class="service-header">
-                        <div class="service-icon">📊</div>
-                        <h3>Analytics Service</h3>
-                    </div>
-                    <div class="database-info">
-                        <strong>Database:</strong> MongoDB | <strong>Port:</strong> 8082
-                    </div>Storing event-based and analytical data (trends, usage stats)
-                    </p>
-                </div>
-
-                <div class="service-card">
-                    <div class="service-header">
-                        <div class="service-icon">📊</div>
-                        <h3>Auth Service</h3>
-                    </div>
-                    <div class="database-info">
-                        <strong>Database:</strong> PostgreSQL | <strong>Port:</strong> 8089
-                    </div>
-                    <p><strong>Responsibilities:</strong> This microservice is responsible for creating auth records. It
-                        generates an <strong>JWT</strong> token for accessing other endpoints
-                    <p>
-                    <div class="code-block">{
-                        "Name": String,
-                        "Email": String,
-                        "Password": String,
-                        "RegisterDate": LocalDate
-                        }</div>
-                </div>
-
-                <div class="service-card">
-                    <div class="service-header">
-                        <div class="service-icon">🌐</div>
-                        <h3>API Gateway</h3>
-                    </div>
-                    <div class="database-info">
-                        <strong>Port:</strong> 4004
-                    </div>
-                    <p><strong>Responsibilities:</strong> This microservice is responsible for managing request routing,
-                        and API management.</p>
-                </div>
-
-                <div class="service-card">
-                    <div class="service-header">
-                        <div class="service-icon">🌐</div>
-                        <h3>Common Things</h3>
-                    </div>
-                    <ul class="tech-list">
-                        <li><span class="icon">✔</span>Logger - slf4j -</li>
-                        <li><span class="icon">✔</span>REST API</li>
-                        <li><span class="icon">✔</span>Docker Compose</li>
-                        <li><span class="icon">✔</span>API Gateway Routing</li>
-                        <li><span class="icon">✔</span>Kafka</li>
-                        <li><span class="icon">✔</span>SQL</li>
-                    </ul>
+                    <p>Consumer of transaction events. It handles ledger entries and generates legal invoice documents in PDF format for patient downloads.</p>
                 </div>
             </div>
         </section>
 
-        <!-- Why This ... Tool/Framework/Design? -->
-        <section class="section" id="why-this">
-            <h2>Why This ... Tool/Framework/Design?</h2>
-            <div class="architecture-grid">
-                <div class="service-card">
-                    <div class="service-header">
-                        <div class="service-icon">?</div>
-                        <h3>Why Microservice Design?</h3>
+        <!-- Auth Flow -->
+        <section class="doc-section" id="how-auth-and-autho-works">
+            <h2>Authentication Lifecycle</h2>
+            <div class="interactive-flow">
+                <div class="flow-status" id="status">System Ready</div>
+                <div class="flow-stage">
+                    <div class="stage-node" id="user">
+                        <div class="node-icon">👤</div>
+                        <span>Client</span>
                     </div>
-                    <p>I chose a microservice architecture to achieve <strong>loose coupling, scalability, and
-                            independent deployments</strong>. Each service is responsible for a specific domain
-                        (patients, doctors, appointments, billing, authentication), which makes the system modular and
-                        easier to maintain.
-
-                        This design also allows services to use different databases and technologies depending on their
-                        requirements, rather than being restricted to a single stack. In addition, microservices enable
-                        fault isolation — if one service fails, the others can continue functioning, improving the
-                        system’s reliability</p>
-                </div>
-
-                <div class="service-card">
-                    <div class="service-header">
-                        <div class="service-icon">?</div>
-                        <h3>Why PostgreSQL (and MySQL)?</h3>
+                    <div class="flow-arrow">→</div>
+                    <div class="stage-node" id="gateway">
+                        <div class="node-icon">🌐</div>
+                        <span>Gateway</span>
                     </div>
-                    <p>Each microservice has its own database to respect the loose coupling principle. I used PostgreSQL
-                        for the Patient Service because of its powerful relational features, JSONB support, and advanced
-                        querying capabilities, which fit patient data well. On the other hand, I chose MySQL for the
-                        Doctor Service since it is lightweight and efficient for handling structured data with high
-                        read/write operations.</p>
-                </div>
-
-                <div class="service-card">
-                    <div class="service-header">
-                        <div class="service-icon">?</div>
-                        <h3>Why Kafka?</h3>
+                    <div class="flow-arrow">→</div>
+                    <div class="stage-node" id="auth">
+                        <div class="node-icon">🔐</div>
+                        <span>Auth Svc</span>
                     </div>
-                    <p>I used Apache Kafka for asynchronous, event-driven communication between services. Instead of
-                        relying only on HTTP calls, Kafka enabled me to build a scalable and fault-tolerant data
-                        pipeline. Producers generate events (such as patient updates or logs), and consumers process
-                        them independently, which reduces coupling and improves system resilience.</p>
-                </div>
-
-                <div class="service-card">
-                    <div class="service-header">
-                        <div class="service-icon">?</div>
-                        <h3>Why Docker & Kubernetes?</h3>
+                    <div class="flow-arrow">→</div>
+                    <div class="stage-node" id="database">
+                        <div class="node-icon">🗄️</div>
+                        <span>Storage</span>
                     </div>
-                    <p>Docker allowed me to containerize services and databases, ensuring they run consistently across
-                        environments. Volumes were used to persist user data. Kubernetes provided orchestration features
-                        such as service discovery, load balancing, scaling, and persistent storage management, making
-                        deployments production-ready and easier to maintain.</p>
                 </div>
-
-
-                <div class="service-card">
-                    <div class="service-header">
-                        <div class="service-icon">?</div>
-                        <h3>Why API Gateway?</h3>
-                    </div>
-                    <p>I implemented an API Gateway to act as the single entry point for all requests. This simplified
-                        routing, authentication, and abstraction, since clients do not need to know individual service
-                        endpoints. It also centralized security and cross-cutting concerns like logging and request
-                        filtering, improving both usability and maintainability.</p>
+                <div class="flow-controls">
+                    <button class="btn btn-action" onclick="startAnimation()">Execute Login Auth</button>
+                    <button class="btn btn-ghost" onclick="resetAnimation()">Reset Flow</button>
                 </div>
-
-                <div class="service-card">
-                    <div class="service-header">
-                        <div class="service-icon">?</div>
-                        <h3>Why CI/CD with GitHub Actions?</h3>
-                    </div>
-                    <p>I set up GitHub Actions to automate build, test, and deployment pipelines. This reduced
-                        deployment time to under 15 minutes and ensured multi-platform Docker images could be pushed and
-                        deployed to cloud providers (AWS, GCP, Azure). The CI/CD pipeline improved reliability,
-                        minimized human error, and made the project more production-ready.</p>
+                <div class="hidden-elements">
+                    <div id="userResponse"></div>
+                    <div id="gatewayResponse"></div>
+                    <div id="authResponse"></div>
+                    <div id="dbResponse"></div>
+                    <div id="jwtToken"></div>
+                    <div id="particles"></div>
                 </div>
-
-                <div class="service-card">
-                    <div class="service-header">
-                        <div class="service-icon">?</div>
-                        <h3>Why JWT Authentication?</h3>
-                    </div>
-                    <p>I chose JWT (JSON Web Tokens) because it enables stateless and lightweight authentication, which
-                        is ideal in a microservices architecture. Tokens are passed with each request, so services can
-                        validate user identity without maintaining server-side sessions.</p>
-                </div>
-
             </div>
         </section>
 
-        <!-- How Authentication And Authorization Works? -->
-        <section class="section" id="how-auth-and-autho-works">
-            <h2>How Authentication And Authorization Works?</h2>
-            <div class="particles" id="particles"></div>
-
-            <div class="status" id="status">Ready to authenticate...</div>
-
-            <div class="container">
-
-                <div class="service-container">
-
-                    <!-- User -->
-                    <div class="service" id="user">
-                        <div class="service-icon user">👤</div>
-                        <div class="service-name">User</div>
-                        <div class="service-desc">Makes request to protected resource</div>
-                        <div class="response-text" id="userResponse">Sending request...</div>
-                    </div>
-
-                    <!-- API Gateway -->
-                    <div class="service" id="gateway">
-                        <div class="service-icon gateway">🌐</div>
-                        <div class="service-name">API Gateway</div>
-                        <div class="service-desc">Routes requests & handles authentication</div>
-                        <div class="response-text" id="gatewayResponse">Routing to auth...</div>
-                    </div>
-
-                    <!-- Auth Service -->
-                    <div class="service" id="auth">
-                        <div class="service-icon auth">🔐</div>
-                        <div class="service-name">Auth Service</div>
-                        <div class="service-desc">Handles login/register & JWT generation</div>
-                        <div class="response-text" id="authResponse">Generating JWT...</div>
-                        <div class="jwt-token" id="jwtToken">eyJhbGciOiJIUzI1NiJ9.eyJzdWI...</div>
-                    </div>
-
-                    <!-- Database -->
-                    <div class="service" id="database">
-                        <div class="service-icon database">🗄️</div>
-                        <div class="service-name">Database</div>
-                        <div class="service-desc">Stores user credentials & data</div>
-                        <div class="response-text" id="dbResponse">User validated ✓</div>
+        <!-- Appointment Flow -->
+        <section class="doc-section" id="appointment-validation-flow">
+            <h2>Workflow: Appointment Validation</h2>
+            <div class="workflow-steps">
+                <div class="step">
+                    <span class="step-idx">01</span>
+                    <div class="step-content">
+                        <h5>Ingestion</h5>
+                        <p>Appointment Service receives the booking payload from the Gateway.</p>
                     </div>
                 </div>
-            </div>
-
-            <div class="controls">
-                <button class="btn" onclick="startAnimation()">🚀 Start Authentication</button>
-                <button class="btn" onclick="resetAnimation()">🔄 Reset</button>
-                <button class="btn" onclick="showRegisterFlow()">📝 Register Flow</button>
-            </div>
-        </section>
-
-        <!-- Appointment Validation Flow -->
-        <section class="section" id="appointment-validation-flow">
-            <h2>Appointment Validation Flow</h2>
-            <p>When a user tries to create an appointment, the system follows this validation process:</p>
-
-            <div class="validation-flow">
-                <div class="flow-step">
-                    <div class="step-number">1</div>
-                    <div>
-                        <strong>Request Received</strong><br>
-                        The Appointment Service receives the appointment creation request
+                <div class="step">
+                    <span class="step-idx">02</span>
+                    <div class="step-content">
+                        <h5>Verification</h5>
+                        <p>Synchronous REST calls to Patient and Doctor services confirm record validity.</p>
                     </div>
                 </div>
-                <div class="flow-step">
-                    <div class="step-number">2</div>
-                    <div>
-                        <strong>Patient Validation</strong><br>
-                        Sends GET request to Patient Service to verify if the patientId exists
+                <div class="step">
+                    <span class="step-idx">03</span>
+                    <div class="step-content">
+                        <h5>Persistence</h5>
+                        <p>Validated entities are committed to the PostgreSQL relational store.</p>
                     </div>
                 </div>
-                <div class="flow-step">
-                    <div class="step-number">3</div>
-                    <div>
-                        <strong>Doctor Validation</strong><br>
-                        Sends GET request to Doctor Service to verify if the doctorId exists
-                    </div>
-                </div>
-                <div class="flow-step">
-                    <div class="step-number">4</div>
-                    <div>
-                        <strong>Appointment Creation</strong><br>
-                        If both validations pass, the appointment is created and stored
-                    </div>
-                </div>
-                <div class="flow-step">
-                    <div class="step-number">5</div>
-                    <div>
-                        <strong>Billing Trigger</strong><br>
-                        A billing record is automatically triggered and created as PDF
+                <div class="step">
+                    <span class="step-idx">04</span>
+                    <div class="step-content">
+                        <h5>Dispatch</h5>
+                        <p>A 'PROCESSED' event is pushed to Kafka for the Billing and Analytics services.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Billing Validation Flow -->
-        <section class="section" id="billing-validation-flow">
-            <h2>Billing - Invoice Flow</h2>
-            <p>When a user create an appointment, the system follows this process for billing:</p>
-
-            <div class="validation-flow">
-                <div class="flow-step">
-                    <div class="step-number">1</div>
-                    <div>
-                        <strong>Kafka Triggered</strong><br>
-                        The Kafka Receiver receives the necessary data from Appointment Service
+        <!-- Billing Flow -->
+        <section class="doc-section" id="billing-validation-flow">
+            <h2>Workflow: Automated Invoicing</h2>
+            <div class="workflow-steps steps-horizontal">
+                <div class="step">
+                    <div class="step-content">
+                        <h5>Consume</h5>
+                        <p>Billing consumes Kafka events.</p>
                     </div>
                 </div>
-                <div class="flow-step">
-                    <div class="step-number">2</div>
-                    <div>
-                        <strong>Generating Unique ID And Using The Given Data</strong><br>
-                        Process the data and creates Invoice Path
+                <div class="step">
+                    <div class="step-content">
+                        <h5>Process</h5>
+                        <p>Unique invoice IDs generated.</p>
                     </div>
                 </div>
-                <div class="flow-step">
-                    <div class="step-number">3</div>
-                    <div>
-                        <strong>Invoice PDF Generated</strong><br>
-                        With the help of Invoice Generator API, Billing process is ended.
-                    </div>
-                </div>
-                <div class="flow-step">
-                    <div class="step-number">4</div>
-                    <div>
-                        <strong>Result</strong><br>
-                        <div style="text-align: center;">
-                            <img src="invoice_screenshot.png" alt="Instance" width="300" height="400" />
-                        </div>
+                <div class="step">
+                    <div class="step-content">
+                        <h5>Generate</h5>
+                        <p>PDF generated via REST API.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Api Gateway Flow -->
-        <section class="section" id="api-gateway-flow">
-            <h2>Api Gateway Flow</h2>
-            <p>When a user request to an endpoint, the system follows this process for Api Gateway:</p>
-
-            <div class="validation-flow">
-                <div class="flow-step">
-                    <div class="step-number">1</div>
-                    <div>
-                        <strong>Client Request → API Gateway</strong><br>
-                        User sends a request (e.g. <code>http://localhost:4004/api/patients</code>) to API Gateway.
+        <!-- API Gateway Flow -->
+        <section class="doc-section" id="api-gateway-flow">
+            <h2>Workflow: Edge Routing</h2>
+            <div class="workflow-steps">
+                <div class="step">
+                    <span class="step-idx">I</span>
+                    <div class="step-content">
+                        <h5>Ingress</h5>
+                        <p>Traffic enters the system via the unified entry point on port 4004.</p>
                     </div>
                 </div>
-                <div class="flow-step">
-                    <div class="step-number">2</div>
-                    <div>
-                        <strong>Predicate Check</strong><br>
-                        Gateway checks the <code>Path</code> predicates to determine the correct microservice
-                        (<code>patient-service</code>, <code>doctor-service</code>, <code>appointment-service</code>,
-                        etc.).
+                <div class="step">
+                    <span class="step-idx">II</span>
+                    <div class="step-content">
+                        <h5>Resolution</h5>
+                        <p>Gateway examines the URI path and maps it to a downstream microservice host.</p>
                     </div>
                 </div>
-                <div class="flow-step">
-                    <div class="step-number">3</div>
-                    <div>
-                        <strong>Apply Filters</strong><br>
-                        Defined filters are applied (e.g. <code>StripPrefix</code>, <code>RewritePath</code>)
-                        to adjust the request before forwarding.
-                    </div>
-                </div>
-                <div class="flow-step">
-                    <div class="step-number">4</div>
-                    <div>
-                        <strong>Forward to Target Service</strong><br>
-                        The modified request is forwarded to the target microservice
-                        (e.g. <code>patient-service:8080</code>).
-                    </div>
-                </div>
-                <div class="flow-step">
-                    <div class="step-number">5</div>
-                    <div>
-                        <strong>Service Processes Request</strong><br>
-                        The microservice executes business logic and returns a response.
-                    </div>
-                </div>
-                <div class="flow-step">
-                    <div class="step-number">6</div>
-                    <div>
-                        <strong>Response Returned</strong><br>
-                        API Gateway sends the response back to the client,
-                        so the user still communicates via <code>http://localhost:4004</code>.
+                <div class="step">
+                    <span class="step-idx">III</span>
+                    <div class="step-content">
+                        <h5>Egress</h5>
+                        <p>The request is proxied with updated headers to the target service node.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- DevOps & Deployment Flow -->
-        <section class="section" id="devops-deployment-flow">
-            <h2>DevOps & Deployment Workflow</h2>
-            <p>From code to production: Complete CI/CD pipeline with containerization and Kubernetes orchestration</p>
-
-            <div class="validation-flow">
-                <div class="flow-step">
-                    <div class="step-number">1</div>
-                    <div>
-                        <strong>Code Push to GitHub</strong><br>
-                        Developer pushes code changes to main branch, triggering automated workflow
+        <!-- Deployment Flow -->
+        <section class="doc-section" id="devops-deployment-flow">
+            <h2>CI/CD & Infrastructure</h2>
+            <div class="deployment-box">
+                <div class="pipeline">
+                    <div class="pipeline-item">
+                        <div class="pipeline-icon">🐙</div>
+                        <span>Push</span>
+                    </div>
+                    <div class="pipeline-item">
+                        <div class="pipeline-icon">🏗️</div>
+                        <span>Build</span>
+                    </div>
+                    <div class="pipeline-item">
+                        <div class="pipeline-icon">🐳</div>
+                        <span>Image</span>
+                    </div>
+                    <div class="pipeline-item">
+                        <div class="pipeline-icon">🚀</div>
+                        <span>Deploy</span>
                     </div>
                 </div>
-                <div class="flow-step">
-                    <div class="step-number">2</div>
-                    <div>
-                        <strong>Docker Image Build</strong><br>
-                        GitHub Actions builds Docker images for all 6 microservices simultaneously
-                    </div>
-                </div>
-                <div class="flow-step">
-                    <div class="step-number">3</div>
-                    <div>
-                        <strong>Container Registry Push</strong><br>
-                        Built images are pushed to GitHub Container Registry with proper versioning
-                    </div>
-                </div>
-                <div class="flow-step">
-                    <div class="step-number">4</div>
-                    <div>
-                        <strong>Kubernetes Manifest Update</strong><br>
-                        Deployment manifests are automatically updated with new image tags
-                    </div>
-                </div>
-                <div class="flow-step">
-                    <div class="step-number">5</div>
-                    <div>
-                        <strong>Production Deployment</strong><br>
-                        Ready for deployment to any cloud provider (AWS ECS, GCP, Azure) in under 15 minutes
-                    </div>
-                </div>
-            </div>
-
-
-            <div class="tech-stack" style="margin-top: 2rem;">
-                <h3 style="color: #0066cc;">🛠️ DevOps Technology Stack</h3>
-                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem;">
-                    <span
-                        style="background: #2188ff; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.9rem;">Docker</span>
-                    <span
-                        style="background: #326ce5; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.9rem;">Kubernetes</span>
-                    <span
-                        style="background: #2088ff; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.9rem;">GitHub
-                        Actions</span>
-                    <span
-                        style="background: #24292e; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.9rem;">GitHub
-                        Container Registry</span>
-                    <span
-                        style="background: #ff9900; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.9rem;">AWS
-                        ECS Ready</span>
-                    <span
-                        style="background: #4285f4; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.9rem;">Google
-                        Cloud Run Ready</span>
-                    <span
-                        style="background: #0078d4; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.9rem;">Azure
-                        Container Ready</span>
-                </div>
-            </div>
-
-            <div
-                style="margin-top: 2rem; padding: 1rem; background: #e3f2fd; border-radius: 8px; border-left: 4px solid #2196f3;">
-                <p style="margin: 0; color: #1565c0;">
-                    <strong>💡 Deployment Impact:</strong>
-                    What previously took hours of manual setup and configuration now takes less than 15 minutes
-                    to deploy to any major cloud provider. The entire microservices ecosystem is containerized,
-                    orchestrated, and ready for horizontal scaling.
-                </p>
-            </div>
-        </section>
-
-        <!-- Example Figma Web Structure -->
-        <section class="section" id="figma">
-            <h2>FIGMA - WEB STRUCTURE</h2>
-            <div class="tech-list">
-                <div class="tech-item">
-                    <strong>Figma File</strong>
-                    <a href="https://www.figma.com/design/y5UNrbgDNnFM1QQfQ6Yk8R/Patient-Management?node-id=0-1&t=G91X426URT09Onq7-1"
-                        class="btn btn-primary" target="_blank">Open Figma Folder</a>
+                <div class="tech-badges">
+                    <span class="tech-tag">Docker</span>
+                    <span class="tech-tag">Github Actions</span>
+                    <span class="tech-tag">Spring Boot</span>
+                    <span class="tech-tag">PostgreSQL</span>
+                    <span class="tech-tag">Kafka</span>
                 </div>
             </div>
         </section>
 
-        <!-- Postman Collection -->
-        <section class="section" id="postman-collection">
-            <h2>Postman Collection</h2>
-            <p>Test all API endpoints with this ready-to-use Postman collection. Import the collection into your Postman
-                to explore requests, headers, and sample responses.</p>
-
-            <div class="cta-buttons">
-
-                <a href="https://www.postman.com/spacecraft-astronaut-67997412/workspace/patient-management/folder/32076392-560c6040-1ca9-429b-8294-c26a30e2127d?action=share&creator=32076392&ctx=documentation"
-                    class="btn btn-primary" target="_blank">Open Postman Collection</a>
+        <!-- API Reference -->
+        <section class="doc-section" id="postman-collection">
+            <h2>API Reference</h2>
+            <div class="reference-card">
+                <p>Access our comprehensive API documentation via Postman to explore endpoints, parameters, and sample response payloads.</p>
+                <a href="https://www.postman.com/spacecraft-astronaut-67997412/workspace/patient-management/folder/32076392-560c6040-1ca9-429b-8294-c26a30e2127d" class="btn btn-action" target="_blank">Launch Postman Workspace</a>
             </div>
-
-            </pre>
         </section>
 
         <!-- Key Features -->
-        <section class="section" id="key-features">
-            <h2>Key Features</h2>
-            <ul>
-                <li><strong>Event-Driven Architecture:</strong> Apache Kafka enables asynchronous communication between
-                    microservices for loose coupling and real-time notifications.</li>
-                <li><strong>Database Optimization:</strong> Each service uses the most appropriate database technology:
-                    MySQL for read-heavy operations, PostgreSQL for transactional data, and MongoDB for analytical/event
-                    data.</li>
-                <li><strong>Scalable Microservices:</strong> Independent services can be scaled individually based on
-                    workload, improving performance and resilience.</li>
-                <li><strong>API Gateway Management:</strong> Centralized request routing, path-based predicates, and
-                    filter mechanisms such as StripPrefix and RewritePath simplify client interactions.</li>
-                <li><strong>Automated Billing & PDF Generation:</strong> Billing Service creates invoices automatically
-                    after appointment completion, storing PDFs efficiently.</li>
-                <li><strong>Real-Time Validation:</strong> Appointment Service validates patients and doctors using REST
-                    APIs before scheduling to ensure data integrity.</li>
-                <li><strong>Containerization with Docker:</strong> Each service runs in its own container, enabling
-                    consistent environments and simplified deployment through Docker Compose.</li>
-                <li><strong>Logging & Monitoring:</strong> SLF4J logging ensures traceability and monitoring across
-                    services for debugging and analytics.</li>
-                <li><strong>Analytics & Reporting:</strong> Analytics Service collects event-driven data for trends,
-                    usage statistics, and reporting, using MongoDB.</li>
-                <li><strong>Multi-Database Architecture:</strong> Supports multiple database systems tailored to service
-                    requirements, improving efficiency and maintainability.</li>
-                <li><strong>Secure & Maintainable Code:</strong> Clear separation of concerns, modular microservices,
-                    and RESTful endpoints ensure maintainable and testable backend code.</li>
-                <li><strong>High Availability:</strong> Independent services with container orchestration allow for
-                    fault tolerance and minimal downtime.</li>
-            </ul>
-        </section>
-
-        <!-- Contact -->
-        <section class="cta-section" id="contact">
-            <h2>View Project</h2>
-            <p>Explore the complete source code and documentation for this microservices architecture</p>
-            <div class="cta-buttons">
-                <a href="https://github.com/doguhanniltextra/patient-management" class="btn btn-primary"
-                    target="_blank">View on GitHub</a>
-                <a href="mailto:doguhannilt@gmail.com" class="btn btn-secondary">Contact Developer</a>
+        <section class="doc-section" id="key-features">
+            <h2>Key Capabilities</h2>
+            <div class="features-list">
+                <div class="feature-item">
+                    <h5>Event-Driven Sync</h5>
+                    <p>Asynchronous data propagation using Kafka brokers for high resilience.</p>
+                </div>
+                <div class="feature-item">
+                    <h5>Unified Relational Store</h5>
+                    <p>Strategic alignment on PostgreSQL for transactional and identity data.</p>
+                </div>
+                <div class="feature-item">
+                    <h5>Edge Routing</h5>
+                    <p>Centralized gateway for routing, filtering, and cross-cutting security.</p>
+                </div>
+                <div class="feature-item">
+                    <h5>Automated Ledger</h5>
+                    <p>Programmatic invoice generation and persistence triggered by system events.</p>
+                </div>
             </div>
         </section>
 
-    </div>
+        <!-- Design Philosophy -->
+        <section class="doc-section" id="why-this">
+            <h2>Architecture Philosophy</h2>
+            <div class="philosophy-grid">
+                <div class="phi-card">
+                    <h4>Scalability</h4>
+                    <p>Microservices allow independent scaling of high-demand nodes (e.g. Appointment Svc) without over-provisioning the entire system.</p>
+                </div>
+                <div class="phi-card">
+                    <h4>Polyglot Persistence</h4>
+                    <p>We use the right tool for the job. Relational data stays in PostgreSQL, while high-volume analytical event logs are streamed to MongoDB.</p>
+                </div>
+                <div class="phi-card">
+                    <h4>Stateless IAM</h4>
+                    <p>JWT tokens distribute authentication responsibility, enabling clusters to remain stateless and easily horizontally scalable.</p>
+                </div>
+            </div>
+        </section>
+
+        <footer class="doc-footer">
+            <div class="footer-content">
+                <p>&copy; 2026 Patient Management System | Technical Documentation</p>
+                <div class="footer-links">
+                    <a href="https://github.com/doguhanniltextra/patient-management">Github Repository</a>
+                    <a href="mailto:doguhannilt@gmail.com">Security Contact</a>
+                </div>
+            </div>
+        </footer>
+    </main>
+</div>
+
 </body>
 </html>
