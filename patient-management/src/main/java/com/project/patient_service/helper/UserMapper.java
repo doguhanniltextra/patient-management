@@ -31,7 +31,7 @@ public class UserMapper {
         kafkaPatientRequestDto.setName(newPatient.getName());
         return kafkaPatientRequestDto;
     }
-    public static UpdatePatientServiceResponseDto getUpdatePatientServiceResponseDto(Patient updatedPatient) {
+    public  UpdatePatientServiceResponseDto getUpdatePatientServiceResponseDto(Patient updatedPatient) {
         UpdatePatientServiceResponseDto updatePatientServiceResponseDto = new UpdatePatientServiceResponseDto();
         updatePatientServiceResponseDto.setName(updatedPatient.getName());
         updatePatientServiceResponseDto.setAddress(updatedPatient.getAddress());
@@ -39,13 +39,13 @@ public class UserMapper {
         updatePatientServiceResponseDto.setEmail(updatedPatient.getEmail());
         return updatePatientServiceResponseDto;
     }
-    public static void getUpdatePatientRequestDto(UpdatePatientServiceRequestDto updatePatientServiceRequestDto, Patient patient) {
+    public  void getUpdatePatientRequestDto(UpdatePatientServiceRequestDto updatePatientServiceRequestDto, Patient patient) {
         patient.setName(updatePatientServiceRequestDto.getName());
         patient.setAddress(updatePatientServiceRequestDto.getAddress());
         patient.setEmail(updatePatientServiceRequestDto.getEmail());
         patient.setDateOfBirth(LocalDate.parse(updatePatientServiceRequestDto.getDateOfBirth()));
     }
-    public static List<GetPatientServiceResponseDto> getGetPatientServiceResponseDtos(List<Patient> patients) {
+    public  List<GetPatientServiceResponseDto> getGetPatientServiceResponseDtos(List<Patient> patients) {
         List<GetPatientServiceResponseDto> result = patients
                 .stream()
                 .map(patient -> {
@@ -60,7 +60,7 @@ public class UserMapper {
                 }).toList();
         return result;
     }
-    public static CreatePatientServiceRequestDto getCreatePatientServiceRequestDto(CreatePatientControllerRequestDto createPatientControllerRequestDto) {
+    public  CreatePatientServiceRequestDto getCreatePatientServiceRequestDto(CreatePatientControllerRequestDto createPatientControllerRequestDto) {
         CreatePatientServiceRequestDto createPatientServiceRequestDto = new CreatePatientServiceRequestDto();
         createPatientServiceRequestDto.setAddress(createPatientControllerRequestDto.getAddress());
         createPatientServiceRequestDto.setEmail(createPatientControllerRequestDto.getEmail());
@@ -69,7 +69,7 @@ public class UserMapper {
         createPatientServiceRequestDto.setDateOfBirth(createPatientControllerRequestDto.getDateOfBirth());
         return createPatientServiceRequestDto;
     }
-    public static List<GetPatientControllerResponseDto> getGetPatientControllerResponseDtos(List<GetPatientServiceResponseDto> patients) {
+    public  List<GetPatientControllerResponseDto> getGetPatientControllerResponseDtos(List<GetPatientServiceResponseDto> patients) {
         List<GetPatientControllerResponseDto> result = patients
                 .stream()
                 .map(patient -> {
@@ -85,7 +85,7 @@ public class UserMapper {
         return result;
     }
 
-    public static UpdatePatientControllerResponseDto getUpdatePatientControllerResponseDto(UpdatePatientServiceResponseDto updatePatient) {
+    public  UpdatePatientControllerResponseDto getUpdatePatientControllerResponseDto(UpdatePatientServiceResponseDto updatePatient) {
         UpdatePatientControllerResponseDto updatePatientControllerResponseDto = new UpdatePatientControllerResponseDto();
         updatePatientControllerResponseDto.setName(updatePatient.getName());
         updatePatientControllerResponseDto.setAddress(updatePatient.getAddress());
@@ -94,7 +94,7 @@ public class UserMapper {
         return updatePatientControllerResponseDto;
     }
 
-    public static UpdatePatientServiceRequestDto getUpdatePatientServiceRequestDto(UpdatePatientControllerRequestDto updatePatientControllerRequestDto) {
+    public  UpdatePatientServiceRequestDto getUpdatePatientServiceRequestDto(UpdatePatientControllerRequestDto updatePatientControllerRequestDto) {
         UpdatePatientServiceRequestDto updatePatientServiceRequestDto = new UpdatePatientServiceRequestDto();
         updatePatientServiceRequestDto.setName(updatePatientControllerRequestDto.getName());
         updatePatientServiceRequestDto.setAddress(updatePatientControllerRequestDto.getAddress());

@@ -30,6 +30,8 @@ public class Patient {
     @NotNull
     private LocalDate registeredDate;
 
+
+
     public UUID getId() {
         return id;
     }
@@ -70,7 +72,7 @@ public class Patient {
         this.dateOfBirth = dateOfBirth;
     }
 
-    public @NotNull LocalDate getRegisteredDate() {
+    public @NotNull(message = "Registered date is required") @NotNull LocalDate getRegisteredDate() {
         return registeredDate;
     }
 

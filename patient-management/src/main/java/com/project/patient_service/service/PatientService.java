@@ -28,16 +28,22 @@ public class PatientService {
 
     private final PatientRepository patientRepository;
     private final KafkaProducer kafkaProducer;
+    private final UserMapper userMapper;
+
+
 
     private static final Logger log = LoggerFactory.getLogger(PatientService.class);
 
-    UserValidator userValidator = new UserValidator();
-    UserMapper userMapper = new UserMapper();
+    private final UserValidator userValidator;
 
-    public PatientService(PatientRepository patientRepository, KafkaProducer kafkaProducer) {
+    public PatientService(PatientRepository patientRepository, KafkaProducer kafkaProducer, UserMapper userMapper, UserValidator userValidator) {
         this.patientRepository = patientRepository;
         this.kafkaProducer = kafkaProducer;
+        this.userMapper = userMapper;
+        this.userValidator = userValidator;
     }
+
+
 
     public List<GetPatientServiceResponseDto> getPatients() {
         List<Patient> patients = patientRepository.findAll();

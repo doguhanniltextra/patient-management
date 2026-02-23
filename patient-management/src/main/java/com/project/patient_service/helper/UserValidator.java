@@ -59,14 +59,14 @@ public class UserValidator {
                 .orElseThrow(()-> new PatientNotFoundException("Patient Not Found With This ID"));
         return patient;
     }
-    public static ResponseEntity<Patient> getPatientResponseEntity(Optional<Patient> currentId) {
+    public  ResponseEntity<Patient> getPatientResponseEntity(Optional<Patient> currentId) {
         if (currentId.isPresent()) {
             return ResponseEntity.ok(currentId.get());
         } else {
             return ResponseEntity.notFound().build();
         }
     }
-    public static ResponseEntity<Boolean> getBooleanResponseEntity(boolean patientByEmail) {
+    public  ResponseEntity<Boolean> getBooleanResponseEntity(boolean patientByEmail) {
         if(patientByEmail) {
             return ResponseEntity.ok().body(true);
         }
@@ -78,7 +78,7 @@ public class UserValidator {
         boolean patientByEmail = patientService.findPatientByEmail(email);
         return patientByEmail;
     }
-    public static Map<String, Object> getStringObjectMap(KafkaPatientRequestDto kafkaPatientRequestDto) {
+    public  Map<String, Object> getStringObjectMap(KafkaPatientRequestDto kafkaPatientRequestDto) {
         Map<String, Object> event = new HashMap<>();
         event.put("patientId", kafkaPatientRequestDto.getId().toString());
         event.put("name", kafkaPatientRequestDto.getName());
