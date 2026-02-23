@@ -28,9 +28,8 @@ import java.util.UUID;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
 // BU STATIC IMPORTLAR ŞART:
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -104,71 +103,91 @@ public class PatientManagementControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/patients")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(controllerRequest)))
-                .andExpect(status().isOk()) // Controller'da ResponseEntity.ok() dönüyorsan kalsın, yoksa isCreated() yap.
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("mock"))
                 .andExpect(jsonPath("$.email").value("mock@gmail.com"));
     }
 
-
     @Test
     public void PatientController_UpdatePatient_ReturnsOk() throws Exception {
+        // --- 1. ARRANGE (Hazırlık) ---
         UUID id = UUID.randomUUID();
+
         UpdatePatientControllerRequestDto requestDto = new UpdatePatientControllerRequestDto();
-        requestDto.setName("Updated Name");
+        requestDto.setName("Updated Patient Name");
+        requestDto.setEmail("updated@gmail.com");
+        requestDto.setAddress("Istanbul, Turkey");
+        requestDto.setDateOfBirth("1995-05-05");
+
 
         UpdatePatientServiceResponseDto serviceResponse = new UpdatePatientServiceResponseDto();
         UpdatePatientControllerResponseDto controllerResponse = new UpdatePatientControllerResponseDto();
-        controllerResponse.setName("Updated Name");
+        controllerResponse.setName("Updated Patient Name");
+        controllerResponse.setEmail("updated@gmail.com");
 
-        when(userMapper.getUpdatePatientServiceRequestDto(any())).thenReturn(new UpdatePatientServiceRequestDto());
-        when(patientService.updatePatient(eq(id), any())).thenReturn(serviceResponse);
-        when(userMapper.getUpdatePatientControllerResponseDto(any())).thenReturn(controllerResponse);
 
-        mockMvc.perform(put("/patients/" + id) // PUT isteği
+        when(userMapper.getUpdatePatientServiceRequestDto(any(UpdatePatientControllerRequestDto.class)))
+                .thenReturn(new UpdatePatientServiceRequestDto());
+
+        when(patientService.updatePatient(eq(id), any(UpdatePatientServiceRequestDto.class)))
+                .thenReturn(serviceResponse);
+
+        when(userMapper.getUpdatePatientControllerResponseDto(any(UpdatePatientServiceResponseDto.class)))
+                .thenReturn(controllerResponse);
+
+        mockMvc.perform(put("/patients/" + id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Updated Name"));
+                .andExpect(jsonPath("$.name").value("Updated Patient Name"))
+                .andExpect(jsonPath("$.email").value("updated@gmail.com"));
     }
-
 
     @Test
     public void PatientController_DeletePatient_ReturnsNoContent() throws Exception {
+        // --- 1. ARRANGE ---
         UUID id = UUID.randomUUID();
 
-        // void dönen metotlar için doNothing kullanılır (zaten mock nesnelerde varsayılandır)
         doNothing().when(patientService).deletePatient(id);
 
-        mockMvc.perform(delete("/patients/" + id)) // DELETE isteği
-                .andExpect(status().isNoContent()); // 204 No Content bekliyoruz
-    }
 
+        mockMvc.perform(delete("/patients/" + id)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent()); // 204 No Content kontrolü
+
+
+        verify(patientService, times(1)).deletePatient(id);
+    }
 
     @Test
     public void PatientController_FindPatientById_ReturnsPatient() throws Exception {
+
         UUID id = UUID.randomUUID();
         Patient mockPatient = new Patient();
         mockPatient.setId(id);
+        mockPatient.setName("Mock Patient");
 
         when(patientService.findPatientById(id)).thenReturn(Optional.of(mockPatient));
-        // Validator'ın ResponseEntity döndüren metodunu mockluyoruz
+
         when(userValidator.getPatientResponseEntity(any())).thenReturn(ResponseEntity.ok(mockPatient));
 
-        mockMvc.perform(get("/patients/" + id))
+
+        mockMvc.perform(get("/patients/find/" + id))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").exists());
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.name").value("Mock Patient"));
     }
 
     // --- FIND BY EMAIL TEST ---
     @Test
     public void PatientController_FindPatientByEmail_ReturnsBoolean() throws Exception {
+        // Arrange
         String email = "test@gmail.com";
 
-        // Controller'daki mantığa göre validator'ı mockluyoruz
         when(userValidator.isPatientByEmail(eq(email), any())).thenReturn(true);
         when(userValidator.getBooleanResponseEntity(true)).thenReturn(ResponseEntity.ok(true));
 
-        mockMvc.perform(get("/patients/email/" + email)) // Path'i Endpoints sınıfındaki tanıma göre kontrol et
+        mockMvc.perform(get("/patients/find/email/" + email)) // Path: /patients/find/email/{email}
                 .andExpect(status().isOk())
                 .andExpect(content().string("true"));
     }
