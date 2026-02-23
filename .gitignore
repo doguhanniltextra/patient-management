@@ -2,3 +2,5 @@
 target/
 
 .idea/
+.to-do
+.env

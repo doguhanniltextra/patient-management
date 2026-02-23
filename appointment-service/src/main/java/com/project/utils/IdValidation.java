@@ -24,10 +24,8 @@ public class IdValidation {
 
     public boolean checkPatientExists(UUID patientId) {
         try {
-            System.out.println("Calling: " + PATIENT_SERVICE_URL + patientId);
             ResponseEntity<Object> response =
                     restTemplate.getForEntity(PATIENT_SERVICE_URL + patientId, Object.class);
-            System.out.println("Response: " + response.getStatusCode());
             return response.getStatusCode().is2xxSuccessful();
         } catch (Exception e) {
             e.printStackTrace();

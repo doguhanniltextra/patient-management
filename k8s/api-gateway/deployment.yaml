@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+  namespace: patient-management
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+      - name: api-gateway
+        image: api-gateway:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 4004
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: prod
+        volumeMounts:
+        - name: api-gateway-storage
+          mountPath: /app/logs
+      volumes:
+      - name: api-gateway-storage
+        persistentVolumeClaim:
+          claimName: api-gateway-pvc

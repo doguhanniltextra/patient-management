@@ -81,8 +81,6 @@ public class SecurityConfig {
                 System.out.println("Extracted token: " + token.substring(0, Math.min(20, token.length())) + "...");
 
                 try {
-                    System.out.println("Using secret: " + secret);
-                    System.out.println("Secret length: " + secret.length());
 
                     Claims claims = Jwts.parserBuilder()
                             .setSigningKey(secret.getBytes())
@@ -92,8 +90,6 @@ public class SecurityConfig {
                             .getBody();
 
                     String subject = claims.getSubject();
-                    System.out.println("Token subject: " + subject);
-                    System.out.println("Token claims: " + claims);
 
                     if (subject != null) {
                         // Extract roles if they exist
