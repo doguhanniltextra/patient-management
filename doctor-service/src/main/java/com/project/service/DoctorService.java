@@ -57,6 +57,8 @@ public class DoctorService {
 
         return doctorMapper.toCreateDoctorServiceResponseDto(result);
     }
+
+
     public void deleteDoctor(UUID id) {
         doctorRepository.deleteById(id);
     }
@@ -67,8 +69,6 @@ public class DoctorService {
     public List<Doctor> getDoctors() {
         return doctorRepository.findAll();
     }
-
-    
     // MAINTAINING
     public void increasePatientNumber(UUID id) throws PatientLimitException {
         Optional<Doctor> byId = doctorRepository.findById(id);

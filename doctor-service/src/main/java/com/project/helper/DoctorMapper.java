@@ -81,7 +81,7 @@ public class DoctorMapper {
         return updateDoctorControllerResponseDto;
     }
 
-    public static CreateDoctorServiceRequestDto getCreateDoctorServiceRequestDto(CreateDoctorControllerRequestDto createDoctorControllerRequestDto) {
+    public  CreateDoctorServiceRequestDto getCreateDoctorServiceRequestDto(CreateDoctorControllerRequestDto createDoctorControllerRequestDto) {
         CreateDoctorServiceRequestDto createDoctorServiceRequestDto = new CreateDoctorServiceRequestDto();
         createDoctorServiceRequestDto.setId(createDoctorControllerRequestDto.getId());
         createDoctorServiceRequestDto.setName(createDoctorControllerRequestDto.getName());
