@@ -1,6 +1,6 @@
 
 
-# 🏥 Patient Management System – Microservices Architecture
+# Patient Management System – Microservices Architecture
 
 This project is a **microservices-based backend system** for managing patients, doctors, appointments, and billing in a healthcare environment. It follows a modular and scalable design.
 
@@ -8,7 +8,7 @@ This project is a **microservices-based backend system** for managing patients, 
 
 ---
 
-## ⚙️ Architecture
+## Architecture
 
 The system is composed of the following microservices, all containerized with Docker:
 
@@ -24,7 +24,7 @@ Services communicate via REST APIs with validation, creation, and synchronizatio
 
 ---
 
-## 🐳 Dockerized Services & Ports
+##  Dockerized Services & Ports
 
 All services run independently in Docker containers. Ports:
 
