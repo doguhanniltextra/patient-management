@@ -31,11 +31,16 @@ public class AppointmentCleanupService {
         List<Appointment> allAppointments = appointmentRepository.findAll();
         LocalDateTime now = appointmentValidator.getLocalDateTime();
 
-        List<Appointment> outdated = appointmentValidator.getAppointments(allAppointments, now, formatter);
+        // Only delete appointments that are BOTH expired AND already paid.
+        // Unpaid expired appointments must be retained for billing/audit purposes.
+        List<Appointment> outdated = appointmentValidator.getAppointments(allAppointments, now, formatter)
+                .stream()
+                .filter(a -> a.isPaymentStatus())
+                .toList();
 
         if (!outdated.isEmpty()) {
             appointmentRepository.deleteAll(outdated);
-            System.out.println("✅ Deleted " + outdated.size() + " outdated appointments at " + now);
+            System.out.println("✅ Deleted " + outdated.size() + " outdated (paid) appointments at " + now);
         }
     }
 }

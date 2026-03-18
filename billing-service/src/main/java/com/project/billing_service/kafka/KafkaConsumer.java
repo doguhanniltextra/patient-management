@@ -22,12 +22,17 @@ public class KafkaConsumer {
         this.invoiceService = invoiceService;
     }
 
-    @KafkaListener(topics = KafkaTopics.APPOINTMENT_PAYMENT_UPDATED, groupId = KafkaTopics.APPOINTMENT_GROUP)    public void listen(String message) {
+    @KafkaListener(topics = KafkaTopics.APPOINTMENT_PAYMENT_UPDATED, groupId = KafkaTopics.APPOINTMENT_GROUP)
+    public void listen(String message) {
         try {
             AppointmentDTO appointment = objectMapper.readValue(message, AppointmentDTO.class);
             log.info(LogMessages.LISTENER_RECEIVED_MESSAGE, appointment);
 
-            String invoiceNumber = appointment.getPatientId().substring(0, 8) + "-" + appointment.getDoctorId().substring(0, 8);
+            // Use full UUIDs to guarantee uniqueness and avoid StringIndexOutOfBoundsException
+            String invoiceNumber = appointment.getPatientId()
+                    + "-" + appointment.getDoctorId()
+                    + "-" + System.currentTimeMillis();
+
             Path invoicePath = getPath(appointment, invoiceNumber);
 
             log.info(LogMessages.INVOICE_GENERATED, invoicePath.toAbsolutePath());

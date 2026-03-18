@@ -15,7 +15,7 @@ public class AppointmentMapper {
         appointmentServiceResponseDto.setId(createAppointmentServiceRequestDto.getId());
         appointmentServiceResponseDto.setServiceDate(createAppointmentServiceRequestDto.getServiceDate());
         appointmentServiceResponseDto.setPaymentStatus(createAppointmentServiceRequestDto.isPaymentStatus());
-        appointmentServiceResponseDto.setServiceDateEnd(appointmentServiceResponseDto.getServiceDate());
+        appointmentServiceResponseDto.setServiceDateEnd(createAppointmentServiceRequestDto.getServiceDateEnd());
         appointmentServiceResponseDto.setPaymentType(createAppointmentServiceRequestDto.getPaymentType());
         return appointmentServiceResponseDto;
     }

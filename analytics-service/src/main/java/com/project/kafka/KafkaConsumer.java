@@ -16,18 +16,21 @@ public class KafkaConsumer {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @KafkaListener(topics = "patient", groupId = "analytics-service")
-    public void consumeEvent(String event) { 
+    public void consumeEvent(String event) {
         try {
-         
             Map<String, Object> patientEvent = objectMapper.readValue(event, Map.class);
 
             String patientId = (String) patientEvent.get("patientId");
-            String name = (String) patientEvent.get("name");
-            String email = (String) patientEvent.get("email");
+            String name     = (String) patientEvent.get("name");
+            String email    = (String) patientEvent.get("email");
             String eventType = (String) patientEvent.get("eventType");
 
-     
-            log.info("Received Patient Event:[PatientId={}, PatientName={}, EventType={}]", patientId, name,  email, eventType);
+            if ("PATIENT_DELETED".equals(eventType)) {
+                log.info("Received Patient Event:[PatientId={}, EventType={}]", patientId, eventType);
+            } else {
+                log.info("Received Patient Event:[PatientId={}, PatientName={}, Email={}, EventType={}]",
+                        patientId, name, email, eventType);
+            }
         } catch (Exception e) {
             log.error("Failed to consume Kafka event", e);
         }

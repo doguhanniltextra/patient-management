@@ -74,13 +74,11 @@ public class AppointmentService {
 
     public ResponseEntity<Appointment> updateAppointment(Appointment appointment) {
         log.info(LogMessages.SERVICE_UPDATE_STARTING, appointment.getId());
-        Appointment existingAppointment = appointmentRepository.findById(appointment.getId()).orElse(null);
-        if (existingAppointment != null) {
-            appointmentMapper.updateAppointmentExtracted(appointment, existingAppointment);
-            log.info(LogMessages.SERVICE_UPDATE_ENDED);
-            return ResponseEntity.ok().body(appointmentRepository.save(existingAppointment));
-        }
-        return ResponseEntity.badRequest().build(); 
+        Appointment existingAppointment = appointmentRepository.findById(appointment.getId())
+                .orElseThrow(() -> new CustomNotFoundException("Appointment not found: " + appointment.getId()));
+        appointmentMapper.updateAppointmentExtracted(appointment, existingAppointment);
+        log.info(LogMessages.SERVICE_UPDATE_ENDED);
+        return ResponseEntity.ok().body(appointmentRepository.save(existingAppointment));
     }
 
     public void deleteAppointment(UUID id) {

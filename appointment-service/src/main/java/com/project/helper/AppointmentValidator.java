@@ -55,9 +55,8 @@ public class AppointmentValidator {
     }
 
     public Appointment getAppointmentForUpdatePaymentStatus(UUID id, AppointmentRepository appointmentRepository) {
-        Appointment appointment = appointmentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Appointment not found: " + id));
-        return appointment;
+        return appointmentRepository.findById(id)
+                .orElseThrow(() -> new CustomNotFoundException("Appointment not found: " + id));
     }
     public List<Appointment> getAppointments(List<Appointment> allAppointments, LocalDateTime now, DateTimeFormatter formatter) {
         List<Appointment> outdated = allAppointments.stream()

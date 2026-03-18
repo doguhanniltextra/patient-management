@@ -71,8 +71,10 @@ public class DoctorService {
     }
     // MAINTAINING
     public void increasePatientNumber(UUID id) throws PatientLimitException {
-        Optional<Doctor> byId = doctorRepository.findById(id);
-        if (byId.get().getPatientCount() == 5) throw new PatientLimitException("Patient limit is full");
-        byId.get().setPatientCount(byId.get().getPatientCount() + 1);
+        Doctor doctor = doctorRepository.findById(id)
+                .orElseThrow(() -> new DoctorNotFoundException("Doctor not found: " + id));
+        if (doctor.getPatientCount() >= 5) throw new PatientLimitException("Patient limit is full");
+        doctor.setPatientCount(doctor.getPatientCount() + 1);
+        doctorRepository.save(doctor);
     }
 }

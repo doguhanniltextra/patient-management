@@ -53,6 +53,8 @@ public class PatientService {
 
     public CreatePatientServiceResponseDto createPatient(CreatePatientServiceRequestDto patientRequestDTO) throws EmailAlreadyExistsException {
 
+        userValidator.CheckEmailIsExistsOrNotForCreatePatient(patientRequestDTO, patientRepository);
+
         Patient patient = userValidator.getPatientForCreatePatient(patientRequestDTO);
 
         Patient newPatient = patientRepository.save(patient);
@@ -84,6 +86,14 @@ public class PatientService {
 
     public void deletePatient(UUID id) {
         log.info(LogMessages.SERVICE_DELETE_TRIGGERED);
+        // Publish PATIENT_DELETED event so appointment-service can clean up orphaned appointments
+        try {
+            KafkaPatientRequestDto kafkaDto = new KafkaPatientRequestDto();
+            kafkaDto.setId(id);
+            kafkaProducer.sendDeleteEvent(id);
+        } catch (Exception e) {
+            log.warn("Failed to publish PATIENT_DELETED Kafka event for patient {}", id);
+        }
         patientRepository.deleteById(id);
     }
 

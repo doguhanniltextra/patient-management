@@ -41,18 +41,18 @@ help:
 
 .PHONY: dev-up
 dev-up:
-	@echo "🚀 Starting all services with Docker Compose..."
+	@echo "Starting all services with Docker Compose..."
 	$(DOCKER_COMPOSE) -f docker-compose.yml up -d
-	@echo "✅ Services started!"
-	@echo "📍 Services available at:"
+	@echo "Services started!"
+	@echo "Services available at:"
 	@echo "   API Gateway:       http://localhost:4004"
 	@echo ""
 
 .PHONY: dev-down
 dev-down:
-	@echo "🛑 Stopping all services..."
+	@echo "Stopping all services..."
 	$(DOCKER_COMPOSE) -f docker-compose.yml down
-	@echo "✅ Services stopped!"
+	@echo "Services stopped!"
 
 .PHONY: dev-logs
 dev-logs:
@@ -61,7 +61,7 @@ dev-logs:
 .PHONY: dev-logs-service
 dev-logs-service:
 	@if [ -z "$(SVC)" ]; then \
-		echo "❌ Error: Please specify SVC=<service-name>"; \
+		echo "Error: Please specify SVC=<service-name>"; \
 		echo "   Example: make dev-logs-service SVC=patient-management"; \
 		exit 1; \
 	fi
@@ -69,15 +69,15 @@ dev-logs-service:
 
 .PHONY: dev-build
 dev-build:
-	@echo "🔨 Building Docker images..."
+	@echo "Building Docker images..."
 	$(DOCKER_COMPOSE) -f docker-compose.yml build
-	@echo "✅ Build complete!"
+	@echo "Build complete!"
 
 .PHONY: dev-rebuild
 dev-rebuild:
-	@echo "🔨 Rebuilding Docker images (no cache)..."
+	@echo "Rebuilding Docker images (no cache)..."
 	$(DOCKER_COMPOSE) -f docker-compose.yml build --no-cache
-	@echo "✅ Rebuild complete!"
+	@echo " Rebuild complete!"
 
 # ============================================================================
 # BUILD COMMANDS
@@ -85,24 +85,24 @@ dev-rebuild:
 
 .PHONY: build-all
 build-all:
-	@echo "🔨 Building all services with Maven..."
+	@echo " Building all services with Maven..."
 	@for svc in $(SERVICES); do \
 		echo "----------------------------------------------------------------"; \
 		echo "Building $$svc..."; \
 		(cd $$svc && mvn clean package -DskipTests) || exit 1; \
 	done
-	@echo "✅ All services built!"
+	@echo " All services built!"
 
 .PHONY: build-service
 build-service:
 	@if [ -z "$(SVC)" ]; then \
-		echo "❌ Error: Please specify SVC=<service-directory>"; \
+		echo "Error: Please specify SVC=<service-directory>"; \
 		echo "   Example: make build-service SVC=auth-service"; \
 		exit 1; \
 	fi
-	@echo "🔨 Building $(SVC)..."
+	@echo "Building $(SVC)..."
 	cd $(SVC) && mvn clean package -DskipTests
-	@echo "✅ $(SVC) built!"
+	@echo " $(SVC) built!"
 
 # ============================================================================
 # CLEANUP
@@ -110,14 +110,14 @@ build-service:
 
 .PHONY: clean-local
 clean-local:
-	@echo "🧹 Cleaning up Docker resources..."
+	@echo "Cleaning up Docker resources..."
 	$(DOCKER_COMPOSE) -f docker-compose.yml down -v
 	$(DOCKER) system prune -f
-	@echo "✅ Local cleanup complete!"
+	@echo " Local cleanup complete!"
 
 .PHONY: clean-all
 clean-all: clean-local
-	@echo "✅ Complete cleanup done!"
+	@echo " Complete cleanup done!"
 
 # ============================================================================
 # UTILITY COMMANDS
@@ -125,20 +125,20 @@ clean-all: clean-local
 
 .PHONY: ping
 ping:
-	@echo "🏓 Pong!"
+	@echo "Pong!"
 
 .PHONY: status
 status:
-	@echo "📡 Checking services status..."
+	@echo "Checking services status..."
 	@if command -v $(DOCKER) > /dev/null 2>&1; then \
-		echo -n "✅ Docker: "; \
+		echo -n "Docker: "; \
 		$(DOCKER) ps -q | wc -l | tr -d ' ' | xargs echo -n; \
 		echo " containers running"; \
 	else \
-		echo "❌ Docker: Not found"; \
+		echo "Docker: Not found"; \
 	fi
 
 .PHONY: info
 info:
-	@echo "📋 Project Information:"
+	@echo "Project Information:"
 	@echo "   Services:  $(SERVICES)"

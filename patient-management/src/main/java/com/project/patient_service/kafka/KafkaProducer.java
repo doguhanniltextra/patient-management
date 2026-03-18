@@ -8,7 +8,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class KafkaProducer {
@@ -35,6 +37,20 @@ public class KafkaProducer {
             log.info("Sent JSON message to Kafka: {}", json);
         } catch (Exception e) {
             log.error("Failed to send message", e);
+        }
+    }
+
+    public void sendDeleteEvent(UUID patientId) {
+        try {
+            Map<String, Object> event = new HashMap<>();
+            event.put("patientId", patientId.toString());
+            event.put("eventType", EventType.PATIENT_DELETED.name());
+
+            String json = objectMapper.writeValueAsString(event);
+            kafkaTemplate.send("patient", json);
+            log.info("KAFKA: Sent PATIENT_DELETED event for patientId={}", patientId);
+        } catch (Exception e) {
+            log.error("KAFKA: Failed to send PATIENT_DELETED event for patientId={}", patientId, e);
         }
     }
 }
