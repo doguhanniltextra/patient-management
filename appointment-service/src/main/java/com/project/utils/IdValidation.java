@@ -39,9 +39,22 @@ public class IdValidation {
     @CircuitBreaker(name = "doctorService", fallbackMethod = "doctorFallback")
     @Retry(name = "doctorService")
     public boolean checkDoctorExists(UUID doctorId) {
-        ResponseEntity<Object> response =
-                restTemplate.getForEntity(DOCTOR_SERVICE_URL + doctorId, Object.class);
-        return response.getStatusCode().is2xxSuccessful();
+        ResponseEntity<java.util.Map> response =
+                restTemplate.getForEntity(DOCTOR_SERVICE_URL + doctorId, java.util.Map.class);
+        if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+            Boolean isAvailable = (Boolean) response.getBody().get("available");
+            if (Boolean.FALSE.equals(isAvailable)) {
+                throw new com.project.exception.CustomConflictException("Doctor is not available for booking.");
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @CircuitBreaker(name = "doctorService", fallbackMethod = "voidFallback")
+    @Retry(name = "doctorService")
+    public void increaseDoctorPatientCount(UUID doctorId) {
+        restTemplate.put(DOCTOR_SERVICE_URL + doctorId + "/increase-patient", null);
     }
 
     // Fallback: circuit is open or all retries exhausted → fail clearly
@@ -52,6 +65,14 @@ public class IdValidation {
 
     private boolean doctorFallback(UUID doctorId, Throwable t) {
         log.error("Circuit breaker OPEN for doctor-service. Cannot verify doctor {}. Cause: {}", doctorId, t.getMessage());
+        if (t instanceof com.project.exception.CustomConflictException) {
+            throw (com.project.exception.CustomConflictException) t;
+        }
         return false;
+    }
+
+    private void voidFallback(UUID doctorId, Throwable t) {
+        log.error("Circuit breaker OPEN for doctor-service. Cannot increase patient count for doctor {}. Cause: {}", doctorId, t.getMessage());
+        throw new com.project.exception.CustomConflictException("Failed to increase doctor patient count: " + t.getMessage());
     }
 }

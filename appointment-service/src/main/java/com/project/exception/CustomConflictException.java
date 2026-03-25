@@ -4,8 +4,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.CONFLICT)
-public class PatientLimitException extends RuntimeException {
-    public PatientLimitException(String patientLimitIsFull) {
-        super(patientLimitIsFull);
+public class CustomConflictException extends RuntimeException {
+    public CustomConflictException(String message) {
+        super(message);
     }
 }

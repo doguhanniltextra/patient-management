@@ -120,7 +120,13 @@ public class DoctorController {
             return ResponseEntity.ok(currentId.get()); 
         } else {
             return ResponseEntity.notFound().build();
-        }
+    }
+
+    @PutMapping("/{id}/increase-patient")
+    @Operation(summary = "Increase patient count for a doctor")
+    public ResponseEntity<Void> increasePatientNumber(@PathVariable UUID id) throws com.project.exception.PatientLimitException, DoctorNotFoundException {
+        doctorService.increasePatientNumber(id);
+        return ResponseEntity.ok().build();
     }
 
 }

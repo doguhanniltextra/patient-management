@@ -8,6 +8,7 @@ public class Endpoints {
     public static final String PATIENT_CONTROLLER_FIND_PATIENT_BY_EMAIL = "/find/email/{email}";
 
 
-
+    public static final String MEDICAL_RECORD_CONTROLLER_REQUEST = "/patients/records";
+    public static final String MEDICAL_RECORD_CONTROLLER_GET_BY_PATIENT = "/patient/{patientId}";
 
 }
