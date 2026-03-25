@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.project.model.Appointment;
 
@@ -14,4 +17,13 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
 
     void deleteByPatientId(UUID patientId);
     void deleteByDoctorId(UUID doctorId);
+
+    /**
+     * Deletes expired appointments that have been paid.
+     * Compares serviceDateEnd (stored as 'yyyy-MM-dd HH:mm' string) against the cutoff.
+     * Returns the number of deleted rows.
+     */
+    @Modifying
+    @Query("DELETE FROM Appointment a WHERE a.paymentStatus = true AND a.serviceDateEnd < :cutoff")
+    int deleteExpiredPaidAppointments(@Param("cutoff") String cutoff);
 }

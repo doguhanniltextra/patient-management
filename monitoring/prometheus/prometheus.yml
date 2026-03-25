@@ -1,0 +1,39 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+scrape_configs:
+  - job_name: 'api-gateway'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['api-gateway:4004']
+
+  - job_name: 'patient-management'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['patient-management:8080']
+
+  - job_name: 'auth-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['auth-service:8089']
+
+  - job_name: 'doctor-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['doctor-service:8083']
+
+  - job_name: 'appointment-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['appointment-service:8084']
+
+  - job_name: 'billing-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['billing-service:8081']
+
+  - job_name: 'analytics-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['analytics-service:8082']

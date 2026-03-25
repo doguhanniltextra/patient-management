@@ -54,6 +54,7 @@ public class AppointmentMapper {
         requestDto.setServiceType(appointment.getServiceType());
         requestDto.setPaymentStatus(appointment.isPaymentStatus());
         requestDto.setServiceDateEnd(appointment.getServiceDateEnd());
+        requestDto.setPaymentType(appointment.getPaymentType());
         return requestDto;
     }
 

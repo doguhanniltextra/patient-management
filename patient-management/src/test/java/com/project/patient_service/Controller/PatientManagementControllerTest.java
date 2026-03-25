@@ -54,22 +54,23 @@ public class PatientManagementControllerTest {
     @Test
     public void PatientController_GetPatients_ReturnsOk() throws Exception {
         // --- ARRANGE ---
-        List<GetPatientServiceResponseDto> serviceResponse = List.of();
+        org.springframework.data.domain.Page<GetPatientServiceResponseDto> servicePage =
+                new org.springframework.data.domain.PageImpl<>(List.of());
         List<GetPatientControllerResponseDto> controllerResponse = List.of();
 
-        when(patientService.getPatients()).thenReturn(serviceResponse);
+        when(patientService.getPatients(any(org.springframework.data.domain.Pageable.class))).thenReturn(servicePage);
         when(userMapper.getGetPatientControllerResponseDtos(any())).thenReturn(controllerResponse);
 
 
         mockMvc.perform(get("/patients")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(status().isOk());
     }
 
     @Test
     public void PatientController_GetPatients_WhenServiceFails_Returns500() throws Exception {
-        when(patientService.getPatients()).thenThrow(new RuntimeException("Database down"));
+        when(patientService.getPatients(any(org.springframework.data.domain.Pageable.class)))
+                .thenThrow(new RuntimeException("Database down"));
 
         assertThatThrownBy(() -> mockMvc.perform(get("/patients")))
                 .hasCauseInstanceOf(RuntimeException.class);

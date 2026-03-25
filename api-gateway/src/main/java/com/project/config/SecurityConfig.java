@@ -44,7 +44,7 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers("/auth/**", "/api/auth/**").permitAll()
+                        .pathMatchers("/auth/**", "/api/auth/**", "/actuator/**").permitAll()
                         .anyExchange().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
@@ -66,7 +66,7 @@ public class SecurityConfig {
             log.debug("JWT Filter — path: {}", path);
 
             // Skip authentication for permitted paths
-            if (path.startsWith("/auth/") || path.startsWith("/api/auth/")) {
+            if (path.startsWith("/auth/") || path.startsWith("/api/auth/") || path.startsWith("/actuator/")) {
                 log.debug("Skipping authentication for permitted path");
                 return chain.filter(exchange);
             }

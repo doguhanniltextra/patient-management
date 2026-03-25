@@ -56,23 +56,24 @@ public class PatientManagementServiceTest {
         patient.setDateOfBirth(LocalDate.of(1990, 1, 1));
         patient.setRegisteredDate(LocalDate.now());
 
-        List<Patient> mockPatientList = List.of(patient);
+        org.springframework.data.domain.Page<Patient> mockPage =
+                new org.springframework.data.domain.PageImpl<>(List.of(patient));
 
         GetPatientServiceResponseDto responseDto = new GetPatientServiceResponseDto();
         responseDto.setEmail("test@gmail.com");
-        List<GetPatientServiceResponseDto> mockDtoList = List.of(responseDto);
 
         // --- STUBBING ---
-        when(patientRepository.findAll()).thenReturn(mockPatientList);
-        when(userMapper.getGetPatientServiceResponseDtos(anyList())).thenReturn(mockDtoList);
+        when(patientRepository.findAll(any(org.springframework.data.domain.Pageable.class))).thenReturn(mockPage);
+        when(userMapper.toServiceResponseDto(any(Patient.class))).thenReturn(responseDto);
 
         // --- ACT ---
-        List<GetPatientServiceResponseDto> result = patientService.getPatients();
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(0, 20);
+        org.springframework.data.domain.Page<GetPatientServiceResponseDto> result = patientService.getPatients(pageable);
 
         // --- ASSERT ---
         assertThat(result).isNotNull();
-        assertThat(result).hasSize(1);
-        verify(patientRepository, times(1)).findAll();
+        assertThat(result.getContent()).hasSize(1);
+        verify(patientRepository, times(1)).findAll(any(org.springframework.data.domain.Pageable.class));
     }
 
     @Test

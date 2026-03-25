@@ -73,7 +73,7 @@ public class DoctorService {
         return doctorRepository.findAll(pageable);
     }
     // MAINTAINING
-    public void increasePatientNumber(UUID id) throws PatientLimitException {
+    public void increasePatientNumber(UUID id) throws PatientLimitException, DoctorNotFoundException {
         Doctor doctor = doctorRepository.findById(id)
                 .orElseThrow(() -> new DoctorNotFoundException("Doctor not found: " + id));
         if (doctor.getPatientCount() >= 5) throw new PatientLimitException("Patient limit is full");

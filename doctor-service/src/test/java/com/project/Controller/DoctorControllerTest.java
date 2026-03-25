@@ -61,11 +61,14 @@ public class DoctorControllerTest {
     // --- GET ALL DOCTORS ---
     @Test
     public void DoctorController_GetDoctors_ReturnsOk() throws Exception {
-        when(doctorService.getDoctors()).thenReturn(List.of(new Doctor()));
+        Doctor doctor = new Doctor();
+        org.springframework.data.domain.Page<Doctor> page =
+                new org.springframework.data.domain.PageImpl<>(List.of(doctor));
+        when(doctorService.getDoctors(any(org.springframework.data.domain.Pageable.class))).thenReturn(page);
 
         mockMvc.perform(get("/doctors"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(1));
+                .andExpect(jsonPath("$.content.size()").value(1));
     }
 
     // --- CREATE DOCTOR ---
