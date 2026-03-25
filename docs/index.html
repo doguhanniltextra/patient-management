@@ -1,437 +1,1205 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patient Management System | Documentation</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="main.css">
-    <link rel="stylesheet" href="auth.css">
-    <link rel="stylesheet" href="navbar.css">
-    <script src="main.js" defer></script>
-</head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>patient-management / docs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --bg-2: #111111;
+      --bg-3: #1a1a1a;
+      --border: #222222;
+      --border-active: #444444;
+      --text: #e8e8e8;
+      --text-muted: #666666;
+      --text-dim: #444444;
+      --accent: #e8e8e8;
+      --green: #4ade80;
+      --yellow: #fbbf24;
+      --red: #f87171;
+      --blue: #60a5fa;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Geist', sans-serif;
+      --sidebar: 260px;
+      --nav-h: 48px;
+    }
 
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    /* ── NAV ─────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--nav-h);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 100;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-brand {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--text);
+      letter-spacing: 0;
+    }
+
+    .nav-brand span { color: var(--text-muted); }
+
+    .nav-pill {
+      font-family: var(--mono);
+      font-size: 10px;
+      padding: 2px 8px;
+      border: 1px solid var(--border-active);
+      color: var(--text-muted);
+      border-radius: 2px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .nav-link {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: color 0.15s;
+    }
+
+    .nav-link:hover { color: var(--text); }
+
+    /* ── LAYOUT ──────────────────────────────────────── */
+    .layout {
+      display: flex;
+      margin-top: var(--nav-h);
+      min-height: calc(100vh - var(--nav-h));
+    }
+
+    /* ── SIDEBAR ─────────────────────────────────────── */
+    aside {
+      width: var(--sidebar);
+      position: fixed;
+      top: var(--nav-h);
+      bottom: 0;
+      left: 0;
+      overflow-y: auto;
+      border-right: 1px solid var(--border);
+      padding: 24px 0;
+    }
+
+    aside::-webkit-scrollbar { width: 2px; }
+    aside::-webkit-scrollbar-track { background: transparent; }
+    aside::-webkit-scrollbar-thumb { background: var(--border); }
+
+    .sidebar-group { margin-bottom: 24px; }
+
+    .sidebar-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-dim);
+      padding: 0 20px;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .sidebar-link {
+      display: block;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 6px 20px;
+      transition: all 0.1s;
+      border-left: 2px solid transparent;
+    }
+
+    .sidebar-link:hover {
+      color: var(--text);
+      background: var(--bg-2);
+      border-left-color: var(--border-active);
+    }
+
+    .sidebar-link.active {
+      color: var(--text);
+      border-left-color: var(--text);
+      background: var(--bg-2);
+    }
+
+    /* ── MAIN ────────────────────────────────────────── */
+    main {
+      margin-left: var(--sidebar);
+      flex: 1;
+      max-width: 860px;
+      padding: 48px 56px;
+    }
+
+    /* ── SECTIONS ────────────────────────────────────── */
+    section { margin-bottom: 72px; }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 28px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-id {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+    }
+
+    h2 {
+      font-family: var(--mono);
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    h3 {
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 10px;
+      margin-top: 28px;
+    }
+
+    p {
+      color: var(--text-muted);
+      font-size: 13.5px;
+      line-height: 1.75;
+      margin-bottom: 16px;
+      max-width: 640px;
+    }
+
+    /* ── HERO ────────────────────────────────────────── */
+    .hero {
+      margin-bottom: 64px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero-eyebrow {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .hero h1 {
+      font-family: var(--mono);
+      font-size: 22px;
+      font-weight: 400;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+      line-height: 1.3;
+    }
+
+    .hero-desc {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      max-width: 560px;
+      margin-bottom: 24px;
+      line-height: 1.8;
+    }
+
+    .hero-meta {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .meta-key {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .meta-val {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* ── TAGS ────────────────────────────────────────── */
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+
+    .tag {
+      font-family: var(--mono);
+      font-size: 10px;
+      padding: 3px 8px;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      border-radius: 2px;
+      letter-spacing: 0.04em;
+    }
+
+    .tag.green { border-color: #1a3a22; color: var(--green); }
+    .tag.blue  { border-color: #1a2a3a; color: var(--blue); }
+    .tag.yellow { border-color: #3a2a0a; color: var(--yellow); }
+
+    /* ── TABLE ───────────────────────────────────────── */
+    .table-wrap {
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+
+    thead tr {
+      background: var(--bg-2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      padding: 10px 16px;
+      text-align: left;
+      color: var(--text-dim);
+      font-weight: 400;
+      text-transform: uppercase;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+    }
+
+    td {
+      padding: 10px 16px;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    tbody tr:hover { background: var(--bg-2); }
+
+    td .port {
+      color: var(--blue);
+    }
+
+    td .svc-name {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    td .db-label {
+      color: var(--green);
+    }
+
+    /* ── CODE BLOCK ──────────────────────────────────── */
+    pre {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 18px 20px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      overflow-x: auto;
+      margin-bottom: 20px;
+      line-height: 1.7;
+    }
+
+    pre .comment { color: var(--text-dim); }
+    pre .key     { color: var(--blue); }
+    pre .val     { color: var(--green); }
+    pre .sym     { color: var(--text-dim); }
+    pre .type    { color: var(--yellow); }
+
+    code {
+      font-family: var(--mono);
+      font-size: 12px;
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      padding: 1px 6px;
+      border-radius: 2px;
+      color: var(--text-muted);
+    }
+
+    /* ── CALLOUT ─────────────────────────────────────── */
+    .callout {
+      border-left: 2px solid var(--border-active);
+      padding: 14px 18px;
+      background: var(--bg-2);
+      margin-bottom: 20px;
+      border-radius: 0 3px 3px 0;
+    }
+
+    .callout.warn { border-left-color: var(--yellow); }
+    .callout.info { border-left-color: var(--blue); }
+    .callout.ok   { border-left-color: var(--green); }
+
+    .callout-title {
+      font-family: var(--mono);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 6px;
+      color: var(--text-dim);
+    }
+
+    .callout.ok   .callout-title { color: var(--green); }
+    .callout.info .callout-title { color: var(--blue); }
+    .callout.warn .callout-title { color: var(--yellow); }
+
+    .callout p { margin: 0; color: var(--text-muted); max-width: none; }
+
+    /* ── FLOW DIAGRAM ────────────────────────────────── */
+    .flow {
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 28px 24px;
+      background: var(--bg-2);
+      margin-bottom: 20px;
+      font-family: var(--mono);
+      font-size: 12px;
+      overflow-x: auto;
+    }
+
+    .flow-row {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: nowrap;
+      margin-bottom: 8px;
+    }
+
+    .flow-row:last-child { margin-bottom: 0; }
+
+    .flow-node {
+      border: 1px solid var(--border-active);
+      padding: 7px 14px;
+      color: var(--text);
+      white-space: nowrap;
+      border-radius: 2px;
+      font-size: 11px;
+    }
+
+    .flow-node.entry { border-color: var(--blue); color: var(--blue); }
+    .flow-node.svc   { border-color: var(--border-active); color: var(--text-muted); }
+    .flow-node.db    { border-color: var(--green); color: var(--green); }
+    .flow-node.queue { border-color: var(--yellow); color: var(--yellow); }
+    .flow-node.ext   { border-color: var(--text-dim); color: var(--text-dim); }
+
+    .flow-arrow {
+      color: var(--text-dim);
+      padding: 0 8px;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .flow-label {
+      font-size: 10px;
+      color: var(--text-dim);
+      padding: 0 4px;
+      white-space: nowrap;
+    }
+
+    /* ── SERVICE GRID ────────────────────────────────── */
+    .svc-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .svc-card {
+      border: 1px solid var(--border);
+      padding: 18px 20px;
+      border-radius: 3px;
+      background: var(--bg-2);
+      transition: border-color 0.15s;
+    }
+
+    .svc-card:hover { border-color: var(--border-active); }
+
+    .svc-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .svc-card-name {
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .svc-card-port {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--blue);
+      border: 1px solid #1a2a3a;
+      padding: 2px 7px;
+      border-radius: 2px;
+    }
+
+    .svc-card p {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      margin: 0 0 12px 0;
+      max-width: none;
+    }
+
+    .svc-schema {
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 10px 12px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+
+    .svc-schema .k { color: var(--blue); }
+    .svc-schema .t { color: var(--yellow); }
+    .svc-schema .c { color: var(--text-dim); }
+
+    /* ── STEP LIST ───────────────────────────────────── */
+    .steps { margin-bottom: 20px; }
+
+    .step {
+      display: flex;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .step:last-child { border-bottom: none; }
+
+    .step-num {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      min-width: 24px;
+      padding-top: 2px;
+    }
+
+    .step-content { flex: 1; }
+
+    .step-title {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .step-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin: 0;
+      max-width: none;
+    }
+
+    /* ── INLINE BADGE ────────────────────────────────── */
+    .badge {
+      font-family: var(--mono);
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 2px;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    /* ── FOOTER ──────────────────────────────────────── */
+    footer {
+      margin-left: var(--sidebar);
+      padding: 24px 56px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    footer span {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    footer a {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+
+    footer a:hover { color: var(--text); }
+
+    /* ── RESPONSIVE ──────────────────────────────────── */
+    @media (max-width: 900px) {
+      aside { display: none; }
+      main  { margin-left: 0; padding: 32px 24px; }
+      footer { margin-left: 0; padding: 20px 24px; }
+      .svc-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
 <body>
-<nav class="navbar">
-    <div class="navbar-container">
-        <div class="logo-group">
-            <span class="logo-icon">🏥</span>
-            <span class="logo-text">Patient Management System</span>
-        </div>
-        <div class="hamburger">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
-    </div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left">
+    <span class="nav-brand">patient-management <span>/ docs</span></span>
+    <span class="nav-pill">v1.0</span>
+  </div>
+  <div class="nav-right">
+    <a class="nav-link" href="https://github.com/doguhanniltextra/patient-management" target="_blank">github</a>
+    <a class="nav-link" href="https://www.postman.com/spacecraft-astronaut-67997412/workspace/patient-management/folder/32076392-560c6040-1ca9-429b-8294-c26a30e2127d" target="_blank">postman</a>
+  </div>
 </nav>
 
-<div class="app-layout">
-    <aside class="sidebar">
-        <nav class="sidebar-nav">
-            <ul>
-                <li><a href="#overview" class="nav-item">Overview</a></li>
-                <li><a href="#architecture" class="nav-item">System Architecture</a></li>
-                <li><a href="#microservices-details" class="nav-item">Microservices Details</a></li>
-                <li><hr class="nav-divider"></li>
-                <li><span class="nav-label">Flow Diagrams</span></li>
-                <li><a href="#how-auth-and-autho-works" class="nav-item">Auth Flow</a></li>
-                <li><a href="#appointment-validation-flow" class="nav-item">Appointment Flow</a></li>
-                <li><a href="#billing-validation-flow" class="nav-item">Invoice Flow</a></li>
-                <li><a href="#api-gateway-flow" class="nav-item">API Gateway Flow</a></li>
-                <li><hr class="nav-divider"></li>
-                <li><a href="#devops-deployment-flow" class="nav-item">Deployment</a></li>
-                <li><a href="#postman-collection" class="nav-item">API Reference</a></li>
-                <li><a href="#key-features" class="nav-item">Core Features</a></li>
-                <li><a href="#why-this" class="nav-item">Design Philosophy</a></li>
-               
-            </ul>
-        </nav>
-    </aside>
+<!-- LAYOUT -->
+<div class="layout">
 
-    <main class="main-content">
-        <header class="doc-header">
-            <h1>Documentation</h1>
-            <p>Enterprise microservices architecture for healthcare management systems.</p>
-        </header>
+  <!-- SIDEBAR -->
+  <aside>
+    <div class="sidebar-group">
+      <span class="sidebar-label">Overview</span>
+      <a class="sidebar-link" href="#intro">Introduction</a>
+      <a class="sidebar-link" href="#arch">Architecture</a>
+      <a class="sidebar-link" href="#services">Services</a>
+    </div>
+    <div class="sidebar-group">
+      <span class="sidebar-label">Request Flows</span>
+      <a class="sidebar-link" href="#flow-auth">Auth</a>
+      <a class="sidebar-link" href="#flow-appointment">Appointment</a>
+      <a class="sidebar-link" href="#flow-billing">Billing</a>
+      <a class="sidebar-link" href="#flow-gateway">API Gateway</a>
+    </div>
+    <div class="sidebar-group">
+      <span class="sidebar-label">Infrastructure</span>
+      <a class="sidebar-link" href="#resilience">Fault Tolerance</a>
+      <a class="sidebar-link" href="#observability">Observability</a>
+      <a class="sidebar-link" href="#cicd">CI / CD</a>
+    </div>
+    <div class="sidebar-group">
+      <span class="sidebar-label">Reference</span>
+      <a class="sidebar-link" href="#api">API Reference</a>
+    </div>
+  </aside>
 
-        <!-- Overview -->
-        <section class="doc-section" id="overview">
-            <h2>Project Overview</h2>
-            <p class="section-desc">This modular backend system manages healthcare entities like appointments, patients, and billing. It leverages a modern, distributed architecture to ensure high availability and data integrity.</p>
+  <!-- MAIN -->
+  <main>
 
-            <div class="info-grid">
-                <div class="info-card">
-                    <div class="card-icon">🏗️</div>
-                    <h4>Distributed Nodes</h4>
-                    <p>6 specialized microservices coupled with an edge API Gateway.</p>
-                </div>
-                <div class="info-card">
-                    <div class="card-icon">📦</div>
-                    <h4>Infrastructure</h4>
-                    <p>Full container orchestration via Docker and Compose.</p>
-                </div>
-                <div class="info-card">
-                    <div class="card-icon">⚡</div>
-                    <h4>Event Pipeline</h4>
-                    <p>Asynchronous synchronization using Apache Kafka.</p>
-                </div>
-                <div class="info-card">
-                    <div class="card-icon">💾</div>
-                    <h4>Data Persistence</h4>
-                    <p>PostgreSQL (Relational) robust data stack.</p>
-                </div>
-            </div>
-        </section>
+    <!-- HERO -->
+    <div class="hero" id="intro">
+      <div class="hero-eyebrow">technical documentation</div>
+      <h1>Patient Management System</h1>
+      <p class="hero-desc">
+        A backend-focused healthcare platform built as a distributed system of 6 independent Spring Boot microservices. Each service owns its domain, its schema, and its failure boundary. Services communicate via synchronous REST for reads and asynchronous Kafka events for writes that cross domain lines.
+      </p>
+      <div class="tags">
+        <span class="tag blue">Spring Boot 3.4</span>
+        <span class="tag blue">Spring Cloud Gateway</span>
+        <span class="tag green">PostgreSQL 15</span>
+        <span class="tag yellow">Apache Kafka (KRaft)</span>
+        <span class="tag">Docker Compose</span>
+        <span class="tag">Resilience4j</span>
+        <span class="tag">Prometheus + Grafana</span>
+        <span class="tag">gRPC / Protobuf</span>
+      </div>
+      <div class="hero-meta">
+        <div class="meta-item">
+          <span class="meta-key">services</span>
+          <span class="meta-val">6 + 1 gateway</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-key">database</span>
+          <span class="meta-val">PostgreSQL (shared instance, isolated schemas)</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-key">messaging</span>
+          <span class="meta-val">Kafka KRaft — no ZooKeeper</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-key">test coverage</span>
+          <span class="meta-val">72% instruction (patient-service)</span>
+        </div>
+      </div>
+    </div>
 
-        <!-- System Architecture -->
-        <section class="doc-section" id="architecture">
-            <h2>System Architecture</h2>
-            <p class="section-desc">Global routing and service port assignments across the ecosystem.</p>
+    <!-- ARCHITECTURE -->
+    <section id="arch">
+      <div class="section-header">
+        <span class="section-id">01</span>
+        <h2>System Architecture</h2>
+      </div>
 
-            <div class="table-container">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Service Identifier</th>
-                            <th>Host Port</th>
-                            <th>Storage Engine</th>
-                            <th>Core Responsibility</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><span class="badge badge-primary">API Gateway</span></td>
-                            <td><code>4004</code></td>
-                            <td>N/A</td>
-                            <td>Global routing & Load balancing</td>
-                        </tr>
-                        <tr>
-                            <td><span class="badge badge-secondary">Patient Service</span></td>
-                            <td><code>8080</code></td>
-                            <td>PostgreSQL</td>
-                            <td>Identity & Health records</td>
-                        </tr>
-                        <tr>
-                            <td><span class="badge badge-secondary">Billing Service</span></td>
-                            <td><code>8081</code></td>
-                            <td>PostgreSQL</td>
-                            <td>Transactional billing & PDFs</td>
-                        </tr>
+      <p>All inbound traffic enters through a single reactive API Gateway running on port 4004. The gateway handles JWT validation before requests reach any downstream service — downstream services themselves have no auth middleware. Inter-service calls that require entity verification (e.g. appointment creation verifying patient and doctor existence) are synchronous REST calls guarded by Resilience4j circuit breakers.</p>
 
-                        <tr>
-                            <td><span class="badge badge-secondary">Doctor Service</span></td>
-                            <td><code>8083</code></td>
-                            <td>PostgreSQL</td>
-                            <td>Directory & Availability</td>
-                        </tr>
-                        <tr>
-                            <td><span class="badge badge-secondary">Appointment Svc</span></td>
-                            <td><code>8084</code></td>
-                            <td>PostgreSQL</td>
-                            <td>Scheduling & Orchestration</td>
-                        </tr>
-                        <tr>
-                            <td><span class="badge badge-secondary">Auth Service</span></td>
-                            <td><code>8089</code></td>
-                            <td>PostgreSQL</td>
-                            <td>IAM & JWT Provisioning</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
+      <div class="flow">
+        <div class="flow-row">
+          <div class="flow-node entry">Client</div>
+          <div class="flow-arrow">──────</div>
+          <div class="flow-node entry">API Gateway :4004</div>
+          <div class="flow-label">JWT filter → route match</div>
+        </div>
+        <div class="flow-row" style="margin-left:120px">
+          <div class="flow-arrow">┌───────────┬──────────────┬───────────────┬──────────────┐</div>
+        </div>
+        <div class="flow-row" style="margin-left:80px; gap: 24px; flex-wrap:wrap">
+          <div class="flow-node svc">patient-svc :8080</div>
+          <div class="flow-node svc">doctor-svc :8083</div>
+          <div class="flow-node svc">appointment-svc :8084</div>
+          <div class="flow-node svc">auth-svc :8089</div>
+          <div class="flow-node svc">billing-svc :8081</div>
+        </div>
+        <div class="flow-row" style="margin-top: 12px; margin-left: 80px;">
+          <div class="flow-node db">PostgreSQL :5432</div>
+          <div class="flow-arrow">────</div>
+          <div class="flow-node queue">Kafka :9092</div>
+        </div>
+      </div>
 
-        <!-- Microservices Details -->
-        <section class="doc-section" id="microservices-details">
-            <h2>Microservices Details</h2>
-            <div class="service-details-grid">
-                <div class="detail-card">
-                    <div class="detail-card-header">
-                        <span class="service-id">👥 Patient Service</span>
-                    </div>
-                    <div class="card-meta">
-                        <code>POSTGRESQL</code> • <code>PORT 8080</code>
-                    </div>
-                    <p>Centralized authority for patient demographic data. It functions as the source of truth for patient identity and provides event triggers for system workflows.</p>
-                    <pre class="code-snipp"><code>{
-  "id": "UUID",
-  "name": "String",
-  "email": "String",
-  "registeredDate": "LocalDate"
-}</code></pre>
-                </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Service</th>
+              <th>Port</th>
+              <th>Storage</th>
+              <th>Responsibility</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="svc-name">api-gateway</span></td>
+              <td><span class="port">4004</span></td>
+              <td>—</td>
+              <td>Edge routing, JWT enforcement, header rewriting</td>
+            </tr>
+            <tr>
+              <td><span class="svc-name">patient-service</span></td>
+              <td><span class="port">8080</span></td>
+              <td><span class="db-label">PostgreSQL</span></td>
+              <td>Patient CRUD, Kafka event producer (patient lifecycle)</td>
+            </tr>
+            <tr>
+              <td><span class="svc-name">auth-service</span></td>
+              <td><span class="port">8089</span></td>
+              <td><span class="db-label">PostgreSQL</span></td>
+              <td>Register / login, JWT issuance (HMAC-SHA256)</td>
+            </tr>
+            <tr>
+              <td><span class="svc-name">doctor-service</span></td>
+              <td><span class="port">8083</span></td>
+              <td><span class="db-label">PostgreSQL</span></td>
+              <td>Doctor profiles, availability, license records, gRPC server</td>
+            </tr>
+            <tr>
+              <td><span class="svc-name">appointment-service</span></td>
+              <td><span class="port">8084</span></td>
+              <td><span class="db-label">PostgreSQL</span></td>
+              <td>Booking orchestration, cross-service ID validation, Kafka event producer</td>
+            </tr>
+            <tr>
+              <td><span class="svc-name">billing-service</span></td>
+              <td><span class="port">8081</span></td>
+              <td><span class="db-label">PostgreSQL</span></td>
+              <td>Kafka consumer, PDF invoice generation via external REST API</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-                <div class="detail-card">
-                    <div class="detail-card-header">
-                        <span class="service-id">👨‍⚕️ Doctor Service</span>
-                    </div>
-                    <div class="card-meta">
-                        <code>POSTGRESQL</code> • <code>PORT 8083</code>
-                    </div>
-                    <p>Manages professional profiles, departmental mapping, and license verification. It ensures all practicing entities within the system are valid and authorized.</p>
-                    <pre class="code-snipp"><code>{
-  "id": "UUID",
-  "specialization": "ENUM",
-  "available": "Boolean",
-  "license": "String"
-}</code></pre>
-                </div>
+      <div class="callout info">
+        <div class="callout-title">Database Isolation</div>
+        <p>All services connect to the same PostgreSQL instance but operate on isolated tables. Hibernate DDL is set to <code>update</code> — schema migrations are applied automatically on service startup. No cross-service joins; each service owns its own data model.</p>
+      </div>
+    </section>
 
-                <div class="detail-card">
-                    <div class="detail-card-header">
-                        <span class="service-id">📅 Appointment Service</span>
-                    </div>
-                    <div class="card-meta">
-                        <code>POSTGRESQL</code> • <code>PORT 8084</code>
-                    </div>
-                    <p>The system's orchestrator. It verifies patient/doctor availability via cross-calls and initiates the billing lifecycle upon successful booking.</p>
-                    <pre class="code-snipp"><code>{
-  "patientId": "UUID",
-  "doctorId": "UUID",
-  "amount": "Float",
-  "paymentStatus": "Boolean"
-}</code></pre>
-                </div>
+    <!-- SERVICES -->
+    <section id="services">
+      <div class="section-header">
+        <span class="section-id">02</span>
+        <h2>Service Data Models</h2>
+      </div>
 
-                <div class="detail-card">
-                    <div class="detail-card-header">
-                        <span class="service-id">💰 Billing Service</span>
-                    </div>
-                    <div class="card-meta">
-                        <code>POSTGRESQL</code> • <code>PORT 8081</code>
-                    </div>
-                    <p>Consumer of transaction events. It handles ledger entries and generates legal invoice documents in PDF format for patient downloads.</p>
-                </div>
-            </div>
-        </section>
+      <p>Each service exposes a REST API and persists its own entity graph. Below are the primary domain models per service.</p>
 
-        <!-- Auth Flow -->
-        <section class="doc-section" id="how-auth-and-autho-works">
-            <h2>Authentication Lifecycle</h2>
-            <div class="interactive-flow">
-                <div class="flow-status" id="status">System Ready</div>
-                <div class="flow-stage">
-                    <div class="stage-node" id="user">
-                        <div class="node-icon">👤</div>
-                        <span>Client</span>
-                    </div>
-                    <div class="flow-arrow">→</div>
-                    <div class="stage-node" id="gateway">
-                        <div class="node-icon">🌐</div>
-                        <span>Gateway</span>
-                    </div>
-                    <div class="flow-arrow">→</div>
-                    <div class="stage-node" id="auth">
-                        <div class="node-icon">🔐</div>
-                        <span>Auth Svc</span>
-                    </div>
-                    <div class="flow-arrow">→</div>
-                    <div class="stage-node" id="database">
-                        <div class="node-icon">🗄️</div>
-                        <span>Storage</span>
-                    </div>
-                </div>
-                <div class="flow-controls">
-                    <button class="btn btn-action" onclick="startAnimation()">Execute Login Auth</button>
-                    <button class="btn btn-ghost" onclick="resetAnimation()">Reset Flow</button>
-                </div>
-                <div class="hidden-elements">
-                    <div id="userResponse"></div>
-                    <div id="gatewayResponse"></div>
-                    <div id="authResponse"></div>
-                    <div id="dbResponse"></div>
-                    <div id="jwtToken"></div>
-                    <div id="particles"></div>
-                </div>
-            </div>
-        </section>
+      <div class="svc-grid">
+        <div class="svc-card">
+          <div class="svc-card-header">
+            <span class="svc-card-name">patient-service</span>
+            <span class="svc-card-port">:8080</span>
+          </div>
+          <p>Source of truth for patient identity. Publishes <code>PATIENT_CREATED</code> and <code>PATIENT_DELETED</code> events to Kafka asynchronously via <code>CompletableFuture</code>.</p>
+          <div class="svc-schema">
+            <span class="k">id</span>           <span class="t">UUID</span>        <span class="c">// PK, auto-generated</span><br>
+            <span class="k">name</span>         <span class="t">String</span>      <span class="c">// max 100 chars</span><br>
+            <span class="k">email</span>        <span class="t">String</span>      <span class="c">// unique constraint</span><br>
+            <span class="k">address</span>      <span class="t">String</span><br>
+            <span class="k">dateOfBirth</span>  <span class="t">LocalDate</span><br>
+            <span class="k">registeredDate</span> <span class="t">LocalDate</span>
+          </div>
+        </div>
 
-        <!-- Appointment Flow -->
-        <section class="doc-section" id="appointment-validation-flow">
-            <h2>Workflow: Appointment Validation</h2>
-            <div class="workflow-steps">
-                <div class="step">
-                    <span class="step-idx">01</span>
-                    <div class="step-content">
-                        <h5>Ingestion</h5>
-                        <p>Appointment Service receives the booking payload from the Gateway.</p>
-                    </div>
-                </div>
-                <div class="step">
-                    <span class="step-idx">02</span>
-                    <div class="step-content">
-                        <h5>Verification</h5>
-                        <p>Synchronous REST calls to Patient and Doctor services confirm record validity.</p>
-                    </div>
-                </div>
-                <div class="step">
-                    <span class="step-idx">03</span>
-                    <div class="step-content">
-                        <h5>Persistence</h5>
-                        <p>Validated entities are committed to the PostgreSQL relational store.</p>
-                    </div>
-                </div>
-                <div class="step">
-                    <span class="step-idx">04</span>
-                    <div class="step-content">
-                        <h5>Dispatch</h5>
-                        <p>A 'PROCESSED' event is pushed to Kafka for the Billing service.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <div class="svc-card">
+          <div class="svc-card-header">
+            <span class="svc-card-name">doctor-service</span>
+            <span class="svc-card-port">:8083</span>
+          </div>
+          <p>Manages doctor profiles and availability. Exposes a gRPC server for low-latency internal queries. Uses <code>@Version</code> optimistic locking on the Doctor entity.</p>
+          <div class="svc-schema">
+            <span class="k">id</span>               <span class="t">UUID</span><br>
+            <span class="k">specialization</span>   <span class="t">ENUM</span>  <span class="c">// Cardiologist | Dermatologist | ...</span><br>
+            <span class="k">licenseNumber</span>    <span class="t">int</span><br>
+            <span class="k">available</span>        <span class="t">boolean</span><br>
+            <span class="k">patientCount</span>     <span class="t">int</span>   <span class="c">// cap: 5</span><br>
+            <span class="k">hospitalName</span>     <span class="t">String</span><br>
+            <span class="k">version</span>          <span class="t">int</span>   <span class="c">// optimistic lock</span>
+          </div>
+        </div>
 
-        <!-- Billing Flow -->
-        <section class="doc-section" id="billing-validation-flow">
-            <h2>Workflow: Automated Invoicing</h2>
-            <div class="workflow-steps steps-horizontal">
-                <div class="step">
-                    <div class="step-content">
-                        <h5>Consume</h5>
-                        <p>Billing consumes Kafka events.</p>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-content">
-                        <h5>Process</h5>
-                        <p>Unique invoice IDs generated.</p>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-content">
-                        <h5>Generate</h5>
-                        <p>PDF generated via REST API.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <div class="svc-card">
+          <div class="svc-card-header">
+            <span class="svc-card-name">appointment-service</span>
+            <span class="svc-card-port">:8084</span>
+          </div>
+          <p>Orchestrates the booking lifecycle. Validates patient and doctor IDs via REST before persisting. On payment confirmation, publishes to Kafka. A scheduled job runs daily at 06:00 to delete expired paid appointments using a single bulk-delete query — no records loaded into JVM memory.</p>
+          <div class="svc-schema">
+            <span class="k">patientId</span>     <span class="t">UUID</span>        <span class="c">// FK ref, not enforced at DB level</span><br>
+            <span class="k">doctorId</span>      <span class="t">UUID</span><br>
+            <span class="k">serviceDate</span>   <span class="t">String</span>      <span class="c">// "yyyy-MM-dd HH:mm"</span><br>
+            <span class="k">serviceType</span>   <span class="t">ENUM</span>        <span class="c">// CONSULTATION | SURGERY | VACCINATION</span><br>
+            <span class="k">amount</span>        <span class="t">float</span><br>
+            <span class="k">paymentStatus</span> <span class="t">boolean</span><br>
+            <span class="k">paymentType</span>   <span class="t">ENUM</span>        <span class="c">// CREDIT | DEBIT</span>
+          </div>
+        </div>
 
-        <!-- API Gateway Flow -->
-        <section class="doc-section" id="api-gateway-flow">
-            <h2>Workflow: Edge Routing</h2>
-            <div class="workflow-steps">
-                <div class="step">
-                    <span class="step-idx">I</span>
-                    <div class="step-content">
-                        <h5>Ingress</h5>
-                        <p>Traffic enters the system via the unified entry point on port 4004.</p>
-                    </div>
-                </div>
-                <div class="step">
-                    <span class="step-idx">II</span>
-                    <div class="step-content">
-                        <h5>Resolution</h5>
-                        <p>Gateway examines the URI path and maps it to a downstream microservice host.</p>
-                    </div>
-                </div>
-                <div class="step">
-                    <span class="step-idx">III</span>
-                    <div class="step-content">
-                        <h5>Egress</h5>
-                        <p>The request is proxied with updated headers to the target service node.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <div class="svc-card">
+          <div class="svc-card-header">
+            <span class="svc-card-name">auth-service</span>
+            <span class="svc-card-port">:8089</span>
+          </div>
+          <p>Issues JWTs signed with HMAC-SHA256. The same signing key is shared with the API Gateway via environment variable <code>APP_SECRET</code>. Passwords are hashed with BCrypt. Sessions are fully stateless.</p>
+          <div class="svc-schema">
+            <span class="k">id</span>             <span class="t">UUID</span>       <span class="c">// GenerationType.UUID</span><br>
+            <span class="k">name</span>           <span class="t">String</span>     <span class="c">// max 50 chars, unique</span><br>
+            <span class="k">email</span>          <span class="t">String</span>     <span class="c">// validated @Email</span><br>
+            <span class="k">password</span>       <span class="t">String</span>     <span class="c">// BCrypt hash</span><br>
+            <span class="k">registerDate</span>   <span class="t">LocalDate</span>
+          </div>
+        </div>
+      </div>
+    </section>
 
-        <!-- Deployment Flow -->
-        <section class="doc-section" id="devops-deployment-flow">
-            <h2>CI/CD & Infrastructure</h2>
-            <div class="deployment-box">
-                <div class="pipeline">
-                    <div class="pipeline-item">
-                        <div class="pipeline-icon">🐙</div>
-                        <span>Push</span>
-                    </div>
-                    <div class="pipeline-item">
-                        <div class="pipeline-icon">🏗️</div>
-                        <span>Build</span>
-                    </div>
-                    <div class="pipeline-item">
-                        <div class="pipeline-icon">🐳</div>
-                        <span>Image</span>
-                    </div>
-                    <div class="pipeline-item">
-                        <div class="pipeline-icon">🚀</div>
-                        <span>Deploy</span>
-                    </div>
-                </div>
-                <div class="tech-badges">
-                    <span class="tech-tag">Docker</span>
-                    <span class="tech-tag">Github Actions</span>
-                    <span class="tech-tag">Spring Boot</span>
-                    <span class="tech-tag">PostgreSQL</span>
-                    <span class="tech-tag">Kafka</span>
-                </div>
-            </div>
-        </section>
+    <!-- FLOW: AUTH -->
+    <section id="flow-auth">
+      <div class="section-header">
+        <span class="section-id">03</span>
+        <h2>Request Flow — Authentication</h2>
+      </div>
 
-        <!-- API Reference -->
-        <section class="doc-section" id="postman-collection">
-            <h2>API Reference</h2>
-            <div class="reference-card">
-                <p>Access our comprehensive API documentation via Postman to explore endpoints, parameters, and sample response payloads.</p>
-                <a href="https://www.postman.com/spacecraft-astronaut-67997412/workspace/patient-management/folder/32076392-560c6040-1ca9-429b-8294-c26a30e2127d" class="btn btn-action" target="_blank">Launch Postman Workspace</a>
-            </div>
-        </section>
+      <p>Auth endpoints (<code>/api/auth/**</code>) are whitelisted at the gateway — no JWT filter runs. The gateway strips the <code>/api</code> prefix and forwards to auth-service on port 8089. The auth-service itself has its own Spring Security config that permits <code>/auth/**</code> without a session.</p>
 
-        <!-- Key Features -->
-        <section class="doc-section" id="key-features">
-            <h2>Key Capabilities</h2>
-            <div class="features-list">
-                <div class="feature-item">
-                    <h5>Event-Driven Sync</h5>
-                    <p>Asynchronous data propagation using Kafka brokers for high resilience.</p>
-                </div>
-                <div class="feature-item">
-                    <h5>Unified Relational Store</h5>
-                    <p>Strategic alignment on PostgreSQL for transactional and identity data.</p>
-                </div>
-                <div class="feature-item">
-                    <h5>Edge Routing</h5>
-                    <p>Centralized gateway for routing, filtering, and cross-cutting security.</p>
-                </div>
-                <div class="feature-item">
-                    <h5>Automated Ledger</h5>
-                    <p>Programmatic invoice generation and persistence triggered by system events.</p>
-                </div>
-            </div>
-        </section>
+      <div class="flow">
+        <div class="flow-row">
+          <div class="flow-node entry">POST /api/auth/login</div>
+          <div class="flow-arrow">──▶</div>
+          <div class="flow-node svc">Gateway</div>
+          <div class="flow-label">path matches /api/auth/** → skip JWT filter</div>
+        </div>
+        <div class="flow-row" style="margin-left: 80px;">
+          <div class="flow-arrow">│</div>
+        </div>
+        <div class="flow-row" style="margin-left: 40px;">
+          <div class="flow-label">StripPrefix=1 + SetRequestHeader Content-Type</div>
+          <div class="flow-arrow">──▶</div>
+          <div class="flow-node svc">auth-service :8089</div>
+        </div>
+        <div class="flow-row" style="margin-left: 200px;">
+          <div class="flow-arrow">│</div>
+        </div>
+        <div class="flow-row" style="margin-left: 160px;">
+          <div class="flow-label">findByName() + BCrypt.matches()</div>
+          <div class="flow-arrow">──▶</div>
+          <div class="flow-node db">PostgreSQL</div>
+        </div>
+        <div class="flow-row" style="margin-left: 200px;">
+          <div class="flow-arrow">│</div>
+        </div>
+        <div class="flow-row" style="margin-left: 160px;">
+          <div class="flow-label">Jwts.builder() HS256, exp: 86400s</div>
+          <div class="flow-arrow">──▶</div>
+          <div class="flow-node entry">{ token: "..." }</div>
+        </div>
+      </div>
 
-        <!-- Design Philosophy -->
-        <section class="doc-section" id="why-this">
-            <h2>Architecture Philosophy</h2>
-            <div class="philosophy-grid">
-                <div class="phi-card">
-                    <h4>Scalability</h4>
-                    <p>Microservices allow independent scaling of high-demand nodes (e.g. Appointment Svc) without over-provisioning the entire system.</p>
-                </div>
-                <div class="phi-card">
-                    <h4>Reliable Persistence</h4>
-                    <p>We use robust technologies for the job. Relational data stays in PostgreSQL, ensuring ACID compliance and strong data integrity across all services.</p>
-                </div>
-                <div class="phi-card">
-                    <h4>Stateless IAM</h4>
-                    <p>JWT tokens distribute authentication responsibility, enabling clusters to remain stateless and easily horizontally scalable.</p>
-                </div>
-            </div>
-        </section>
+      <div class="callout info">
+        <div class="callout-title">JWT Verification at Gateway</div>
+        <p>For all non-auth routes, the gateway's <code>jwtAuthenticationFilter</code> (WebFilter) extracts the Bearer token, parses claims using <code>Keys.hmacShaKeyFor(APP_SECRET)</code>, extracts roles into <code>SimpleGrantedAuthority</code> objects, and writes the authentication into <code>ReactiveSecurityContextHolder</code>. Clock skew tolerance is set to 5 minutes. Downstream services receive the request without further auth checks.</p>
+      </div>
+    </section>
 
-        <footer class="doc-footer">
-            <div class="footer-content">
-                <p>&copy; 2026 Patient Management System | Technical Documentation</p>
-                <div class="footer-links">
-                    <a href="https://github.com/doguhanniltextra/patient-management">Github Repository</a>
-                    <a href="mailto:doguhannilt@gmail.com">Security Contact</a>
-                </div>
-            </div>
-        </footer>
-    </main>
+    <!-- FLOW: APPOINTMENT -->
+    <section id="flow-appointment">
+      <div class="section-header">
+        <span class="section-id">04</span>
+        <h2>Request Flow — Appointment Creation</h2>
+      </div>
+
+      <p>Appointment creation is the most complex write path in the system. It involves synchronous cross-service validation with circuit-breaker protection, a Kafka publish, and an optional scheduled cleanup job.</p>
+
+      <div class="steps">
+        <div class="step">
+          <span class="step-num">01</span>
+          <div class="step-content">
+            <div class="step-title">Inbound — Gateway routes POST /api/appointments/</div>
+            <p class="step-desc">JWT validated at gateway. StripPrefix=1 applied. Request lands at <code>AppointmentController.createAppointment()</code> as raw <code>Appointment</code> entity, mapped to <code>CreateAppointmentServiceRequestDto</code> by <code>AppointmentMapper</code>.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">02</span>
+          <div class="step-content">
+            <div class="step-title">Patient ID validation — Resilience4j + Retry</div>
+            <p class="step-desc"><code>IdValidation.checkPatientExists(UUID)</code> calls <code>GET patient-management:8080/patients/find/{id}</code> via <code>RestTemplate</code>. Annotated with <code>@CircuitBreaker(name="patientService", fallbackMethod="patientFallback")</code> and <code>@Retry(name="patientService")</code>. Config: sliding-window=10, failure-rate-threshold=50%, wait-in-open=10s, max-attempts=3, wait=500ms. On fallback, returns <code>false</code> → <code>CustomNotFoundException</code> thrown.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">03</span>
+          <div class="step-content">
+            <div class="step-title">Doctor ID validation — same pattern</div>
+            <p class="step-desc">Identical circuit-breaker configuration against <code>doctor-service:8083/doctors/find/{id}</code>. Both calls are sequential, not concurrent.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">04</span>
+          <div class="step-content">
+            <div class="step-title">Persist to PostgreSQL</div>
+            <p class="step-desc"><code>appointmentRepository.save(appointment)</code> via Spring Data JPA. HikariCP pool: max=10, min-idle=5, connection-timeout=30s.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">05</span>
+          <div class="step-content">
+            <div class="step-title">Payment confirmation — Kafka publish</div>
+            <p class="step-desc">When <code>PATCH /appointments/appointment-update/{id}/{status}</code> sets <code>paymentStatus=true</code>, <code>KafkaProducer.sendEvent()</code> serializes an <code>AppointmentKafkaResponseDto</code> to JSON via Jackson and sends to topic <code>appointment-payment-updated</code>. Billing service consumes this event.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">06</span>
+          <div class="step-content">
+            <div class="step-title">Scheduled cleanup — AppointmentCleanupService</div>
+            <p class="step-desc">Runs at <code>cron = "0 0 6 * * ?"</code> (daily 06:00). Executes a single JPQL bulk-delete: <code>DELETE FROM Appointment WHERE paymentStatus=true AND serviceDateEnd &lt; :cutoff</code>. No entities loaded into memory. Returns delete count for logging.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FLOW: BILLING -->
+    <section id="flow-billing">
+      <div class="section-header">
+        <span class="section-id">05</span>
+        <h2>Request Flow — Automated Invoicing</h2>
+      </div>
+
+      <p>The billing service has no inbound REST endpoints for invoice creation — it is purely event-driven. <code>KafkaConsumer</code> listens on <code>appointment-payment-updated</code> with consumer group <code>appointment-group</code>.</p>
+
+      <div class="steps">
+        <div class="step">
+          <span class="step-num">01</span>
+          <div class="step-content">
+            <div class="step-title">Consume — deserialize payload</div>
+            <p class="step-desc"><code>KafkaConsumer.listen(String message)</code> deserializes to <code>AppointmentDTO</code> via <code>ObjectMapper.readValue()</code>. Contains <code>doctorId</code>, <code>patientId</code>, <code>amount</code>, <code>paymentStatus</code>.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">02</span>
+          <div class="step-content">
+            <div class="step-title">Build invoice ID</div>
+            <p class="step-desc">Invoice number: <code>patientId + "-" + doctorId + "-" + System.currentTimeMillis()</code>. Guarantees uniqueness without a database sequence.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">03</span>
+          <div class="step-content">
+            <div class="step-title">Call external PDF API</div>
+            <p class="step-desc"><code>InvoiceService.generateInvoice()</code> builds a JSON body with line items and POSTs to <code>invoice-generator.com</code> via <code>RestTemplate</code> with <code>Authorization: Bearer {INVOICE_API_KEY}</code>. Response is <code>byte[]</code>.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">04</span>
+          <div class="step-content">
+            <div class="step-title">Write PDF to disk</div>
+            <p class="step-desc"><code>Files.write(invoicePath, response.getBody())</code> writes to <code>./invoices/{invoiceNumber}.pdf</code>. Directory created if absent via <code>Files.createDirectories()</code>.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout warn">
+        <div class="callout-title">Known Limitation</div>
+        <p>Invoice PDFs are written to the container's local filesystem. In a multi-replica deployment this would require a shared volume or object storage (S3). Current setup is single-instance per service.</p>
+      </div>
+    </section>
+
+    <!-- FLOW: GATEWAY -->
+    <section id="flow-gateway">
+      <div class="section-header">
+        <span class="section-id">06</span>
+        <h2>Request Flow — API Gateway Routing</h2>
+      </div>
+
+      <p>The gateway is built on Spring Cloud Gateway (WebFlux / Project Reactor). All route definitions live in <code>application.yml</code>. There is no service discovery — routes are statically configured to Docker Compose service names.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Inbound Path</th>
+              <th>Upstream</th>
+              <th>Filters</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>/api/patients/**</code></td>
+              <td>patient-management:8080</td>
+              <td>StripPrefix=1</td>
+            </tr>
+            <tr>
+              <td><code>/api/doctors/**</code></td>
+              <td>doctor-service:8083</td>
+              <td>StripPrefix=1</td>
+            </tr>
+            <tr>
+              <td><code>/api/appointments/**</code></td>
+              <td>appointment-service:8084</td>
+              <td>StripPrefix=1</td>
+            </tr>
+            <tr>
+              <td><code>/api/auth/**</code></td>
+              <td>auth-service:8089</td>
+              <td>StripPrefix=1, SetRequestHeader Content-Type</td>
+            </tr>
+            <tr>
+              <td><code>/api-docs/patients</code></td>
+              <td>patient-management:8080</td>
+              <td>RewritePath → /v3/api-docs</td>
+            </tr>
+            <tr>
+              <td><code>/auth/**</code>, <code>/actuator/**</code></td>
+              <td>—</td>
+              <td>Permit all — no JWT filter</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout">
+        <div class="callout-title">WebFlux Security Note</div>
+        <p>The gateway uses <code>@EnableWebFluxSecurity</code>, not standard MVC security. <code>ReactiveUserDetailsService</code> is overridden with a no-op bean to suppress Spring Security's autoconfigured form login. Auth is handled entirely by the custom <code>jwtAuthenticationFilter</code> WebFilter.</p>
+      </div>
+    </section>
+
+    <!-- RESILIENCE -->
+    <section id="resilience">
+      <div class="section-header">
+        <span class="section-id">07</span>
+        <h2>Fault Tolerance — Resilience4j</h2>
+      </div>
+
+      <p>Circuit breakers guard all outbound REST calls from appointment-service to patient-service and doctor-service. Configuration is identical for both:</p>
+
+      <pre><span class="comment"># appointment-service / application.properties</span>
+
+<span class="key">resilience4j.circuitbreaker.instances.patientService</span>
+  <span class="key">sliding-window-size</span>                    <span class="val">= 10</span>
+  <span class="key">failure-rate-threshold</span>                 <span class="val">= 50</span>    <span class="comment">  # % failures to open</span>
+  <span class="key">wait-duration-in-open-state</span>            <span class="val">= 10s</span>
+  <span class="key">permitted-calls-in-half-open-state</span>     <span class="val">= 3</span>
+  <span class="key">minimum-number-of-calls</span>               <span class="val">= 5</span>
+
+<span class="key">resilience4j.retry.instances.patientService</span>
+  <span class="key">max-attempts</span>                           <span class="val">= 3</span>
+  <span class="key">wait-duration</span>                          <span class="val">= 500ms</span></pre>
+
+      <p>State transitions: <code>CLOSED</code> → (failure rate exceeds threshold) → <code>OPEN</code> → (wait 10s) → <code>HALF_OPEN</code> → (3 probe calls pass) → <code>CLOSED</code>. In <code>OPEN</code> state, all calls immediately hit the fallback method which returns <code>false</code>, causing the appointment creation to fail with <code>CustomNotFoundException</code> rather than timing out.</p>
+
+      <p>patient-service also configures a circuit breaker around its Kafka producer to prevent Kafka broker unavailability from blocking HTTP request threads.</p>
+    </section>
+
+    <!-- OBSERVABILITY -->
+    <section id="observability">
+      <div class="section-header">
+        <span class="section-id">08</span>
+        <h2>Observability</h2>
+      </div>
+
+      <p>Every service exposes a <code>/actuator/prometheus</code> endpoint via Micrometer. Prometheus scrapes all 6 services on a 5-second interval. Grafana reads from Prometheus and serves a pre-provisioned dashboard.</p>
+
+      <h3>Metrics tracked per service</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Metric</th><th>Source</th><th>Use</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>http_server_requests_seconds</code></td><td>Micrometer</td><td>Request rate, P95 latency, error rate by status code</td></tr>
+            <tr><td><code>jvm_memory_used_bytes</code></td><td>JVM</td><td>Heap / non-heap usage per service</td></tr>
+            <tr><td><code>hikaricp_connections_*</code></td><td>HikariCP</td><td>Active, idle, pending, max pool connections</td></tr>
+            <tr><td><code>resilience4j_circuitbreaker_*</code></td><td>Resilience4j</td><td>State (CLOSED/OPEN/HALF_OPEN), failure rate, call rate</td></tr>
+            <tr><td><code>jvm_gc_pause_seconds</code></td><td>JVM / G1GC</td><td>GC pause rate and duration</td></tr>
+            <tr><td><code>tomcat_threads_*</code></td><td>Tomcat</td><td>Current and busy thread counts</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Load testing</h3>
+      <p>Three k6 scripts cover different load profiles: <code>low-stress.js</code> (10 VUs, 30s), <code>medium-stress.js</code> (ramp to 50 VUs), <code>intense-stress.js</code> (ramp to 200 VUs). <code>appointments-stress.js</code> runs a full setup phase — registers a user, creates 50 patients and 50 doctors, then hammers appointment creation at 100 req/s constant arrival rate for 30 seconds. Thresholds: P95 &lt; 2000ms, error rate &lt; 1%.</p>
+
+      <div class="callout ok">
+        <div class="callout-title">Test Coverage</div>
+        <p>patient-service achieves 72% instruction coverage measured by JaCoCo. Coverage spans controller (<code>@WebMvcTest</code>), service (Mockito unit tests), repository (<code>@DataJpaTest</code> with H2), and Kafka producer. DTOs, entity classes, config, exception handlers, and generated Protobuf classes are excluded from the report.</p>
+      </div>
+    </section>
+
+    <!-- CI/CD -->
+    <section id="cicd">
+      <div class="section-header">
+        <span class="section-id">09</span>
+        <h2>CI / CD</h2>
+      </div>
+
+      <p>Each service has its own GitHub Actions workflow triggered on push to <code>master</code> when files under its directory change. This prevents unrelated service rebuilds.</p>
+
+      <pre><span class="comment"># Per-service workflow pattern</span>
+<span class="key">on</span><span class="sym">:</span>
+  <span class="key">push</span><span class="sym">:</span>
+    <span class="key">branches</span><span class="sym">:</span> <span class="sym">[</span><span class="val">master</span><span class="sym">]</span>
+    <span class="key">paths</span><span class="sym">:</span>
+      <span class="sym">-</span> <span class="val">'appointment-service/**'</span>
+
+<span class="comment"># Kubernetes workflow uses matrix strategy across 6 services</span>
+<span class="key">strategy</span><span class="sym">:</span>
+  <span class="key">matrix</span><span class="sym">:</span>
+    <span class="key">service</span><span class="sym">:</span>
+      <span class="sym">-</span> <span class="sym">{ </span><span class="key">name</span><span class="sym">:</span> <span class="val">api-gateway</span><span class="sym">,</span>          <span class="key">port</span><span class="sym">:</span> <span class="val">4004</span> <span class="sym">}</span>
+      <span class="sym">-</span> <span class="sym">{ </span><span class="key">name</span><span class="sym">:</span> <span class="val">appointment-service</span><span class="sym">,</span>   <span class="key">port</span><span class="sym">:</span> <span class="val">8084</span> <span class="sym">}</span>
+      <span class="sym">- ...</span></pre>
+
+      <p>The <code>kubernetes-register.yml</code> workflow builds multi-platform images (<code>linux/amd64,linux/arm64</code>) using Docker Buildx, pushes to GHCR, runs Trivy vulnerability scanning, and updates image tags in Kubernetes manifests. Dockerfile uses a two-stage build: Maven builder image + slim <code>eclipse-temurin:21-jdk</code> runner. JVM flags: <code>-XX:MaxRAMPercentage=75.0 -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError</code>.</p>
+    </section>
+
+    <!-- API -->
+    <section id="api">
+      <div class="section-header">
+        <span class="section-id">10</span>
+        <h2>API Reference</h2>
+      </div>
+
+      <p>Full endpoint documentation including request/response schemas, auth headers, and sample payloads is available in the Postman workspace. Each service also serves Swagger UI at <code>/swagger-ui/index.html</code> (where springdoc is configured).</p>
+
+      <div style="display:flex; gap:12px; flex-wrap:wrap;">
+        <a href="https://www.postman.com/spacecraft-astronaut-67997412/workspace/patient-management/folder/32076392-560c6040-1ca9-429b-8294-c26a30e2127d"
+           target="_blank"
+           style="font-family:var(--mono); font-size:12px; padding:9px 18px; border:1px solid var(--border-active); color:var(--text-muted); text-decoration:none; border-radius:2px; transition:all 0.15s;"
+           onmouseover="this.style.color='var(--text)'; this.style.borderColor='var(--text)'"
+           onmouseout="this.style.color='var(--text-muted)'; this.style.borderColor='var(--border-active)'">
+          postman workspace →
+        </a>
+        <a href="https://github.com/doguhanniltextra/patient-management"
+           target="_blank"
+           style="font-family:var(--mono); font-size:12px; padding:9px 18px; border:1px solid var(--border); color:var(--text-muted); text-decoration:none; border-radius:2px; transition:all 0.15s;"
+           onmouseover="this.style.color='var(--text)'; this.style.borderColor='var(--border-active)'"
+           onmouseout="this.style.color='var(--text-muted)'; this.style.borderColor='var(--border)'">
+          source code →
+        </a>
+      </div>
+    </section>
+
+  </main>
 </div>
+
+<!-- FOOTER -->
+<footer>
+  <span>patient-management / docs — 2026</span>
+  <div style="display:flex; gap:20px;">
+    <a href="https://github.com/doguhanniltextra/patient-management" target="_blank">github</a>
+    <a href="mailto:doguhannilt@gmail.com">contact</a>
+  </div>
+</footer>
+
+<script>
+  // Active sidebar link on scroll
+  const links = document.querySelectorAll('.sidebar-link');
+  const sections = document.querySelectorAll('section, .hero');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        links.forEach(l => {
+          l.classList.toggle('active', l.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { threshold: 0.25, rootMargin: '-48px 0px -60% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+</script>
 
 </body>
 </html>
