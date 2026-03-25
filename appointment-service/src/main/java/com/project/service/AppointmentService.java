@@ -2,7 +2,6 @@ package com.project.service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,6 +19,8 @@ import com.project.utils.IdValidation;
 
 import jakarta.transaction.Transactional;
 import org.apache.juli.logging.Log;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -98,9 +99,9 @@ public class AppointmentService {
         appointmentValidator.updatePaymentStatusKafkaSendEvent(status, appointmentDTO, kafkaProducer);
     }
 
-    public List<Appointment> getAllAppointments() {
+    public Page<Appointment> getAllAppointments(Pageable pageable) {
         log.info(LogMessages.SERVICE_GET_ALL_TRIGGERED);
-        return appointmentRepository.findAll();
+        return appointmentRepository.findAll(pageable);
     }
     
 }

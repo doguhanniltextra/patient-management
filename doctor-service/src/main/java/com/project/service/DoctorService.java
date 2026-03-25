@@ -20,6 +20,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 @Service
 public class DoctorService {
     private final DoctorRepository doctorRepository;
@@ -66,8 +69,8 @@ public class DoctorService {
         Optional<Doctor> byId = doctorRepository.findById(id);
         return byId;
     }
-    public List<Doctor> getDoctors() {
-        return doctorRepository.findAll();
+    public Page<Doctor> getDoctors(Pageable pageable) {
+        return doctorRepository.findAll(pageable);
     }
     // MAINTAINING
     public void increasePatientNumber(UUID id) throws PatientLimitException {

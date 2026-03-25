@@ -18,6 +18,9 @@ import jakarta.validation.Valid;
 import jakarta.validation.groups.Default;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -44,11 +47,17 @@ public class PatientController {
 
     @GetMapping
     @Operation(summary = SwaggerMessages.GET_PATIENTS)
-    public ResponseEntity<List<GetPatientControllerResponseDto>> getPatients() {
+    public ResponseEntity<Page<GetPatientControllerResponseDto>> getPatients(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
         log.info(LogMessages.CONTROLLER_GET_TRIGGERED);
-        List<GetPatientServiceResponseDto> patients = patientService.getPatients();
 
-        List<GetPatientControllerResponseDto> result = userMapper.getGetPatientControllerResponseDtos(patients);
+        // Cap page size to prevent abuse
+        int safeSize = Math.min(size, 100);
+        Pageable pageable = PageRequest.of(page, safeSize);
+
+        Page<GetPatientServiceResponseDto> patients = patientService.getPatients(pageable);
+        Page<GetPatientControllerResponseDto> result = patients.map(userMapper::toControllerResponseDto);
 
         return ResponseEntity.ok().body(result);
     }

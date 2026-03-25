@@ -14,12 +14,12 @@ import com.project.patient_service.kafka.KafkaProducer;
 import com.project.patient_service.model.Patient;
 import com.project.patient_service.repository.PatientRepository;
 import com.project.patient_service.helper.UserValidator;
-import org.apache.kafka.common.KafkaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -29,8 +29,6 @@ public class PatientService {
     private final PatientRepository patientRepository;
     private final KafkaProducer kafkaProducer;
     private final UserMapper userMapper;
-
-
 
     private static final Logger log = LoggerFactory.getLogger(PatientService.class);
 
@@ -43,12 +41,9 @@ public class PatientService {
         this.userValidator = userValidator;
     }
 
-
-
-    public List<GetPatientServiceResponseDto> getPatients() {
-        List<Patient> patients = patientRepository.findAll();
-        List<GetPatientServiceResponseDto> result = userMapper.getGetPatientServiceResponseDtos(patients);
-        return result;
+    public Page<GetPatientServiceResponseDto> getPatients(Pageable pageable) {
+        Page<Patient> patients = patientRepository.findAll(pageable);
+        return patients.map(userMapper::toServiceResponseDto);
     }
 
     public CreatePatientServiceResponseDto createPatient(CreatePatientServiceRequestDto patientRequestDTO) throws EmailAlreadyExistsException {
@@ -60,12 +55,9 @@ public class PatientService {
         Patient newPatient = patientRepository.save(patient);
         log.info(LogMessages.SERVICE_CREATE_TRIGGERED, newPatient.getId());
 
-        try {
-            KafkaPatientRequestDto kafkaDto = userMapper.getKafkaPatientRequestDto(newPatient);
-            kafkaProducer.sendEvent(kafkaDto);
-        } catch (KafkaException e) {
-            log.warn(LogMessages.SERVICE_CREATE_KAFKA_ERROR, newPatient.getId());
-        }
+        // Async Kafka — fire-and-forget with callback logging
+        kafkaProducer.sendEventAsync(userMapper.getKafkaPatientRequestDto(newPatient));
+
         CreatePatientServiceResponseDto createPatientServiceResponseDto = userMapper.getCreatePatientServiceResponseDto(patient);
         return createPatientServiceResponseDto;
     }
@@ -86,14 +78,8 @@ public class PatientService {
 
     public void deletePatient(UUID id) {
         log.info(LogMessages.SERVICE_DELETE_TRIGGERED);
-        // Publish PATIENT_DELETED event so appointment-service can clean up orphaned appointments
-        try {
-            KafkaPatientRequestDto kafkaDto = new KafkaPatientRequestDto();
-            kafkaDto.setId(id);
-            kafkaProducer.sendDeleteEvent(id);
-        } catch (Exception e) {
-            log.warn("Failed to publish PATIENT_DELETED Kafka event for patient {}", id);
-        }
+        // Async Kafka — fire-and-forget with callback logging
+        kafkaProducer.sendDeleteEventAsync(id);
         patientRepository.deleteById(id);
     }
 

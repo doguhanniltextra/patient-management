@@ -17,4 +17,9 @@ COPY --from=builder /app/target/analytics-service-1.0-SNAPSHOT.jar ./app.jar
 EXPOSE 8082
 EXPOSE 9002
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", \
+  "-XX:MaxRAMPercentage=75.0", \
+  "-XX:InitialRAMPercentage=50.0", \
+  "-XX:+UseG1GC", \
+  "-XX:+ExitOnOutOfMemoryError", \
+  "-jar", "app.jar"]

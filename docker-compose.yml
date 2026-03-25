@@ -1,5 +1,16 @@
 version: "3.8"
 
+# Resource limit defaults for Java microservices
+x-java-service-resources: &java-resources
+  deploy:
+    resources:
+      limits:
+        cpus: '1.0'
+        memory: 512M
+      reservations:
+        cpus: '0.25'
+        memory: 256M
+
 services:
   # ============================================================================
   # INFRASTRUCTURE SERVICES
@@ -24,6 +35,14 @@ services:
       ALLOW_PLAINTEXT_LISTENER: "yes"
       KAFKA_HEARTBEAT_INTERVAL_MS: 3000
       KAFKA_SESSION_TIMEOUT_MS: 30000
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
     volumes:
       - kafka-data:/bitnami/kafka
     networks:
@@ -51,6 +70,14 @@ services:
       POSTGRES_DB: patient_db
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres123
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
     volumes:
       - postgresql-data:/var/lib/postgresql/data
     networks:
@@ -72,6 +99,14 @@ services:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: mongodb123
       MONGO_INITDB_DATABASE: patient_db
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
     volumes:
       - mongodb-data:/data/db
     networks:
@@ -88,6 +123,7 @@ services:
 
   # API Gateway - Entry point for all requests
   api-gateway:
+    <<: *java-resources
     build:
       context: ./api-gateway
       dockerfile: Dockerfile
@@ -122,6 +158,7 @@ services:
 
   # Patient Service - Manages patient records (PostgreSQL)
   patient-management:
+    <<: *java-resources
     build:
       context: ./patient-management
       dockerfile: Dockerfile
@@ -154,6 +191,7 @@ services:
 
   # Auth Service - Authentication & Authorization (PostgreSQL)
   auth-service:
+    <<: *java-resources
     build:
       context: ./auth-service
       dockerfile: Dockerfile
@@ -187,6 +225,7 @@ services:
 
   # Doctor Service - Manages doctor profiles (MongoDB)
   doctor-service:
+    <<: *java-resources
     build:
       context: ./doctor-service
       dockerfile: Dockerfile
@@ -216,6 +255,7 @@ services:
 
   # Appointment Service - Manages appointments (PostgreSQL)
   appointment-service:
+    <<: *java-resources
     build:
       context: ./appointment-service
       dockerfile: Dockerfile
@@ -248,6 +288,7 @@ services:
 
   # Billing Service - Manages billing & payments (PostgreSQL)
   billing-service:
+    <<: *java-resources
     build:
       context: ./billing-service
       dockerfile: Dockerfile
@@ -279,6 +320,7 @@ services:
 
   # Analytics Service - Analytics & Reporting (MongoDB)
   analytics-service:
+    <<: *java-resources
     build:
       context: ./analytics-service
       dockerfile: Dockerfile

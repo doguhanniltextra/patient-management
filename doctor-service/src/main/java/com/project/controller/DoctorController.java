@@ -21,11 +21,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.groups.Default;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -47,8 +49,12 @@ public class DoctorController {
 
     @GetMapping
     @Operation(summary = SwaggerMessages.GET_DOCTORS )
-    public ResponseEntity<List<Doctor>> getDoctors() {
-        List<Doctor> doctors = doctorService.getDoctors();
+    public ResponseEntity<Page<Doctor>> getDoctors(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        int safeSize = Math.min(size, 100);
+        Pageable pageable = PageRequest.of(page, safeSize);
+        Page<Doctor> doctors = doctorService.getDoctors(pageable);
         return ResponseEntity.ok().body(doctors);
     }
     

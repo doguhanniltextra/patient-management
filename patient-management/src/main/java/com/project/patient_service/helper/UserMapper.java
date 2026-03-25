@@ -45,19 +45,32 @@ public class UserMapper {
         patient.setEmail(updatePatientServiceRequestDto.getEmail());
         patient.setDateOfBirth(LocalDate.parse(updatePatientServiceRequestDto.getDateOfBirth()));
     }
+    // Single-object mapper for Page.map() — used by paginated endpoints
+    public GetPatientServiceResponseDto toServiceResponseDto(Patient patient) {
+        GetPatientServiceResponseDto dto = new GetPatientServiceResponseDto();
+        dto.setId(patient.getId());
+        dto.setEmail(patient.getEmail());
+        dto.setAddress(patient.getAddress());
+        dto.setDateOfBirth(patient.getDateOfBirth());
+        dto.setName(patient.getName());
+        return dto;
+    }
+
+    // Single-object mapper for Page.map() — used by paginated endpoints
+    public GetPatientControllerResponseDto toControllerResponseDto(GetPatientServiceResponseDto patient) {
+        GetPatientControllerResponseDto dto = new GetPatientControllerResponseDto();
+        dto.setAddress(patient.getAddress());
+        dto.setId(String.valueOf(patient.getId()));
+        dto.setName(patient.getName());
+        dto.setEmail(patient.getEmail());
+        dto.setDateOfBirth(patient.getDateOfBirth());
+        return dto;
+    }
+
     public  List<GetPatientServiceResponseDto> getGetPatientServiceResponseDtos(List<Patient> patients) {
         List<GetPatientServiceResponseDto> result = patients
                 .stream()
-                .map(patient -> {
-                    GetPatientServiceResponseDto getPatientServiceResponseDtos = new GetPatientServiceResponseDto();
-                    getPatientServiceResponseDtos.setId(patient.getId());
-                    getPatientServiceResponseDtos.setEmail(patient.getEmail());
-                    getPatientServiceResponseDtos.setAddress(patient.getAddress());
-                    getPatientServiceResponseDtos.setDateOfBirth(patient.getDateOfBirth());
-                    getPatientServiceResponseDtos.setName(patient.getName());
-
-                    return getPatientServiceResponseDtos;
-                }).toList();
+                .map(this::toServiceResponseDto).toList();
         return result;
     }
     public  CreatePatientServiceRequestDto getCreatePatientServiceRequestDto(CreatePatientControllerRequestDto createPatientControllerRequestDto) {

@@ -16,4 +16,9 @@ COPY --from=builder /app/target/patient-service-0.0.1-SNAPSHOT.jar ./app.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", \
+  "-XX:MaxRAMPercentage=75.0", \
+  "-XX:InitialRAMPercentage=50.0", \
+  "-XX:+UseG1GC", \
+  "-XX:+ExitOnOutOfMemoryError", \
+  "-jar", "app.jar"]

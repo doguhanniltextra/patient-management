@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class KafkaProducer {
@@ -24,33 +25,59 @@ public class KafkaProducer {
         this.userValidator = userValidator;
     }
 
-    public void sendEvent(KafkaPatientRequestDto kafkaPatientRequestDto) {
+    /**
+     * Async fire-and-forget: sends PATIENT_CREATED event without blocking the request thread.
+     * Success/failure is logged via CompletableFuture callback.
+     */
+    public void sendEventAsync(KafkaPatientRequestDto kafkaPatientRequestDto) {
         try {
-            log.info("KAFKA: Kafka -PATIENT- Triggered");
             Map<String, Object> event = userValidator.getStringObjectMap(kafkaPatientRequestDto);
-
-            log.info("KAFKA: kafka -PATIENT-{}", event);
-
             String json = objectMapper.writeValueAsString(event);
 
-            userValidator.sendKafkaEvent(json, kafkaTemplate);
-            log.info("Sent JSON message to Kafka: {}", json);
+            CompletableFuture<?> future = kafkaTemplate.send("patient", json);
+            future.whenComplete((result, ex) -> {
+                if (ex != null) {
+                    log.error("KAFKA: Failed to send PATIENT_CREATED event for patientId={}",
+                            kafkaPatientRequestDto.getId(), ex);
+                } else {
+                    log.info("KAFKA: Sent PATIENT_CREATED event for patientId={}", kafkaPatientRequestDto.getId());
+                }
+            });
         } catch (Exception e) {
-            log.error("Failed to send message", e);
+            log.error("KAFKA: Failed to serialize PATIENT_CREATED event", e);
         }
     }
 
-    public void sendDeleteEvent(UUID patientId) {
+    /**
+     * Async fire-and-forget: sends PATIENT_DELETED event without blocking the request thread.
+     */
+    public void sendDeleteEventAsync(UUID patientId) {
         try {
             Map<String, Object> event = new HashMap<>();
             event.put("patientId", patientId.toString());
             event.put("eventType", EventType.PATIENT_DELETED.name());
 
             String json = objectMapper.writeValueAsString(event);
-            kafkaTemplate.send("patient", json);
-            log.info("KAFKA: Sent PATIENT_DELETED event for patientId={}", patientId);
+
+            CompletableFuture<?> future = kafkaTemplate.send("patient", json);
+            future.whenComplete((result, ex) -> {
+                if (ex != null) {
+                    log.error("KAFKA: Failed to send PATIENT_DELETED event for patientId={}", patientId, ex);
+                } else {
+                    log.info("KAFKA: Sent PATIENT_DELETED event for patientId={}", patientId);
+                }
+            });
         } catch (Exception e) {
-            log.error("KAFKA: Failed to send PATIENT_DELETED event for patientId={}", patientId, e);
+            log.error("KAFKA: Failed to serialize PATIENT_DELETED event for patientId={}", patientId, e);
         }
+    }
+
+    // Keep legacy sync methods for backward compatibility
+    public void sendEvent(KafkaPatientRequestDto kafkaPatientRequestDto) {
+        sendEventAsync(kafkaPatientRequestDto);
+    }
+
+    public void sendDeleteEvent(UUID patientId) {
+        sendDeleteEventAsync(patientId);
     }
 }

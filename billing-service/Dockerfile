@@ -17,4 +17,9 @@ COPY --from=builder /app/target/billing-service-0.0.1-SNAPSHOT.jar ./app.jar
 EXPOSE 8081
 EXPOSE 9001
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", \
+  "-XX:MaxRAMPercentage=75.0", \
+  "-XX:InitialRAMPercentage=50.0", \
+  "-XX:+UseG1GC", \
+  "-XX:+ExitOnOutOfMemoryError", \
+  "-jar", "app.jar"]

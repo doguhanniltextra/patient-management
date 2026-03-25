@@ -7,13 +7,15 @@ import com.project.dto.request.CreateAppointmentServiceRequestDto;
 import com.project.dto.response.CreateAppointmentServiceResponseDto;
 import com.project.helper.AppointmentMapper;
 import com.project.utils.IdValidation;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import com.project.dto.AppointmentDTO;
 import com.project.model.Appointment;
 import com.project.service.AppointmentService;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
@@ -67,8 +69,12 @@ public class AppointmentController {
     }
 
     @GetMapping(Endpoints.GET_ALL_APPOINTMENTS)
-    public ResponseEntity<List<Appointment>> getAllAppointments() {
-        List<Appointment> appointments = appointmentService.getAllAppointments();
+    public ResponseEntity<Page<Appointment>> getAllAppointments(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        int safeSize = Math.min(size, 100);
+        Pageable pageable = PageRequest.of(page, safeSize);
+        Page<Appointment> appointments = appointmentService.getAllAppointments(pageable);
         if (appointments.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
