@@ -65,10 +65,23 @@ public class AppointmentService {
         log.info(LogMessages.SERVICE_CREATE_VALIDATE_DOCTOR, createAppointmentServiceRequestDto.getDoctorId());
         appointmentValidator.checkDoctorExistsOrNotForCreateAppointment(result.doctorId());
 
+        java.util.List<Appointment> overlaps = appointmentRepository.findOverlappingAppointments(
+                doctorId, 
+                createAppointmentServiceRequestDto.getServiceDate(), 
+                createAppointmentServiceRequestDto.getServiceDateEnd()
+        );
+        if (!overlaps.isEmpty()) {
+            throw new com.project.exception.CustomConflictException("Time slot overlaps with an existing appointment.");
+        }
+
+        idValidation.increaseDoctorPatientCount(doctorId);
+
         Appointment appointment = appointmentMapper.getAppointment(createAppointmentServiceRequestDto);
         CreateAppointmentServiceResponseDto appointmentServiceResponseDto = appointmentMapper.getCreateAppointmentServiceResponseDto(createAppointmentServiceRequestDto);
 
         appointmentRepository.save(appointment);
+        
+        log.info("Mock Notification: Sent email/SMS confirmation to patient {} for appointment {}", patientId, appointment.getId());
 
         return appointmentServiceResponseDto;
     }

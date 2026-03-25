@@ -18,6 +18,9 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
     void deleteByPatientId(UUID patientId);
     void deleteByDoctorId(UUID doctorId);
 
+    @Query("SELECT a FROM Appointment a WHERE a.doctorId = :doctorId AND ((a.serviceDate <= :end AND a.serviceDateEnd >= :start))")
+    List<Appointment> findOverlappingAppointments(@Param("doctorId") UUID doctorId, @Param("start") String start, @Param("end") String end);
+
     /**
      * Deletes expired appointments that have been paid.
      * Compares serviceDateEnd (stored as 'yyyy-MM-dd HH:mm' string) against the cutoff.
