@@ -11,7 +11,7 @@ DOCKER := docker
 # Prioritize the modern plugin version which handles WSL credentials better
 DOCKER_COMPOSE := $(shell docker compose version >/dev/null 2>&1 && echo "docker compose" || echo "docker-compose")
 
-SERVICES := api-gateway patient-management auth-service doctor-service appointment-service billing-service analytics-service
+SERVICES := api-gateway patient-management auth-service doctor-service appointment-service billing-service
 
 .PHONY: help
 help:

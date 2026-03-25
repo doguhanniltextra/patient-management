@@ -18,7 +18,7 @@ The system is composed of the following microservices, all containerized with Do
 * **Patient Service**
 * **Appointment Service**
 * **Billing Service**
-* **Analytics Service**
+
 
 Services communicate via REST APIs with validation, creation, and synchronization mechanisms.
 
@@ -36,7 +36,7 @@ All services run independently in Docker containers. Ports:
 | Doctor Service      | 8083 |
 | Appointment Service | 8084 |
 | Billing Service     | 8081 |
-| Analytics Service   | 8082 |
+
 
 ---
 

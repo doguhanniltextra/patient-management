@@ -67,7 +67,7 @@
                 <div class="info-card">
                     <div class="card-icon">🏗️</div>
                     <h4>Distributed Nodes</h4>
-                    <p>7 specialized microservices coupled with an edge API Gateway.</p>
+                    <p>6 specialized microservices coupled with an edge API Gateway.</p>
                 </div>
                 <div class="info-card">
                     <div class="card-icon">📦</div>
@@ -82,7 +82,7 @@
                 <div class="info-card">
                     <div class="card-icon">💾</div>
                     <h4>Data Persistence</h4>
-                    <p>PostgreSQL (Relational) and MongoDB (Document) hybrid stack.</p>
+                    <p>PostgreSQL (Relational) robust data stack.</p>
                 </div>
             </div>
         </section>
@@ -121,12 +121,7 @@
                             <td>PostgreSQL</td>
                             <td>Transactional billing & PDFs</td>
                         </tr>
-                        <tr>
-                            <td><span class="badge badge-info">Analytics Service</span></td>
-                            <td><code>8082</code></td>
-                            <td>MongoDB</td>
-                            <td>BI & Event aggregation</td>
-                        </tr>
+
                         <tr>
                             <td><span class="badge badge-secondary">Doctor Service</span></td>
                             <td><code>8083</code></td>
@@ -161,7 +156,7 @@
                     <div class="card-meta">
                         <code>POSTGRESQL</code> • <code>PORT 8080</code>
                     </div>
-                    <p>Centralized authority for patient demographic data. It functions as the source of truth for patient identity and provides event triggers for lifestyle and attendance analytics.</p>
+                    <p>Centralized authority for patient demographic data. It functions as the source of truth for patient identity and provides event triggers for system workflows.</p>
                     <pre class="code-snipp"><code>{
   "id": "UUID",
   "name": "String",
@@ -284,7 +279,7 @@
                     <span class="step-idx">04</span>
                     <div class="step-content">
                         <h5>Dispatch</h5>
-                        <p>A 'PROCESSED' event is pushed to Kafka for the Billing and Analytics services.</p>
+                        <p>A 'PROCESSED' event is pushed to Kafka for the Billing service.</p>
                     </div>
                 </div>
             </div>
@@ -416,8 +411,8 @@
                     <p>Microservices allow independent scaling of high-demand nodes (e.g. Appointment Svc) without over-provisioning the entire system.</p>
                 </div>
                 <div class="phi-card">
-                    <h4>Polyglot Persistence</h4>
-                    <p>We use the right tool for the job. Relational data stays in PostgreSQL, while high-volume analytical event logs are streamed to MongoDB.</p>
+                    <h4>Reliable Persistence</h4>
+                    <p>We use robust technologies for the job. Relational data stays in PostgreSQL, ensuring ACID compliance and strong data integrity across all services.</p>
                 </div>
                 <div class="phi-card">
                     <h4>Stateless IAM</h4>

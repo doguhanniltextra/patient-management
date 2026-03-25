@@ -86,34 +86,7 @@ services:
       timeout: 5s
       retries: 5
 
-  # MongoDB Database
-  mongodb:
-    image: mongo:6.0
-    container_name: mongodb
-    restart: unless-stopped
-    ports:
-      - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: mongodb123
-      MONGO_INITDB_DATABASE: patient_db
-    deploy:
-      resources:
-        limits:
-          cpus: "1.5"
-          memory: 1G
-        reservations:
-          cpus: "0.5"
-          memory: 512M
-    volumes:
-      - mongodb-data:/data/db
-    networks:
-      - patient-network
-    healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+
 
   # ============================================================================
   # MICROSERVICES
@@ -144,7 +117,7 @@ services:
       DOCTOR_SERVICE_URL: http://doctor-service:8083
       APPOINTMENT_SERVICE_URL: http://appointment-service:8084
       BILLING_SERVICE_URL: http://billing-service:8081
-      ANALYTICS_SERVICE_URL: http://analytics-service:8082
+
     volumes:
       - ./api-gateway/src:/app/src
     networks:
@@ -223,7 +196,7 @@ services:
       timeout: 5s
       retries: 5
 
-  # Doctor Service - Manages doctor profiles (MongoDB)
+  # Doctor Service - Manages doctor profiles (PostgreSQL)
   doctor-service:
     <<: *java-resources
     build:
@@ -234,14 +207,17 @@ services:
     ports:
       - "8083:8083"
     depends_on:
-      mongodb:
+      postgresql:
         condition: service_healthy
       kafka:
         condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: dev
       SERVER_PORT: 8083
-      SPRING_DATA_MONGODB_URI: mongodb://admin:mongodb123@mongodb:27017/patient_db?authSource=admin
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/patient_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres123
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     volumes:
       - ./doctor-service/src:/app/src
@@ -320,35 +296,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # Analytics Service - Analytics & Reporting (MongoDB)
-  analytics-service:
-    <<: *java-resources
-    build:
-      context: ./analytics-service
-      dockerfile: Dockerfile
-    container_name: analytics-service
-    restart: unless-stopped
-    ports:
-      - "8082:8082"
-    depends_on:
-      mongodb:
-        condition: service_healthy
-      kafka:
-        condition: service_healthy
-    environment:
-      SPRING_PROFILES_ACTIVE: dev
-      SERVER_PORT: 8082
-      SPRING_DATA_MONGODB_URI: mongodb://admin:mongodb123@mongodb:27017/patient_db?authSource=admin
-      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-    volumes:
-      - ./analytics-service/src:/app/src
-    networks:
-      - patient-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
-      interval: 15s
-      timeout: 5s
-      retries: 5
 
   # ============================================================================
   # MONITORING
@@ -384,7 +331,7 @@ services:
       - doctor-service
       - appointment-service
       - billing-service
-      - analytics-service
+
 
   # Grafana - Metrics visualization
   grafana:
@@ -418,8 +365,7 @@ volumes:
     driver: local
   postgresql-data:
     driver: local
-  mongodb-data:
-    driver: local
+
   prometheus-data:
     driver: local
   grafana-data:

@@ -33,7 +33,3 @@ scrape_configs:
     static_configs:
       - targets: ['billing-service:8081']
 
-  - job_name: 'analytics-service'
-    metrics_path: '/actuator/prometheus'
-    static_configs:
-      - targets: ['analytics-service:8082']
