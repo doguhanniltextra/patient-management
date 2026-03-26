@@ -49,6 +49,7 @@ public class DoctorController {
 
     @GetMapping
     @Operation(summary = SwaggerMessages.GET_DOCTORS )
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST')")
     public ResponseEntity<Page<Doctor>> getDoctors(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
@@ -61,6 +62,7 @@ public class DoctorController {
 
     @PutMapping(Endpoints.DOCTOR_CONTROLLER_UPDATE_DOCTOR)
     @Operation(summary = SwaggerMessages.UPDATE_DOCTOR)
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN') or @securityService.isDoctorOwner(authentication, #id)")
     public ResponseEntity<UpdateDoctorControllerResponseDto> updateDoctor(@PathVariable UUID id, @Validated({Default.class}) @RequestBody UpdateDoctorControllerRequestDto updateDoctorControllerRequestDto) throws DoctorNotFoundException {
 
         UpdateDoctorServiceRequestDto updateDoctorServiceRequestDto = new UpdateDoctorServiceRequestDto();
@@ -85,6 +87,7 @@ public class DoctorController {
 
     @PostMapping
     @Operation(summary = SwaggerMessages.CREATE_DOCTOR)
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CreateDoctorControllerResponseDto> createDoctor(@Valid @RequestBody CreateDoctorControllerRequestDto createDoctorControllerRequestDto) throws IdIsValidException, EmailIsNotUniqueException {
 
         CreateDoctorServiceRequestDto createDoctorServiceRequestDto = doctorMapper.getCreateDoctorServiceRequestDto(createDoctorControllerRequestDto);
@@ -107,6 +110,7 @@ public class DoctorController {
 
     @DeleteMapping(Endpoints.DOCTOR_CONTROLLER_DELETE_DOCTOR)
     @Operation(summary = SwaggerMessages.DELETE_DOCTOR)
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteDoctor(@PathVariable UUID id) {
         doctorService.deleteDoctor(id);
         return ResponseEntity.noContent().build();
@@ -114,6 +118,7 @@ public class DoctorController {
 
     @GetMapping(Endpoints.DOCTOR_CONTROLLER_FIND_DOCTOR_BY_ID)
     @Operation(summary = SwaggerMessages.FIND_DOCTOR_BY_ID)
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST') or @securityService.isDoctorOwner(authentication, #id)")
     public ResponseEntity<Doctor> findDoctorById(@PathVariable UUID id) {
         Optional<Doctor> currentId = doctorService.findDoctorById(id);
         if (currentId.isPresent()) {
@@ -121,9 +126,11 @@ public class DoctorController {
         } else {
             return ResponseEntity.notFound().build();
     }
+}
 
     @PutMapping("/{id}/increase-patient")
     @Operation(summary = "Increase patient count for a doctor")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('PATIENT', 'RECEPTIONIST', 'ADMIN')")
     public ResponseEntity<Void> increasePatientNumber(@PathVariable UUID id) throws com.project.exception.PatientLimitException, DoctorNotFoundException {
         doctorService.increasePatientNumber(id);
         return ResponseEntity.ok().build();

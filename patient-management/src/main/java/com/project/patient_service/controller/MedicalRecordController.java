@@ -22,11 +22,13 @@ public class MedicalRecordController {
     }
 
     @PostMapping
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('DOCTOR')")
     public ResponseEntity<MedicalRecordResponseDto> createRecord(@Valid @RequestBody CreateMedicalRecordRequestDto request) {
         return ResponseEntity.ok(medicalRecordService.createMedicalRecord(request));
     }
 
     @GetMapping(Endpoints.MEDICAL_RECORD_CONTROLLER_GET_BY_PATIENT)
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN') or @securityService.isPatientOwner(authentication, #patientId)")
     public ResponseEntity<List<MedicalRecordResponseDto>> getRecordsByPatient(@PathVariable UUID patientId) {
         return ResponseEntity.ok(medicalRecordService.getRecordsByPatient(patientId));
     }

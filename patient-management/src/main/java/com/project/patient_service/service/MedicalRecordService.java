@@ -1,7 +1,7 @@
 package com.project.patient_service.service;
 
-import com.project.patient_service.dto.request.CreateMedicalRecordRequestDto;
-import com.project.patient_service.dto.response.MedicalRecordResponseDto;
+import com.project.patient_service.dto.CreateMedicalRecordRequestDto;
+import com.project.patient_service.dto.MedicalRecordResponseDto;
 import com.project.patient_service.model.MedicalRecord;
 import com.project.patient_service.repository.MedicalRecordRepository;
 import com.project.patient_service.repository.PatientRepository;

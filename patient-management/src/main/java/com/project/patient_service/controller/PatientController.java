@@ -10,6 +10,7 @@ import com.project.patient_service.dto.response.UpdatePatientServiceResponseDto;
 import com.project.patient_service.dto.request.UpdatePatientServiceRequestDto;
 import com.project.patient_service.dto.request.UpdatePatientControllerRequestDto;
 import com.project.patient_service.dto.request.CreatePatientControllerRequestDto;
+import com.project.patient_service.dto.response.CreatePatientServiceResponseDto;
 import com.project.patient_service.dto.request.CreatePatientServiceRequestDto;
 import com.project.patient_service.helper.UserMapper;
 import com.project.patient_service.helper.UserValidator;
@@ -50,6 +51,7 @@ public class PatientController {
 
     @GetMapping
     @Operation(summary = SwaggerMessages.GET_PATIENTS)
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN', 'RECEPTIONIST')")
     public ResponseEntity<Page<GetPatientControllerResponseDto>> getPatients(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
@@ -67,6 +69,7 @@ public class PatientController {
 
     @PostMapping
     @Operation(summary = SwaggerMessages.CREATE_PATIENT)
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST')")
     public ResponseEntity<CreatePatientServiceResponseDto> createPatient(@Valid @RequestBody CreatePatientControllerRequestDto createPatientControllerRequestDto){
         log.info(LogMessages.CONTROLLER_CREATE_TRIGGERED);
 
@@ -78,6 +81,7 @@ public class PatientController {
 
     @PutMapping(Endpoints.PATIENT_CONTROLLER_UPDATE_PATIENT)
     @Operation(summary = SwaggerMessages.UPDATE_PATIENT)
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST') or @securityService.isPatientOwner(authentication, #id)")
     public ResponseEntity<UpdatePatientControllerResponseDto> updatePatient(@PathVariable UUID id, @Validated({Default.class}) @RequestBody UpdatePatientControllerRequestDto updatePatientControllerRequestDto) {
         log.info(LogMessages.CONTROLLER_UPDATE_TRIGGERED);
 
@@ -90,6 +94,7 @@ public class PatientController {
 
     @DeleteMapping(Endpoints.PATIENT_CONTROLLER_DELETE_PATIENT)
     @Operation(summary = SwaggerMessages.DELETE_PATIENT)
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deletePatient(@PathVariable UUID id) {
         log.info(LogMessages.CONTROLLER_DELETE_TRIGGERED);
         patientService.deletePatient(id);
@@ -98,6 +103,7 @@ public class PatientController {
 
     @GetMapping(Endpoints.PATIENT_CONTROLLER_FIND_PATIENT_BY_ID)
     @Operation(summary = SwaggerMessages.FIND_PATIENT_BY_ID)
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN', 'RECEPTIONIST') or @securityService.isPatientOwner(authentication, #id)")
     public ResponseEntity<Patient> findPatientById(@PathVariable UUID id) {
         log.info(LogMessages.CONTROLLER_FIND_BY_ID_TRIGGERED);
         Optional<Patient> currentId = patientService.findPatientById(id);
@@ -106,6 +112,7 @@ public class PatientController {
 
     @GetMapping(Endpoints.PATIENT_CONTROLLER_FIND_PATIENT_BY_EMAIL)
     @Operation(summary = SwaggerMessages.FIND_PATIENT_BY_EMAIL)
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN', 'RECEPTIONIST')")
     public ResponseEntity<Boolean> findPatientByEmail(@PathVariable String email) {
         log.info(LogMessages.CONTROLLER_FIND_BY_EMAIL_TRIGGERED);
         boolean patientByEmail = userValidator.isPatientByEmail(email, patientService);

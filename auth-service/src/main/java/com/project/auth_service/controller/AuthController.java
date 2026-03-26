@@ -50,7 +50,7 @@ public class AuthController {
 
         userRepository.save(user);
         log.info(LogMessages.REGISTER_USER_SAVED);
-        String token = jwtService.generateToken(user.getName());
+        String token = jwtService.generateToken(user.getName(), user.getRoles());
         log.info(LogMessages.REGISTER_TOKEN_GENERATED);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(new RegisterResponseDto("User registered successfully", token));
     }
@@ -69,7 +69,7 @@ public class AuthController {
         ResponseEntity<String> CheckPasswordEncoder = authValidator.CheckIfUsernameOrPasswordIsInvalidForPasswordEncoderForLoginMethod(loginRequestDto, user, passwordEncoder);
         if (CheckPasswordEncoder != null) return CheckPasswordEncoder;
         log.info(LogMessages.LOGIN_INVALID_CREDENTIALS);
-        String token = jwtService.generateToken(user.getName());
+        String token = jwtService.generateToken(user.getName(), user.getRoles());
         log.info(LogMessages.LOGIN_TOKEN_GENERATED);
 
         return ResponseEntity.ok(new LoginResponseDto(LogMessages.LOGIN_SUCCESS, token));

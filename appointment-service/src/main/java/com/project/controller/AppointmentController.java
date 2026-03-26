@@ -37,6 +37,7 @@ public class AppointmentController {
     }
 
     @PostMapping(Endpoints.CREATE_APPOINTMENT)
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('PATIENT', 'RECEPTIONIST', 'ADMIN')")
     public ResponseEntity<AppointmentDTO> createAppointment(@RequestBody Appointment appointment) {
         CreateAppointmentServiceRequestDto requestDto = appointmentMapper.getCreateAppointmentServiceRequestDto(appointment);
         CreateAppointmentServiceResponseDto responseDto = appointmentService.createAppointment(requestDto);
@@ -47,6 +48,7 @@ public class AppointmentController {
 
 
     @PutMapping(Endpoints.UPDATE_APPOINTMENT)
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST') or @securityService.isAppointmentOwner(authentication, #id)")
     public ResponseEntity<AppointmentDTO> updateAppointment(@PathVariable UUID id, @RequestBody Appointment appointment) {
         appointment.setId(id);
         Appointment updatedAppointment = appointmentService.updateAppointment(appointment).getBody();
@@ -55,6 +57,7 @@ public class AppointmentController {
     }
 
     @PutMapping(Endpoints.UPDATE_APPOINTMENT_STATUS)
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST')")
     public ResponseEntity<AppointmentUpdateDtoResponse> UpdateAppointmentStatus(@PathVariable UUID id, @PathVariable boolean status) {
         appointmentService.updatePaymentStatus(id, status);
         AppointmentUpdateDtoResponse appointmentUpdateDtoResponse = new AppointmentUpdateDtoResponse();
@@ -63,12 +66,14 @@ public class AppointmentController {
     }
 
     @DeleteMapping(Endpoints.DELETE_APPOINTMENT)
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteAppointment(@PathVariable UUID id) {
         appointmentService.deleteAppointment(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping(Endpoints.GET_ALL_APPOINTMENTS)
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST')")
     public ResponseEntity<Page<Appointment>> getAllAppointments(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
@@ -82,6 +87,7 @@ public class AppointmentController {
     }
 
     @GetMapping(Endpoints.VALIDATE_IDS)
+    @org.springframework.security.access.prepost.PreAuthorize("permitAll()")
     public String validateIds(@PathVariable UUID patientId, @PathVariable UUID doctorId) {
         UUID patientIdResult = patientId;
         UUID doctorIdResult = doctorId;
