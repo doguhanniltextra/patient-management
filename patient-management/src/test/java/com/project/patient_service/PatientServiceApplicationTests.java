@@ -6,6 +6,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import com.project.patient_service.security.JwtAuthFilter;
 
 @SpringBootTest
+@org.springframework.test.context.TestPropertySource(properties = "grpc.server.port=-1")
 class PatientServiceApplicationTests {
 
     @MockitoBean

@@ -16,9 +16,11 @@ public class SecurityOwnershipService {
 
     public boolean isPatientOwner(Authentication authentication, UUID patientId) {
         if (authentication == null || !authentication.isAuthenticated()) return false;
-        String email = authentication.getName(); // JWT subject is actually the username (name), wait! 
-        return patientRepository.findById(patientId)
-                .map(patient -> patient.getName().equals(email)) // Auth service stores name as the subject!
-                .orElse(false);
+        try {
+            UUID tokenUserId = UUID.fromString(authentication.getName()); 
+            return patientId.equals(tokenUserId);
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 }

@@ -16,9 +16,15 @@ public class SecurityOwnershipService {
 
     public boolean isAppointmentOwner(Authentication authentication, UUID appointmentId) {
         if (authentication == null || !authentication.isAuthenticated()) return false;
-        // In a strictly distributed architecture, validating cross-service ownership via token subjective 'name'
-        // vs 'UUID' requires calling the external service.
-        // Returning valid if token matches expected baseline scope or appointment exists as placeholder.
-        return appointmentRepository.existsById(appointmentId);
+        
+        try {
+            UUID tokenUserId = UUID.fromString(authentication.getName()); 
+            return appointmentRepository.findById(appointmentId)
+                .map(appointment -> appointment.getPatientId().equals(tokenUserId) || 
+                                    appointment.getDoctorId().equals(tokenUserId))
+                .orElse(false);
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 }
