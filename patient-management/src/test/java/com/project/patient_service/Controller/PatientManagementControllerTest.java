@@ -21,6 +21,10 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import org.springframework.security.test.context.support.WithMockUser;
+import com.project.patient_service.security.SecurityOwnershipService;
+import com.project.patient_service.security.JwtAuthFilter;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -33,11 +37,22 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+
 @WebMvcTest(PatientController.class)
+@AutoConfigureMockMvc(addFilters = false)
+@WithMockUser(roles = "ADMIN")
 public class PatientManagementControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockitoBean
+    private SecurityOwnershipService securityService;
+
+    @MockitoBean
+    private JwtAuthFilter jwtAuthFilter;
 
     @MockitoBean
     private PatientService patientService;

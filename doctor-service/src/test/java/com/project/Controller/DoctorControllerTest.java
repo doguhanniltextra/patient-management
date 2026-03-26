@@ -37,13 +37,27 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
-import static org.mockito.Mockito.when;
+import org.springframework.security.test.context.support.WithMockUser;
+import com.project.security.SecurityOwnershipService;
+import com.project.security.JwtAuthFilter;
+
+import org.mockito.Mockito;
+
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 
 @WebMvcTest(DoctorController.class)
+@AutoConfigureMockMvc(addFilters = false)
+@WithMockUser(roles = "ADMIN")
 public class DoctorControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockitoBean
+    private SecurityOwnershipService securityService;
+
+    @MockitoBean
+    private JwtAuthFilter jwtAuthFilter;
 
     @MockitoBean
     private DoctorService doctorService;

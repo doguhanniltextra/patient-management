@@ -27,6 +27,7 @@ public class AuthValidator {
         user.setPassword(passwordEncoder.encode(registerRequestDto.getPassword()));
         user.setEmail(registerRequestDto.getEmail());
         user.setRegisterDate(registerRequestDto.getRegisterDate());
+        user.getRoles().add(com.project.auth_service.entity.Role.PATIENT);
         return user;
     }
 

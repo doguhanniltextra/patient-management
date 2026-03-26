@@ -67,4 +67,16 @@ public class User {
     public void setRegisterDate(LocalDate registerDate) {
         this.registerDate = registerDate;
     }
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
+    private java.util.Set<Role> roles = new java.util.HashSet<>();
+
+    public java.util.Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(java.util.Set<Role> roles) {
+        this.roles = roles;
+    }
 }

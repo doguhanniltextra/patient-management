@@ -19,9 +19,11 @@ public class JwtService {
         this.signingKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateToken(String username) {
+    public String generateToken(String username, java.util.Set<com.project.auth_service.entity.Role> roles) {
+        java.util.List<String> roleNames = roles.stream().map(Enum::name).collect(java.util.stream.Collectors.toList());
         return Jwts.builder()
                 .setSubject(username)
+                .claim("roles", roleNames)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 86400000))
                 .signWith(signingKey, SignatureAlgorithm.HS256)

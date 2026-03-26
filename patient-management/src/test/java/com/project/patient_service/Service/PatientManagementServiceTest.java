@@ -122,7 +122,7 @@ public class PatientManagementServiceTest {
 
 
         verify(patientRepository, times(1)).save(any(Patient.class));
-        verify(kafkaProducer, times(1)).sendEvent(any(KafkaPatientRequestDto.class));
+        verify(kafkaProducer, times(1)).sendEventAsync(any(KafkaPatientRequestDto.class));
         verify(userMapper, times(1)).getCreatePatientServiceResponseDto(any(Patient.class));
     }
 
