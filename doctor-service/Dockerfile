@@ -2,17 +2,22 @@ FROM maven:3.9.9-eclipse-temurin-21 AS builder
 
 WORKDIR /app
 
-COPY pom.xml .
-RUN mvn dependency:go-offline -B
+# Copy the BOM and install it to the local maven repo
+COPY patient-management-bom ./patient-management-bom
+RUN mvn install -f patient-management-bom/pom.xml -B
 
-COPY src ./src
+# Copy the service project
+COPY doctor-service ./doctor-service
+
+# Build the service from its own directory
+WORKDIR /app/doctor-service
 RUN mvn clean package -DskipTests
 
 FROM eclipse-temurin:21-jdk AS runner
 
 WORKDIR /app
 
-COPY --from=builder /app/target/doctor-service-1.0-SNAPSHOT.jar ./app.jar
+COPY --from=builder /app/doctor-service/target/doctor-service-1.0-SNAPSHOT.jar ./app.jar
 
 EXPOSE 8083
 

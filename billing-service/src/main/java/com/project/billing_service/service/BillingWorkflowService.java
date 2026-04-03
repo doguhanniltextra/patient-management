@@ -6,8 +6,10 @@ import com.project.billing_service.dto.ClaimRequestDto;
 import com.project.billing_service.model.Claim;
 import com.project.billing_service.model.ClaimStatus;
 import com.project.billing_service.model.Invoice;
+import com.project.billing_service.model.UnbilledCharge;
 import com.project.billing_service.repository.ClaimRepository;
 import com.project.billing_service.repository.InvoiceRepository;
+import com.project.billing_service.repository.UnbilledChargeRepository;
 import com.project.billing_service.strategy.InsuranceCalculationResult;
 import com.project.billing_service.strategy.InsuranceFactory;
 import com.project.billing_service.strategy.InsuranceStrategy;
@@ -29,6 +31,7 @@ public class BillingWorkflowService {
     private final InvoiceService invoiceService;
     private final InvoiceRepository invoiceRepository;
     private final ClaimRepository claimRepository;
+    private final UnbilledChargeRepository unbilledChargeRepository;
     private final InsuranceFactory insuranceFactory;
     private final ClaimClient claimClient;
 
@@ -36,12 +39,14 @@ public class BillingWorkflowService {
             InvoiceService invoiceService,
             InvoiceRepository invoiceRepository,
             ClaimRepository claimRepository,
+            UnbilledChargeRepository unbilledChargeRepository,
             InsuranceFactory insuranceFactory,
             ClaimClient claimClient
     ) {
         this.invoiceService = invoiceService;
         this.invoiceRepository = invoiceRepository;
         this.claimRepository = claimRepository;
+        this.unbilledChargeRepository = unbilledChargeRepository;
         this.insuranceFactory = insuranceFactory;
         this.claimClient = claimClient;
     }
@@ -120,5 +125,21 @@ public class BillingWorkflowService {
         requestDto.setProviderName(claim.getProviderName());
         requestDto.setAmount(claimAmount);
         return claimClient.submitClaim(requestDto);
+    }
+
+    @Transactional
+    public void createUnbilledLabCharge(UUID patientId, UUID sourceOrderId, BigDecimal amount, String currency) {
+        if (unbilledChargeRepository.findBySourceTypeAndSourceOrderId("LAB", sourceOrderId).isPresent()) {
+            return;
+        }
+        UnbilledCharge charge = new UnbilledCharge();
+        charge.setPatientId(patientId);
+        charge.setSourceType("LAB");
+        charge.setSourceOrderId(sourceOrderId);
+        charge.setAmount(amount);
+        charge.setCurrency(currency);
+        charge.setStatus("OPEN");
+        charge.setCreatedAt(LocalDateTime.now().toInstant(java.time.ZoneOffset.UTC));
+        unbilledChargeRepository.save(charge);
     }
 }

@@ -5,6 +5,7 @@ import com.project.billing_service.constants.KafkaTopics;
 import com.project.billing_service.constants.LogMessages;
 import com.project.billing_service.dto.AppointmentDTO;
 import com.project.billing_service.service.BillingWorkflowService;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -30,6 +31,21 @@ public class KafkaConsumer {
 
         } catch (Exception e) {
             log.error(LogMessages.FAILED_TO_PARSE_OR_GENERATE_INVOICE, e);
+        }
+    }
+
+    @KafkaListener(topics = KafkaTopics.LAB_ORDER_PLACED, groupId = KafkaTopics.LAB_ORDER_GROUP)
+    public void listenLabOrder(String message) {
+        try {
+            JsonNode event = objectMapper.readTree(message);
+            billingWorkflowService.createUnbilledLabCharge(
+                    java.util.UUID.fromString(event.get("patientId").asText()),
+                    java.util.UUID.fromString(event.get("orderId").asText()),
+                    new java.math.BigDecimal(event.get("orderTotal").asText()),
+                    "TRY"
+            );
+        } catch (Exception e) {
+            log.error("Failed to process lab order event", e);
         }
     }
 }

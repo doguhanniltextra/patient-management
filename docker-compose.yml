@@ -96,8 +96,8 @@ services:
   api-gateway:
     <<: *java-resources
     build:
-      context: ./api-gateway
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: api-gateway/Dockerfile
     container_name: api-gateway
     restart: unless-stopped
     ports:
@@ -117,6 +117,7 @@ services:
       DOCTOR_SERVICE_URL: http://doctor-service:8083
       APPOINTMENT_SERVICE_URL: http://appointment-service:8084
       BILLING_SERVICE_URL: http://billing-service:8081
+      LAB_SERVICE_URL: http://lab-service:8087
 
     volumes:
       - ./api-gateway/src:/app/src
@@ -132,8 +133,8 @@ services:
   patient-management:
     <<: *java-resources
     build:
-      context: ./patient-management
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: patient-management/Dockerfile
     container_name: patient-management
     restart: unless-stopped
     ports:
@@ -151,6 +152,8 @@ services:
       SPRING_DATASOURCE_PASSWORD: postgres123
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_TOPIC_LAB_RESULT_COMPLETED: lab-result-completed.v1
+      KAFKA_GROUP_PATIENT_LAB_RESULT: patient-lab-result-group
       APP_SECRET: A7f9K2mN8pQ3sT6vY1zB4cD7gH0jL3nP6qR9uW2xE5yI8oU1aS4dF7hK0mP3sV6z
     volumes:
       - ./patient-management/src:/app/src
@@ -166,8 +169,8 @@ services:
   auth-service:
     <<: *java-resources
     build:
-      context: ./auth-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: auth-service/Dockerfile
     container_name: auth-service
     restart: unless-stopped
     ports:
@@ -201,8 +204,8 @@ services:
   doctor-service:
     <<: *java-resources
     build:
-      context: ./doctor-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: doctor-service/Dockerfile
     container_name: doctor-service
     restart: unless-stopped
     ports:
@@ -220,6 +223,9 @@ services:
       SPRING_DATASOURCE_PASSWORD: postgres123
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_TOPIC_LAB_ORDER_PLACED: lab-order-placed.v1
+      KAFKA_TOPIC_LAB_RESULT_COMPLETED: lab-result-completed.v1
+      KAFKA_GROUP_DOCTOR_LAB_RESULT: doctor-lab-result-group
       APP_SECRET: A7f9K2mN8pQ3sT6vY1zB4cD7gH0jL3nP6qR9uW2xE5yI8oU1aS4dF7hK0mP3sV6z
     volumes:
       - ./doctor-service/src:/app/src
@@ -235,8 +241,8 @@ services:
   appointment-service:
     <<: *java-resources
     build:
-      context: ./appointment-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: appointment-service/Dockerfile
     container_name: appointment-service
     restart: unless-stopped
     ports:
@@ -269,8 +275,8 @@ services:
   billing-service:
     <<: *java-resources
     build:
-      context: ./billing-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: billing-service/Dockerfile
     container_name: billing-service
     restart: unless-stopped
     ports:
@@ -287,6 +293,8 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres123
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_TOPIC_LAB_ORDER_PLACED: lab-order-placed.v1
+      KAFKA_GROUP_BILLING_LAB_ORDER: billing-lab-order-group
       INVOICE_API_KEY: placeholder-api-key
       INVOICE_API_URL: https://invoice-generator.com/api/v1/invoices
     volumes:
@@ -295,6 +303,42 @@ services:
       - patient-network
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  # Lab Service - Manages lab workflows (PostgreSQL)
+  lab-service:
+    <<: *java-resources
+    build:
+      context: .
+      dockerfile: lab-service/Dockerfile
+    container_name: lab-service
+    restart: unless-stopped
+    ports:
+      - "8087:8087"
+    depends_on:
+      postgresql:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SERVER_PORT: 8087
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/patient_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres123
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_TOPIC_LAB_ORDER_PLACED: lab-order-placed.v1
+      KAFKA_TOPIC_LAB_RESULT_COMPLETED: lab-result-completed.v1
+      KAFKA_GROUP_LAB_ORDER: lab-order-group
+      APP_SECRET: A7f9K2mN8pQ3sT6vY1zB4cD7gH0jL3nP6qR9uW2xE5yI8oU1aS4dF7hK0mP3sV6z
+    volumes:
+      - ./lab-service/src:/app/src
+    networks:
+      - patient-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8087/actuator/health"]
       interval: 15s
       timeout: 5s
       retries: 5
@@ -334,6 +378,7 @@ services:
       - doctor-service
       - appointment-service
       - billing-service
+      - lab-service
 
 
   # Grafana - Metrics visualization

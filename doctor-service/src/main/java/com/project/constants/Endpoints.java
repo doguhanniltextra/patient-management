@@ -16,4 +16,5 @@ public class Endpoints {
 
     public static final String DOCTOR_CONTROLLER_AVAILABILITY_BY_DOCTOR = "/{doctorId}/availability";
     public static final String DOCTOR_CONTROLLER_AVAILABILITY = "/availability";
+    public static final String DOCTOR_CONTROLLER_LAB_ORDERS = "/{doctorId}/lab-orders";
 }

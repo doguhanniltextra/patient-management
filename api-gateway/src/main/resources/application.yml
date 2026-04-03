@@ -39,6 +39,12 @@ spring:
           filters:
             - StripPrefix=1
             - SetRequestHeader=Content-Type, application/json
+        - id: lab-service-route
+          uri: ${LAB_SERVICE_URL:http://lab-service:8087}
+          predicates:
+            - Path=/api/labs/**
+          filters:
+            - StripPrefix=1
 
 logging:
   level:

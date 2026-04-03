@@ -17,6 +17,7 @@
         <module>auth-service</module>
         <module>billing-service</module>
         <module>doctor-service</module>
+        <module>lab-service</module>
         <module>patient-management</module>
     </modules>
 </project>

@@ -2,17 +2,22 @@ FROM maven:3.9.9-eclipse-temurin-21 AS builder
 
 WORKDIR /app
 
-COPY pom.xml .
+# Copy the BOM and install it to the local maven repo
+COPY patient-management-bom ./patient-management-bom
+RUN mvn install -f patient-management-bom/pom.xml -B
 
+# Copy the service project
+COPY auth-service ./auth-service
 
-COPY src ./src
+# Build the service from its own directory
+WORKDIR /app/auth-service
 RUN mvn clean package -DskipTests
 
 FROM eclipse-temurin:21-jdk AS runner
 
 WORKDIR /app
 
-COPY --from=builder /app/target/auth-service-0.0.1-SNAPSHOT.jar ./app.jar
+COPY --from=builder /app/auth-service/target/auth-service-0.0.1-SNAPSHOT.jar ./app.jar
 
 EXPOSE 8089
 
