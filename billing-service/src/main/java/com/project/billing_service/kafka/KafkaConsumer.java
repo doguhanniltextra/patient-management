@@ -22,76 +22,55 @@ public class KafkaConsumer {
     }
 
     @KafkaListener(topics = KafkaTopics.APPOINTMENT_PAYMENT_UPDATED, groupId = KafkaTopics.APPOINTMENT_GROUP)
-    public void listen(String message) {
-        try {
-            AppointmentDTO appointment = objectMapper.readValue(message, AppointmentDTO.class);
-            log.info(LogMessages.LISTENER_RECEIVED_MESSAGE, appointment);
-            billingWorkflowService.processPaymentUpdate(appointment);
-            log.info(LogMessages.INVOICE_GENERATED, appointment.getPatientId());
-
-        } catch (Exception e) {
-            log.error(LogMessages.FAILED_TO_PARSE_OR_GENERATE_INVOICE, e);
-        }
+    public void listen(String message) throws Exception {
+        AppointmentDTO appointment = objectMapper.readValue(message, AppointmentDTO.class);
+        log.info(LogMessages.LISTENER_RECEIVED_MESSAGE, appointment);
+        billingWorkflowService.processPaymentUpdate(appointment);
+        log.info(LogMessages.INVOICE_GENERATED, appointment.getPatientId());
     }
 
     @KafkaListener(topics = KafkaTopics.LAB_ORDER_PLACED, groupId = KafkaTopics.LAB_ORDER_GROUP)
-    public void listenLabOrder(String message) {
-        try {
-            JsonNode event = objectMapper.readTree(message);
-            billingWorkflowService.createUnbilledLabCharge(
-                    java.util.UUID.fromString(event.get("patientId").asText()),
-                    java.util.UUID.fromString(event.get("orderId").asText()),
-                    new java.math.BigDecimal(event.get("orderTotal").asText()),
-                    "TRY"
-            );
-        } catch (Exception e) {
-            log.error("Failed to process lab order event", e);
-        }
+    public void listenLabOrder(String message) throws Exception {
+        JsonNode event = objectMapper.readTree(message);
+        billingWorkflowService.createUnbilledLabCharge(
+                java.util.UUID.fromString(event.get("patientId").asText()),
+                java.util.UUID.fromString(event.get("orderId").asText()),
+                new java.math.BigDecimal(event.get("orderTotal").asText()),
+                "TRY"
+        );
     }
 
     @KafkaListener(topics = KafkaTopics.INVENTORY_ITEM_CONSUMED, groupId = "billing-inventory-group")
-    public void listenInventoryConsumption(String message) {
-        try {
-            JsonNode event = objectMapper.readTree(message);
-            billingWorkflowService.createUnbilledInventoryCharge(
-                    java.util.UUID.fromString(event.get("patientId").asText()),
-                    java.util.UUID.fromString(event.get("itemId").asText()),
-                    event.get("quantity").asInt(),
-                    new java.math.BigDecimal(event.get("unitPriceSnapshot").asText()),
-                    event.get("currency").asText(),
-                    java.util.UUID.fromString(event.get("eventId").asText())
-            );
-        } catch (Exception e) {
-            log.error("Failed to process inventory consumption event", e);
-        }
+    public void listenInventoryConsumption(String message) throws Exception {
+        JsonNode event = objectMapper.readTree(message);
+        billingWorkflowService.createUnbilledInventoryCharge(
+                java.util.UUID.fromString(event.get("patientId").asText()),
+                java.util.UUID.fromString(event.get("itemId").asText()),
+                event.get("quantity").asInt(),
+                new java.math.BigDecimal(event.get("unitPriceSnapshot").asText()),
+                event.get("currency").asText(),
+                java.util.UUID.fromString(event.get("eventId").asText())
+        );
     }
 
     @KafkaListener(topics = KafkaTopics.ADMISSION_BED_CHARGE, groupId = "billing-admission-group")
-    public void listenBedCharge(String message) {
-        try {
-            JsonNode event = objectMapper.readTree(message);
-            billingWorkflowService.createUnbilledBedCharge(
-                    java.util.UUID.fromString(event.get("patientId").asText()),
-                    java.util.UUID.fromString(event.get("admissionId").asText()),
-                    new java.math.BigDecimal(event.get("amount").asText()),
-                    event.get("currency").asText(),
-                    java.util.UUID.fromString(event.get("eventId").asText())
-            );
-        } catch (Exception e) {
-            log.error("Failed to process bed charge event", e);
-        }
+    public void listenBedCharge(String message) throws Exception {
+        JsonNode event = objectMapper.readTree(message);
+        billingWorkflowService.createUnbilledBedCharge(
+                java.util.UUID.fromString(event.get("patientId").asText()),
+                java.util.UUID.fromString(event.get("admissionId").asText()),
+                new java.math.BigDecimal(event.get("amount").asText()),
+                event.get("currency").asText(),
+                java.util.UUID.fromString(event.get("eventId").asText())
+        );
     }
 
     @KafkaListener(topics = KafkaTopics.ADMISSION_DISCHARGED, groupId = "billing-admission-group")
-    public void listenDischarge(String message) {
-        try {
-            JsonNode event = objectMapper.readTree(message);
-            billingWorkflowService.finalizeDischargeBilling(
-                    java.util.UUID.fromString(event.get("patientId").asText()),
-                    java.util.UUID.fromString(event.get("admissionId").asText())
-            );
-        } catch (Exception e) {
-            log.error("Failed to process patient discharge event", e);
-        }
+    public void listenDischarge(String message) throws Exception {
+        JsonNode event = objectMapper.readTree(message);
+        billingWorkflowService.finalizeDischargeBilling(
+                java.util.UUID.fromString(event.get("patientId").asText()),
+                java.util.UUID.fromString(event.get("admissionId").asText())
+        );
     }
 }

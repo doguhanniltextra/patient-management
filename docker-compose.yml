@@ -78,6 +78,7 @@ services:
           memory: 512M
     volumes:
       - postgresql-data:/var/lib/postgresql/data
+      - ./scripts/postgres:/docker-entrypoint-initdb.d
     networks:
       - patient-network
     healthcheck:
@@ -148,9 +149,9 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: dev
       SERVER_PORT: 8080
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/patient_db
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres123
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/patient_db?currentSchema=patient_schema&reWriteBatchedInserts=true
+      SPRING_DATASOURCE_USERNAME: patient_user
+      SPRING_DATASOURCE_PASSWORD: patient_pass_123
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       KAFKA_TOPIC_LAB_RESULT_COMPLETED: lab-result-completed.v1
@@ -184,9 +185,9 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: dev
       SERVER_PORT: 8089
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/patient_db
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres123
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/patient_db?currentSchema=auth_schema&reWriteBatchedInserts=true
+      SPRING_DATASOURCE_USERNAME: auth_user
+      SPRING_DATASOURCE_PASSWORD: auth_pass_123
       JWT_SECRET: your-secret-jwt-key-change-in-production
       APP_SECRET: A7f9K2mN8pQ3sT6vY1zB4cD7gH0jL3nP6qR9uW2xE5yI8oU1aS4dF7hK0mP3sV6z
       API_KEY: your-api-key-change-in-production
@@ -219,9 +220,9 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: dev
       SERVER_PORT: 8083
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/patient_db
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres123
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/patient_db?currentSchema=doctor_schema&reWriteBatchedInserts=true
+      SPRING_DATASOURCE_USERNAME: doctor_user
+      SPRING_DATASOURCE_PASSWORD: doctor_pass_123
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       KAFKA_TOPIC_LAB_ORDER_PLACED: lab-order-placed.v1
@@ -256,9 +257,9 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: dev
       SERVER_PORT: 8084
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/patient_db
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres123
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/patient_db?currentSchema=appointment_schema&reWriteBatchedInserts=true
+      SPRING_DATASOURCE_USERNAME: appointment_user
+      SPRING_DATASOURCE_PASSWORD: appointment_pass_123
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       APP_SECRET: A7f9K2mN8pQ3sT6vY1zB4cD7gH0jL3nP6qR9uW2xE5yI8oU1aS4dF7hK0mP3sV6z
@@ -290,9 +291,9 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: dev
       SERVER_PORT: 8081
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/patient_db
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres123
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/patient_db?currentSchema=billing_schema&reWriteBatchedInserts=true
+      SPRING_DATASOURCE_USERNAME: billing_user
+      SPRING_DATASOURCE_PASSWORD: billing_pass_123
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       KAFKA_TOPIC_LAB_ORDER_PLACED: lab-order-placed.v1
       KAFKA_GROUP_BILLING_LAB_ORDER: billing-lab-order-group
@@ -326,9 +327,9 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: dev
       SERVER_PORT: 8087
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/patient_db
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres123
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/patient_db?currentSchema=lab_schema&reWriteBatchedInserts=true
+      SPRING_DATASOURCE_USERNAME: lab_user
+      SPRING_DATASOURCE_PASSWORD: lab_pass_123
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       KAFKA_TOPIC_LAB_ORDER_PLACED: lab-order-placed.v1
       KAFKA_TOPIC_LAB_RESULT_COMPLETED: lab-result-completed.v1
@@ -361,9 +362,9 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: dev
       SERVER_PORT: 8088
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/patient_db
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres123
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/patient_db?currentSchema=inventory_schema&reWriteBatchedInserts=true
+      SPRING_DATASOURCE_USERNAME: inventory_user
+      SPRING_DATASOURCE_PASSWORD: inventory_pass_123
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     volumes:
       - ./inventory-service/src:/app/src
@@ -392,9 +393,9 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: dev
       SERVER_PORT: 8086
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/patient_db
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres123
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/patient_db?currentSchema=admission_schema&reWriteBatchedInserts=true
+      SPRING_DATASOURCE_USERNAME: admission_user
+      SPRING_DATASOURCE_PASSWORD: admission_pass_123
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     volumes:
       - ./admission-service/src:/app/src
