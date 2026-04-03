@@ -86,7 +86,10 @@ BEGIN
 
 END $$;
 
--- Explicitly create Notification Template table in case notification-service hasn't yet
+-- ---------------------------------------------------------
+-- NOTIFICATION SERVICE SEEDING
+-- ---------------------------------------------------------
+
 CREATE TABLE IF NOT EXISTS notification_schema.notification_templates (
     id UUID PRIMARY KEY,
     template_code VARCHAR(255) NOT NULL UNIQUE,
@@ -97,10 +100,8 @@ CREATE TABLE IF NOT EXISTS notification_schema.notification_templates (
     updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Ensure notification_user can access the table
-GRANT ALL ON TABLE notification_schema.notification_templates TO notification_user;
+ALTER TABLE notification_schema.notification_templates OWNER TO notification_user;
 
--- Seed Templates
 INSERT INTO notification_schema.notification_templates (id, template_code, channel, subject, body, created_at, updated_at)
 VALUES 
 (gen_random_uuid(), 'LAB_RESULT_READY', 'EMAIL', 'Your Lab Results are Ready', 'Dear Patient, your lab results for order [(${patientId})] are now available at: [(${reportUrl})]', now(), now()),

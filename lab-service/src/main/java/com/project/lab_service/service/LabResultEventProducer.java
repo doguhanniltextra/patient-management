@@ -3,6 +3,7 @@ package com.project.lab_service.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.lab_service.constants.KafkaTopics;
+import org.springframework.beans.factory.annotation.Value;
 import com.project.lab_service.dto.LabResultCompletedEvent;
 import com.project.lab_service.model.LabOrder;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -15,10 +16,14 @@ import java.util.UUID;
 @Service
 public class LabResultEventProducer {
     private final KafkaTemplate<String, String> kafkaTemplate;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
-    public LabResultEventProducer(KafkaTemplate<String, String> kafkaTemplate) {
+    @Value("${kafka.topics.lab-result-completed:lab-result-completed.v1}")
+    private String labResultCompletedTopic;
+
+    public LabResultEventProducer(KafkaTemplate<String, String> kafkaTemplate, ObjectMapper objectMapper) {
         this.kafkaTemplate = kafkaTemplate;
+        this.objectMapper = objectMapper;
     }
 
     public void publish(LabOrder order, List<LabResultCompletedEvent.ResultItem> items, String reportUrl, String correlationId) {
@@ -36,7 +41,7 @@ public class LabResultEventProducer {
         event.completedAt = order.getCompletedAt();
         event.correlationId = correlationId;
         try {
-            kafkaTemplate.send(KafkaTopics.LAB_RESULT_COMPLETED, order.getOrderId().toString(), objectMapper.writeValueAsString(event));
+            kafkaTemplate.send(labResultCompletedTopic, order.getOrderId().toString(), objectMapper.writeValueAsString(event));
         } catch (JsonProcessingException e) {
             throw new IllegalStateException("Unable to serialize lab result event", e);
         }

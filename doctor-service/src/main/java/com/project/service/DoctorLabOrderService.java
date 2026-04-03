@@ -21,11 +21,15 @@ import java.util.UUID;
 public class DoctorLabOrderService {
     private final DoctorLabOrderRepository labOrderRepository;
     private final DoctorOutboxEventRepository outboxEventRepository;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
-    public DoctorLabOrderService(DoctorLabOrderRepository labOrderRepository, DoctorOutboxEventRepository outboxEventRepository) {
+    public DoctorLabOrderService(
+            DoctorLabOrderRepository labOrderRepository, 
+            DoctorOutboxEventRepository outboxEventRepository,
+            ObjectMapper objectMapper) {
         this.labOrderRepository = labOrderRepository;
         this.outboxEventRepository = outboxEventRepository;
+        this.objectMapper = objectMapper;
     }
 
     @Transactional
