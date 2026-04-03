@@ -30,6 +30,8 @@ public class Patient {
     @NotNull
     private LocalDate registeredDate;
 
+    @Embedded
+    private InsuranceInfo insuranceInfo;
 
 
     public UUID getId() {
@@ -78,5 +80,13 @@ public class Patient {
 
     public void setRegisteredDate(@NotNull LocalDate registeredDate) {
         this.registeredDate = registeredDate;
+    }
+
+    public InsuranceInfo getInsuranceInfo() {
+        return insuranceInfo;
+    }
+
+    public void setInsuranceInfo(InsuranceInfo insuranceInfo) {
+        this.insuranceInfo = insuranceInfo;
     }
 }

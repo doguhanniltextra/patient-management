@@ -1,5 +1,6 @@
 package com.project.patient_service.dto.request;
 
+import com.project.patient_service.dto.InsuranceInfoDto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -22,6 +23,7 @@ public class CreatePatientServiceRequestDto {
 
     @NotNull(message = "Registered date is required")
     private String registeredDate;
+    private InsuranceInfoDto insuranceInfo;
 
     public @NotBlank(message = "Name is required") @Size(max = 100, message = "Name cannot exceed 100 characters") String getName() {
         return name;
@@ -61,5 +63,13 @@ public class CreatePatientServiceRequestDto {
 
     public void setRegisteredDate(@NotNull(message = "Registered date is required") String registeredDate) {
         this.registeredDate = registeredDate;
+    }
+
+    public InsuranceInfoDto getInsuranceInfo() {
+        return insuranceInfo;
+    }
+
+    public void setInsuranceInfo(InsuranceInfoDto insuranceInfo) {
+        this.insuranceInfo = insuranceInfo;
     }
 }

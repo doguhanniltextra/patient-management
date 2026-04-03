@@ -1,6 +1,7 @@
 package com.project.utils;
 
 import com.project.config.RestTemplateAddresses;
+import com.project.dto.PatientInfoDTO;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import org.slf4j.Logger;
@@ -31,9 +32,18 @@ public class IdValidation {
     @CircuitBreaker(name = "patientService", fallbackMethod = "patientFallback")
     @Retry(name = "patientService")
     public boolean checkPatientExists(UUID patientId) {
-        ResponseEntity<Object> response =
-                restTemplate.getForEntity(PATIENT_SERVICE_URL + patientId, Object.class);
-        return response.getStatusCode().is2xxSuccessful();
+        return fetchPatientInfo(patientId) != null;
+    }
+
+    @CircuitBreaker(name = "patientService", fallbackMethod = "patientInfoFallback")
+    @Retry(name = "patientService")
+    public PatientInfoDTO fetchPatientInfo(UUID patientId) {
+        ResponseEntity<PatientInfoDTO> response =
+                restTemplate.getForEntity(PATIENT_SERVICE_URL + patientId, PatientInfoDTO.class);
+        if (response.getStatusCode().is2xxSuccessful()) {
+            return response.getBody();
+        }
+        return null;
     }
 
     @CircuitBreaker(name = "doctorService", fallbackMethod = "doctorFallback")
@@ -61,6 +71,14 @@ public class IdValidation {
     private boolean patientFallback(UUID patientId, Throwable t) {
         log.error("Circuit breaker OPEN for patient-service. Cannot verify patient {}. Cause: {}", patientId, t.getMessage());
         return false;
+    }
+
+    private PatientInfoDTO patientInfoFallback(UUID patientId, Throwable t) {
+        log.error("Circuit breaker OPEN for patient-service. Cannot fetch patient {} details. Cause: {}", patientId, t.getMessage());
+        if (t instanceof HttpClientErrorException.NotFound) {
+            return null;
+        }
+        return null;
     }
 
     private boolean doctorFallback(UUID doctorId, Throwable t) {

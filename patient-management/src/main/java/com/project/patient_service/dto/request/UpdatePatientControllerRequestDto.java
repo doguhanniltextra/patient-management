@@ -1,5 +1,6 @@
 package com.project.patient_service.dto.request;
 
+import com.project.patient_service.dto.InsuranceInfoDto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -19,6 +20,7 @@ public class UpdatePatientControllerRequestDto {
 
     @NotBlank(message = "Date of birth is required")
     private String dateOfBirth;
+    private InsuranceInfoDto insuranceInfo;
 
 
     public String getName() {
@@ -51,5 +53,13 @@ public class UpdatePatientControllerRequestDto {
 
     public void setDateOfBirth(String dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
+    }
+
+    public InsuranceInfoDto getInsuranceInfo() {
+        return insuranceInfo;
+    }
+
+    public void setInsuranceInfo(InsuranceInfoDto insuranceInfo) {
+        this.insuranceInfo = insuranceInfo;
     }
 }

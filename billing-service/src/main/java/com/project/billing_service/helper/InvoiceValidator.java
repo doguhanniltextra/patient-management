@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -43,7 +44,7 @@ public class InvoiceValidator {
         }
     }
 
-    public  Map<String, Object> getStringObjectMapForItem(double amount) {
+    public  Map<String, Object> getStringObjectMapForItem(BigDecimal amount) {
         Map<String, Object> item = new HashMap<>();
         item.put("name", "Medical Service");
         item.put("quantity", 1);

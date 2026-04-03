@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.HttpHeaders;
 
+import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ import java.util.Map;
             this.invoiceValidator = invoiceValidator;
         }
 
-        public Path generateInvoice(String doctorName, String patientName, double amount, String invoiceNumber) {
+        public Path generateInvoice(String doctorName, String patientName, BigDecimal amount, String invoiceNumber) {
             log.info("Generate Invoice Method Triggered");
 
             Map<String, Object> body = invoiceValidator.getStringObjectMapForBody(doctorName, patientName, invoiceNumber);

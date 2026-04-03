@@ -1,7 +1,9 @@
 package com.project.patient_service.helper;
 
+import com.project.patient_service.dto.InsuranceInfoDto;
 import com.project.patient_service.dto.request.*;
 import com.project.patient_service.dto.response.*;
+import com.project.patient_service.model.InsuranceInfo;
 import com.project.patient_service.model.Patient;
 import com.project.patient_service.service.PatientService;
 import org.slf4j.Logger;
@@ -22,6 +24,7 @@ public class UserMapper {
         createPatientServiceResponseDto.setEmail(patient.getEmail());
         createPatientServiceResponseDto.setAddress(patient.getAddress());
         createPatientServiceResponseDto.setDateOfBirth(patient.getDateOfBirth());
+        createPatientServiceResponseDto.setInsuranceInfo(toInsuranceInfoDto(patient.getInsuranceInfo()));
         return createPatientServiceResponseDto;
     }
     public KafkaPatientRequestDto getKafkaPatientRequestDto(Patient newPatient) {
@@ -37,6 +40,7 @@ public class UserMapper {
         updatePatientServiceResponseDto.setAddress(updatedPatient.getAddress());
         updatePatientServiceResponseDto.setDateOfBirth(updatedPatient.getDateOfBirth());
         updatePatientServiceResponseDto.setEmail(updatedPatient.getEmail());
+        updatePatientServiceResponseDto.setInsuranceInfo(toInsuranceInfoDto(updatedPatient.getInsuranceInfo()));
         return updatePatientServiceResponseDto;
     }
     public  void getUpdatePatientRequestDto(UpdatePatientServiceRequestDto updatePatientServiceRequestDto, Patient patient) {
@@ -44,6 +48,7 @@ public class UserMapper {
         patient.setAddress(updatePatientServiceRequestDto.getAddress());
         patient.setEmail(updatePatientServiceRequestDto.getEmail());
         patient.setDateOfBirth(LocalDate.parse(updatePatientServiceRequestDto.getDateOfBirth()));
+        patient.setInsuranceInfo(toInsuranceInfo(updatePatientServiceRequestDto.getInsuranceInfo()));
     }
     // Single-object mapper for Page.map() — used by paginated endpoints
     public GetPatientServiceResponseDto toServiceResponseDto(Patient patient) {
@@ -53,6 +58,7 @@ public class UserMapper {
         dto.setAddress(patient.getAddress());
         dto.setDateOfBirth(patient.getDateOfBirth());
         dto.setName(patient.getName());
+        dto.setInsuranceInfo(toInsuranceInfoDto(patient.getInsuranceInfo()));
         return dto;
     }
 
@@ -64,6 +70,7 @@ public class UserMapper {
         dto.setName(patient.getName());
         dto.setEmail(patient.getEmail());
         dto.setDateOfBirth(patient.getDateOfBirth());
+        dto.setInsuranceInfo(patient.getInsuranceInfo());
         return dto;
     }
 
@@ -80,6 +87,7 @@ public class UserMapper {
         createPatientServiceRequestDto.setName(createPatientControllerRequestDto.getName());
         createPatientServiceRequestDto.setRegisteredDate(createPatientControllerRequestDto.getRegisteredDate());
         createPatientServiceRequestDto.setDateOfBirth(createPatientControllerRequestDto.getDateOfBirth());
+        createPatientServiceRequestDto.setInsuranceInfo(createPatientControllerRequestDto.getInsuranceInfo());
         return createPatientServiceRequestDto;
     }
     public  List<GetPatientControllerResponseDto> getGetPatientControllerResponseDtos(List<GetPatientServiceResponseDto> patients) {
@@ -92,6 +100,7 @@ public class UserMapper {
                     getPatientControllerResponseDto1.setName(patient.getName());
                     getPatientControllerResponseDto1.setEmail(patient.getEmail());
                     getPatientControllerResponseDto1.setDateOfBirth(patient.getDateOfBirth());
+                    getPatientControllerResponseDto1.setInsuranceInfo(patient.getInsuranceInfo());
                     log.info("PATIENT: Get Patients Controller -MAPPING- is done");
                     return getPatientControllerResponseDto1;
                 }).toList();
@@ -104,6 +113,7 @@ public class UserMapper {
         updatePatientControllerResponseDto.setAddress(updatePatient.getAddress());
         updatePatientControllerResponseDto.setDateOfBirth(updatePatient.getDateOfBirth());
         updatePatientControllerResponseDto.setEmail(updatePatient.getEmail());
+        updatePatientControllerResponseDto.setInsuranceInfo(updatePatient.getInsuranceInfo());
         return updatePatientControllerResponseDto;
     }
 
@@ -113,6 +123,33 @@ public class UserMapper {
         updatePatientServiceRequestDto.setAddress(updatePatientControllerRequestDto.getAddress());
         updatePatientServiceRequestDto.setDateOfBirth(updatePatientControllerRequestDto.getDateOfBirth());
         updatePatientServiceRequestDto.setEmail(updatePatientControllerRequestDto.getEmail());
+        updatePatientServiceRequestDto.setInsuranceInfo(updatePatientControllerRequestDto.getInsuranceInfo());
         return updatePatientServiceRequestDto;
+    }
+
+    private InsuranceInfoDto toInsuranceInfoDto(InsuranceInfo insuranceInfo) {
+        if (insuranceInfo == null) {
+            return null;
+        }
+        InsuranceInfoDto dto = new InsuranceInfoDto();
+        dto.setPolicyNumber(insuranceInfo.getPolicyNumber());
+        dto.setProviderName(insuranceInfo.getProviderName());
+        if (insuranceInfo.getProviderType() != null) {
+            dto.setProviderType(insuranceInfo.getProviderType().name());
+        }
+        return dto;
+    }
+
+    private InsuranceInfo toInsuranceInfo(InsuranceInfoDto insuranceInfoDto) {
+        if (insuranceInfoDto == null) {
+            return null;
+        }
+        InsuranceInfo insuranceInfo = new InsuranceInfo();
+        insuranceInfo.setProviderName(insuranceInfoDto.getProviderName());
+        insuranceInfo.setPolicyNumber(insuranceInfoDto.getPolicyNumber());
+        if (insuranceInfoDto.getProviderType() != null && !insuranceInfoDto.getProviderType().isBlank()) {
+            insuranceInfo.setProviderType(com.project.patient_service.model.InsuranceProviderType.valueOf(insuranceInfoDto.getProviderType().toUpperCase()));
+        }
+        return insuranceInfo;
     }
 }

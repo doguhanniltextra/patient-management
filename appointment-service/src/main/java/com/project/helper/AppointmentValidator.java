@@ -1,6 +1,7 @@
 package com.project.helper;
 
 import com.project.dto.AppointmentKafkaResponseDto;
+import com.project.dto.PatientInfoDTO;
 import com.project.exception.CustomNotFoundException;
 import com.project.kafka.KafkaProducer;
 import com.project.model.Appointment;
@@ -37,12 +38,25 @@ public class AppointmentValidator {
     }
 
 
-    public static AppointmentKafkaResponseDto getAppointmentKafkaResponseDto(boolean status, Appointment appointment) {
+    public static AppointmentKafkaResponseDto getAppointmentKafkaResponseDto(boolean status, Appointment appointment, PatientInfoDTO patientInfo) {
+        String providerType = "NONE";
+        String providerName = "NONE";
+        if (patientInfo != null && patientInfo.getInsuranceInfo() != null) {
+            if (patientInfo.getInsuranceInfo().getProviderType() != null && !patientInfo.getInsuranceInfo().getProviderType().isBlank()) {
+                providerType = patientInfo.getInsuranceInfo().getProviderType();
+            }
+            if (patientInfo.getInsuranceInfo().getProviderName() != null && !patientInfo.getInsuranceInfo().getProviderName().isBlank()) {
+                providerName = patientInfo.getInsuranceInfo().getProviderName();
+            }
+        }
+
         AppointmentKafkaResponseDto appointmentDTO = new AppointmentKafkaResponseDto(
                 appointment.getDoctorId().toString(),
                 appointment.getPatientId().toString(),
                 appointment.getAmount(),
-                status
+                status,
+                providerType,
+                providerName
         );
         return appointmentDTO;
     }

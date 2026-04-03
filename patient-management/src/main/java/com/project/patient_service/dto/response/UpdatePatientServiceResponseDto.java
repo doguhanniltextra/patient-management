@@ -1,5 +1,7 @@
 package com.project.patient_service.dto.response;
 
+import com.project.patient_service.dto.InsuranceInfoDto;
+
 import java.time.LocalDate;
 
 public class UpdatePatientServiceResponseDto {
@@ -8,6 +10,7 @@ public class UpdatePatientServiceResponseDto {
     private String address;
     private LocalDate dateOfBirth;
     private String email;
+    private InsuranceInfoDto insuranceInfo;
 
     public String getEmail() {
         return email;
@@ -47,5 +50,13 @@ public class UpdatePatientServiceResponseDto {
 
     public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
+    }
+
+    public InsuranceInfoDto getInsuranceInfo() {
+        return insuranceInfo;
+    }
+
+    public void setInsuranceInfo(InsuranceInfoDto insuranceInfo) {
+        this.insuranceInfo = insuranceInfo;
     }
 }

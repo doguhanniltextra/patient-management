@@ -1,10 +1,13 @@
 package com.project.patient_service.helper;
 
+import com.project.patient_service.dto.InsuranceInfoDto;
 import com.project.patient_service.dto.request.CreatePatientServiceRequestDto;
 import com.project.patient_service.dto.request.KafkaPatientRequestDto;
 import com.project.patient_service.dto.request.UpdatePatientServiceRequestDto;
 import com.project.patient_service.exception.EmailAlreadyExistsException;
 import com.project.patient_service.exception.PatientNotFoundException;
+import com.project.patient_service.model.InsuranceInfo;
+import com.project.patient_service.model.InsuranceProviderType;
 import com.project.patient_service.model.Patient;
 import com.project.patient_service.repository.PatientRepository;
 import com.project.patient_service.service.PatientService;
@@ -39,6 +42,7 @@ public class UserValidator {
         patient.setEmail(patientRequestDTO.getEmail());
         patient.setDateOfBirth(parseDateForCreatePatient(patientRequestDTO.getDateOfBirth()));
         patient.setRegisteredDate(parseDateForCreatePatient(patientRequestDTO.getRegisteredDate()));
+        patient.setInsuranceInfo(toInsuranceInfo(patientRequestDTO.getInsuranceInfo()));
         return patient;
     }
     private LocalDate parseDateForCreatePatient(String dateStr) {
@@ -88,5 +92,18 @@ public class UserValidator {
     }
     public void sendKafkaEvent(String json, KafkaTemplate kafkaTemplate) {
         kafkaTemplate.send("patient", json);
+    }
+
+    private InsuranceInfo toInsuranceInfo(InsuranceInfoDto insuranceInfoDto) {
+        if (insuranceInfoDto == null) {
+            return null;
+        }
+        InsuranceInfo insuranceInfo = new InsuranceInfo();
+        insuranceInfo.setProviderName(insuranceInfoDto.getProviderName());
+        insuranceInfo.setPolicyNumber(insuranceInfoDto.getPolicyNumber());
+        if (insuranceInfoDto.getProviderType() != null && !insuranceInfoDto.getProviderType().isBlank()) {
+            insuranceInfo.setProviderType(InsuranceProviderType.valueOf(insuranceInfoDto.getProviderType().toUpperCase()));
+        }
+        return insuranceInfo;
     }
 }

@@ -9,6 +9,7 @@ import java.util.UUID;
 import com.project.constants.LogMessages;
 import com.project.dto.AppointmentDTO;
 import com.project.dto.AppointmentKafkaResponseDto;
+import com.project.dto.PatientInfoDTO;
 import com.project.dto.request.CreateAppointmentServiceRequestDto;
 import com.project.dto.response.CreateAppointmentServiceResponseDto;
 import com.project.exception.CustomNotFoundException;
@@ -108,7 +109,8 @@ public class AppointmentService {
         appointment.setPaymentStatus(status);
         appointmentRepository.save(appointment);
 
-        AppointmentKafkaResponseDto appointmentDTO = appointmentValidator.getAppointmentKafkaResponseDto(status, appointment);
+        PatientInfoDTO patientInfo = idValidation.fetchPatientInfo(appointment.getPatientId());
+        AppointmentKafkaResponseDto appointmentDTO = appointmentValidator.getAppointmentKafkaResponseDto(status, appointment, patientInfo);
         appointmentValidator.updatePaymentStatusKafkaSendEvent(status, appointmentDTO, kafkaProducer);
     }
 

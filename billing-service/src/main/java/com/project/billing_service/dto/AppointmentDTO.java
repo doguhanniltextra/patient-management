@@ -6,6 +6,8 @@ public class AppointmentDTO {
     private String patientId;
     private double amount;
     private boolean paymentStatus;
+    private String insuranceProviderType;
+    private String providerName;
 
     public String getDoctorId() {
         return doctorId;
@@ -37,5 +39,21 @@ public class AppointmentDTO {
 
     public void setPaymentStatus(boolean paymentStatus) {
         this.paymentStatus = paymentStatus;
+    }
+
+    public String getInsuranceProviderType() {
+        return insuranceProviderType;
+    }
+
+    public void setInsuranceProviderType(String insuranceProviderType) {
+        this.insuranceProviderType = insuranceProviderType;
+    }
+
+    public String getProviderName() {
+        return providerName;
+    }
+
+    public void setProviderName(String providerName) {
+        this.providerName = providerName;
     }
 }

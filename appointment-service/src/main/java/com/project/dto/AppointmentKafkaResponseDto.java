@@ -5,12 +5,16 @@ public class AppointmentKafkaResponseDto {
     private String patientId;
     private double amount;
     private boolean paymentStatus;
+    private String insuranceProviderType;
+    private String providerName;
 
-    public AppointmentKafkaResponseDto(String doctorId, String patientId, double amount, boolean paymentStatus) {
+    public AppointmentKafkaResponseDto(String doctorId, String patientId, double amount, boolean paymentStatus, String insuranceProviderType, String providerName) {
         this.doctorId = doctorId;
         this.patientId = patientId;
         this.amount = amount;
         this.paymentStatus = paymentStatus;
+        this.insuranceProviderType = insuranceProviderType;
+        this.providerName = providerName;
     }
 
     public String getDoctorId() {
@@ -43,5 +47,21 @@ public class AppointmentKafkaResponseDto {
 
     public void setPaymentStatus(boolean paymentStatus) {
         this.paymentStatus = paymentStatus;
+    }
+
+    public String getInsuranceProviderType() {
+        return insuranceProviderType;
+    }
+
+    public void setInsuranceProviderType(String insuranceProviderType) {
+        this.insuranceProviderType = insuranceProviderType;
+    }
+
+    public String getProviderName() {
+        return providerName;
+    }
+
+    public void setProviderName(String providerName) {
+        this.providerName = providerName;
     }
 }
