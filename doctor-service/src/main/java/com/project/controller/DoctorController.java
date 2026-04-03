@@ -6,8 +6,14 @@ import com.project.dto.UpdateDoctorControllerRequestDto;
 import com.project.dto.UpdateDoctorControllerResponseDto;
 import com.project.dto.UpdateDoctorServiceRequestDto;
 import com.project.dto.UpdateDoctorServiceResponseDto;
+import com.project.dto.request.CreateLeaveRequestDto;
+import com.project.dto.request.CreateShiftRequestDto;
+import com.project.dto.response.AvailabilityResponseDto;
 import com.project.dto.response.CreateDoctorControllerResponseDto;
 import com.project.dto.response.CreateDoctorServiceResponseDto;
+import com.project.dto.response.DoctorAvailabilitySummaryDto;
+import com.project.dto.response.LeaveResponseDto;
+import com.project.dto.response.ShiftResponseDto;
 import com.project.dto.request.CreateDoctorControllerRequestDto;
 import com.project.dto.request.CreateDoctorServiceRequestDto;
 import com.project.exception.DoctorNotFoundException;
@@ -16,6 +22,7 @@ import com.project.exception.IdIsValidException.IdIsValidException;
 import com.project.helper.DoctorMapper;
 import com.project.helper.DoctorValidator;
 import com.project.model.Doctor;
+import com.project.model.ServiceType;
 import com.project.service.DoctorService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,6 +35,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -118,7 +128,7 @@ public class DoctorController {
 
     @GetMapping(Endpoints.DOCTOR_CONTROLLER_FIND_DOCTOR_BY_ID)
     @Operation(summary = SwaggerMessages.FIND_DOCTOR_BY_ID)
-    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST') or @securityService.isDoctorOwner(authentication, #id)")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'INTERNAL_SERVICE') or @securityService.isDoctorOwner(authentication, #id)")
     public ResponseEntity<Doctor> findDoctorById(@PathVariable UUID id) {
         Optional<Doctor> currentId = doctorService.findDoctorById(id);
         if (currentId.isPresent()) {
@@ -128,12 +138,85 @@ public class DoctorController {
     }
 }
 
-    @PutMapping("/{id}/increase-patient")
+    @PutMapping(Endpoints.DOCTOR_CONTROLLER_INCREASE_PATIENT)
     @Operation(summary = "Increase patient count for a doctor")
-    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('PATIENT', 'RECEPTIONIST', 'ADMIN')")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('PATIENT', 'RECEPTIONIST', 'ADMIN', 'INTERNAL_SERVICE')")
     public ResponseEntity<Void> increasePatientNumber(@PathVariable UUID id) throws com.project.exception.PatientLimitException, DoctorNotFoundException {
         doctorService.increasePatientNumber(id);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(Endpoints.DOCTOR_CONTROLLER_SHIFTS)
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN') or @securityService.isDoctorOwner(authentication, #doctorId)")
+    public ResponseEntity<ShiftResponseDto> createShift(@PathVariable UUID doctorId, @Valid @RequestBody CreateShiftRequestDto requestDto) {
+        return ResponseEntity.ok(doctorService.createShift(doctorId, requestDto));
+    }
+
+    @GetMapping(Endpoints.DOCTOR_CONTROLLER_SHIFTS)
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST') or @securityService.isDoctorOwner(authentication, #doctorId)")
+    public ResponseEntity<List<ShiftResponseDto>> listShifts(
+            @PathVariable UUID doctorId,
+            @RequestParam String fromDate,
+            @RequestParam String toDate
+    ) {
+        try {
+            LocalDate from = LocalDate.parse(fromDate);
+            LocalDate to = LocalDate.parse(toDate);
+            return ResponseEntity.ok(doctorService.listShifts(doctorId, from, to));
+        } catch (DateTimeParseException ex) {
+            throw new com.project.exception.ApiException("INVALID_SLOT", "Invalid date format, expected yyyy-MM-dd", 400);
+        }
+    }
+
+    @DeleteMapping(Endpoints.DOCTOR_CONTROLLER_SHIFT_BY_ID)
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN') or @securityService.isDoctorOwner(authentication, #doctorId)")
+    public ResponseEntity<Void> deleteShift(@PathVariable UUID doctorId, @PathVariable UUID shiftId) {
+        doctorService.deleteShift(doctorId, shiftId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping(Endpoints.DOCTOR_CONTROLLER_LEAVES)
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN') or @securityService.isDoctorOwner(authentication, #doctorId)")
+    public ResponseEntity<LeaveResponseDto> createLeave(@PathVariable UUID doctorId, @Valid @RequestBody CreateLeaveRequestDto requestDto) {
+        return ResponseEntity.ok(doctorService.createLeave(doctorId, requestDto));
+    }
+
+    @PutMapping(Endpoints.DOCTOR_CONTROLLER_LEAVE_APPROVE)
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<LeaveResponseDto> approveLeave(@PathVariable UUID doctorId, @PathVariable UUID leaveId) {
+        return ResponseEntity.ok(doctorService.approveLeave(doctorId, leaveId));
+    }
+
+    @DeleteMapping(Endpoints.DOCTOR_CONTROLLER_LEAVE_BY_ID)
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN') or @securityService.isOwnPendingLeave(authentication, #doctorId, #leaveId)")
+    public ResponseEntity<Void> deleteLeave(@PathVariable UUID doctorId, @PathVariable UUID leaveId) {
+        doctorService.deleteLeave(doctorId, leaveId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping(Endpoints.DOCTOR_CONTROLLER_AVAILABILITY_BY_DOCTOR)
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'PATIENT', 'DOCTOR', 'INTERNAL_SERVICE')")
+    public ResponseEntity<AvailabilityResponseDto> checkAvailability(
+            @PathVariable UUID doctorId,
+            @RequestParam String start,
+            @RequestParam String end,
+            @RequestParam ServiceType serviceType
+    ) {
+        return ResponseEntity.ok(doctorService.checkDoctorAvailability(doctorId, start, end, serviceType));
+    }
+
+    @GetMapping(Endpoints.DOCTOR_CONTROLLER_AVAILABILITY)
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'PATIENT', 'DOCTOR', 'INTERNAL_SERVICE')")
+    public ResponseEntity<Page<DoctorAvailabilitySummaryDto>> getAvailableDoctors(
+            @RequestParam String start,
+            @RequestParam String end,
+            @RequestParam ServiceType serviceType,
+            @RequestParam(required = false) String specialization,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, Math.min(size, 100));
+        return ResponseEntity.ok(doctorService.findAvailableDoctorsForSlot(start, end, serviceType, specialization, pageable));
     }
 
 }

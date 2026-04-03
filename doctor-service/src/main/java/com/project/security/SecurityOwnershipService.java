@@ -1,5 +1,7 @@
 package com.project.security;
 
+import com.project.model.LeaveStatus;
+import com.project.repository.LeaveAbsenceRepository;
 import com.project.repository.DoctorRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -9,9 +11,11 @@ import java.util.UUID;
 public class SecurityOwnershipService {
 
     private final DoctorRepository doctorRepository;
+    private final LeaveAbsenceRepository leaveAbsenceRepository;
 
-    public SecurityOwnershipService(DoctorRepository doctorRepository) {
+    public SecurityOwnershipService(DoctorRepository doctorRepository, LeaveAbsenceRepository leaveAbsenceRepository) {
         this.doctorRepository = doctorRepository;
+        this.leaveAbsenceRepository = leaveAbsenceRepository;
     }
 
     public boolean isDoctorOwner(Authentication authentication, UUID doctorId) {
@@ -22,5 +26,14 @@ public class SecurityOwnershipService {
         } catch (IllegalArgumentException e) {
             return false;
         }
+    }
+
+    public boolean isOwnPendingLeave(Authentication authentication, UUID doctorId, UUID leaveId) {
+        if (!isDoctorOwner(authentication, doctorId)) {
+            return false;
+        }
+        return leaveAbsenceRepository.findById(leaveId)
+                .map(leave -> leave.getDoctorId().equals(doctorId) && leave.getStatus() == LeaveStatus.PENDING)
+                .orElse(false);
     }
 }

@@ -3,9 +3,11 @@ package com.project.controller;
 import com.project.constants.Endpoints;
 import com.project.dto.AppointmentResponseDTO;
 import com.project.dto.AppointmentUpdateDtoResponse;
+import com.project.dto.DoctorAvailabilityPageResponseDTO;
 import com.project.dto.request.CreateAppointmentServiceRequestDto;
 import com.project.dto.response.CreateAppointmentServiceResponseDto;
 import com.project.helper.AppointmentMapper;
+import com.project.model.ServiceType;
 import com.project.utils.IdValidation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -96,5 +98,21 @@ public class AppointmentController {
         boolean doctorExists = idValidation.checkDoctorExists(doctorId);
 
         return "Patient exists: " + patientExists + ", Doctor exists: " + doctorExists;
+    }
+
+    @GetMapping(Endpoints.DOCTOR_OPTIONS)
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('PATIENT', 'RECEPTIONIST', 'ADMIN', 'DOCTOR')")
+    public ResponseEntity<DoctorAvailabilityPageResponseDTO> getDoctorOptions(
+            @RequestParam String start,
+            @RequestParam String end,
+            @RequestParam ServiceType serviceType,
+            @RequestParam(required = false) String specialization,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        DoctorAvailabilityPageResponseDTO response = idValidation.getAvailableDoctorOptions(
+                start, end, serviceType, specialization, page, Math.min(size, 100)
+        );
+        return ResponseEntity.ok(response);
     }
 }

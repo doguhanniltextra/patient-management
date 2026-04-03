@@ -9,6 +9,7 @@ import java.util.UUID;
 import com.project.constants.LogMessages;
 import com.project.dto.AppointmentDTO;
 import com.project.dto.AppointmentKafkaResponseDto;
+import com.project.dto.DoctorAvailabilityResponseDTO;
 import com.project.dto.PatientInfoDTO;
 import com.project.dto.request.CreateAppointmentServiceRequestDto;
 import com.project.dto.response.CreateAppointmentServiceResponseDto;
@@ -65,6 +66,17 @@ public class AppointmentService {
 
         log.info(LogMessages.SERVICE_CREATE_VALIDATE_DOCTOR, createAppointmentServiceRequestDto.getDoctorId());
         appointmentValidator.checkDoctorExistsOrNotForCreateAppointment(result.doctorId());
+        DoctorAvailabilityResponseDTO availabilityResponse = idValidation.checkDoctorAvailability(
+                doctorId,
+                createAppointmentServiceRequestDto.getServiceDate(),
+                createAppointmentServiceRequestDto.getServiceDateEnd(),
+                createAppointmentServiceRequestDto.getServiceType()
+        );
+        if (!availabilityResponse.isAvailable()) {
+            throw new com.project.exception.CustomConflictException(
+                    "Doctor is not available for booking. Reason: " + availabilityResponse.getReasonCode()
+            );
+        }
 
         java.util.List<Appointment> overlaps = appointmentRepository.findOverlappingAppointments(
                 doctorId, 

@@ -15,9 +15,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
+    private final InternalServiceAuthFilter internalServiceAuthFilter;
 
-    public SecurityConfig(JwtAuthFilter jwtAuthFilter) {
+    public SecurityConfig(JwtAuthFilter jwtAuthFilter, InternalServiceAuthFilter internalServiceAuthFilter) {
         this.jwtAuthFilter = jwtAuthFilter;
+        this.internalServiceAuthFilter = internalServiceAuthFilter;
     }
 
     @Bean
@@ -29,6 +31,7 @@ public class SecurityConfig {
                         .requestMatchers("/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**", "/actuator/**", "/error").permitAll()
                         .anyRequest().authenticated()
                 )
+                .addFilterBefore(internalServiceAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
