@@ -17,7 +17,19 @@
     <name>billing-service</name>
     <description>Billing Service</description>
 
-    <dependencies>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.project</groupId>
+				<artifactId>patient-management-bom</artifactId>
+				<version>1.0-SNAPSHOT</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
         <!-- Spring Boot Core -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

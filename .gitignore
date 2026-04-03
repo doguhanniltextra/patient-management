@@ -4,3 +4,4 @@ target/
 .idea/
 .to-do
 .env
+hack/
