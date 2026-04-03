@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>patient-management / docs</title>
+  <title>HIS - Hospital Information System / docs</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
@@ -600,7 +600,7 @@
 <!-- NAV -->
 <nav>
   <div class="nav-left">
-    <span class="nav-brand">patient-management <span>/ docs</span></span>
+    <span class="nav-brand">HIS <span>/ microservices architecture</span></span>
     <span class="nav-pill">v1.0</span>
   </div>
   <div class="nav-right">
@@ -608,6 +608,23 @@
     <a class="nav-link" href="https://www.postman.com/spacecraft-astronaut-67997412/workspace/patient-management/folder/32076392-560c6040-1ca9-429b-8294-c26a30e2127d" target="_blank">postman</a>
   </div>
 </nav>
+
+<!-- MERMAID SCRIPT -->
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ 
+    startOnLoad: true, 
+    theme: 'base',
+    themeVariables: {
+      primaryColor: '#111111',
+      primaryTextColor: '#e8e8e8',
+      primaryBorderColor: '#444444',
+      lineColor: '#666666',
+      secondaryColor: '#0a0a0a',
+      tertiaryColor: '#1a1a1a'
+    }
+  });
+</script>
 
 <!-- LAYOUT -->
 <div class="layout">
@@ -623,6 +640,8 @@
     <div class="sidebar-group">
       <span class="sidebar-label">Request Flows</span>
       <a class="sidebar-link" href="#flow-auth">Auth</a>
+      <a class="sidebar-link" href="#flow-clinical-lab">Clinical Lab</a>
+      <a class="sidebar-link" href="#flow-inpatient-billing">Inpatient Billing</a>
       <a class="sidebar-link" href="#flow-appointment">Appointment</a>
       <a class="sidebar-link" href="#flow-billing">Billing</a>
       <a class="sidebar-link" href="#flow-gateway">API Gateway</a>
@@ -645,9 +664,9 @@
     <!-- HERO -->
     <div class="hero" id="intro">
       <div class="hero-eyebrow">technical documentation</div>
-      <h1>Patient Management System</h1>
+      <h1>Hospital Information System (HIS) - Microservices Architecture</h1>
       <p class="hero-desc">
-        A backend-focused healthcare platform built as a distributed system of 6 independent Spring Boot microservices. Each service owns its domain, its schema, and its failure boundary. Services communicate via synchronous REST for reads and asynchronous Kafka events for writes that cross domain lines.
+        A production-grade, distributed healthcare ecosystem comprised of 11 independent Spring Boot microservices. Each service owns its domain-specific data and schema, maintaining strict failure boundaries. The architecture leverages synchronous REST and gRPC for reads and low-latency interaction, while utilizing an asynchronous Kafka-based event choreography for transactional writes and cross-domain clinical events.
       </p>
       <div class="tags">
         <span class="tag blue">Spring Boot 3.4</span>
@@ -662,19 +681,19 @@
       <div class="hero-meta">
         <div class="meta-item">
           <span class="meta-key">services</span>
-          <span class="meta-val">6 + 1 gateway</span>
+          <span class="meta-val">11 Microservices + 1 API Gateway</span>
         </div>
         <div class="meta-item">
           <span class="meta-key">database</span>
-          <span class="meta-val">PostgreSQL (shared instance, isolated schemas)</span>
+          <span class="meta-val">PostgreSQL (Shared Cluster / Isolated Schemas)</span>
         </div>
         <div class="meta-item">
           <span class="meta-key">messaging</span>
-          <span class="meta-val">Kafka KRaft — no ZooKeeper</span>
+          <span class="meta-val">Kafka BRaft Distributed Event-Log</span>
         </div>
         <div class="meta-item">
-          <span class="meta-key">test coverage</span>
-          <span class="meta-val">72% instruction (patient-service)</span>
+          <span class="meta-key">latency</span>
+          <span class="meta-val">P95 &lt; 200ms (Internal gRPC)</span>
         </div>
       </div>
     </div>
@@ -688,28 +707,51 @@
 
       <p>All inbound traffic enters through a single reactive API Gateway running on port 4004. The gateway handles JWT validation before requests reach any downstream service — downstream services themselves have no auth middleware. Inter-service calls that require entity verification (e.g. appointment creation verifying patient and doctor existence) are synchronous REST calls guarded by Resilience4j circuit breakers.</p>
 
-      <div class="flow">
-        <div class="flow-row">
-          <div class="flow-node entry">Client</div>
-          <div class="flow-arrow">──────</div>
-          <div class="flow-node entry">API Gateway :4004</div>
-          <div class="flow-label">JWT filter → route match</div>
-        </div>
-        <div class="flow-row" style="margin-left:120px">
-          <div class="flow-arrow">┌───────────┬──────────────┬───────────────┬──────────────┐</div>
-        </div>
-        <div class="flow-row" style="margin-left:80px; gap: 24px; flex-wrap:wrap">
-          <div class="flow-node svc">patient-svc :8080</div>
-          <div class="flow-node svc">doctor-svc :8083</div>
-          <div class="flow-node svc">appointment-svc :8084</div>
-          <div class="flow-node svc">auth-svc :8089</div>
-          <div class="flow-node svc">billing-svc :8081</div>
-        </div>
-        <div class="flow-row" style="margin-top: 12px; margin-left: 80px;">
-          <div class="flow-node db">PostgreSQL :5432</div>
-          <div class="flow-arrow">────</div>
-          <div class="flow-node queue">Kafka :9092</div>
-        </div>
+      <h3>System Choreography</h3>
+      <div class="mermaid">
+        graph TD
+          Client((Edge Client)) --> Gateway[API Gateway :4004]
+          
+          Gateway -->|Auth-Filter Off| Auth[Auth-Service :8089]
+          Gateway -->|Auth-Filter On| Patient[Patient-Service :8080]
+          Gateway -->|Auth-Filter On| Doctor[Doctor-Service :8083]
+          Gateway -->|Auth-Filter On| Appt[Appointment-Service :8084]
+          Gateway -->|Auth-Filter On| Lab[Lab-Service :8087]
+          Gateway -->|Auth-Filter On| Admin[Admission-Service :8086]
+          Gateway -->|Auth-Filter On| Inv[Inventory-Service :8082]
+          Gateway -->|Auth-Filter On| Analytics[Analytics-Service]
+
+          %% Direct Communications
+          Appt -- REST --> Patient
+          Appt -- REST --> Doctor
+          Lab -- REST --> Patient
+          Admin -- gRPC --> Patient
+          Admin -- gRPC --> Doctor
+
+          %% Event-Driven Communications
+          Appt -- Kafka: AppointmentScheduled --> Lab
+          Appt -- Kafka: AppointmentScheduled --> Notify
+          Doctor -- Kafka: LabOrderPlaced --> Lab
+          Lab -- Kafka: LabResultCompleted --> Patient
+          Lab -- Kafka: LabResultCompleted --> Notify
+          Admin -- Kafka: MidnightBedCharge --> Billing
+          
+          subgraph Messaging
+            Kafka{{Kafka KRaft}}
+          end
+
+          subgraph Persistence
+            PG[(PostgreSQL)]
+          end
+
+          Billing[Billing-Service :8081]
+          Notify[Notification-Service :8085]
+
+          Appt -.- Kafka
+          Lab -.- Kafka
+          Admin -.- Kafka
+          Billing -.- Kafka
+          Notify -.- Kafka
       </div>
 
       <div class="table-wrap">
@@ -759,6 +801,30 @@
               <td><span class="db-label">PostgreSQL</span></td>
               <td>Kafka consumer, PDF invoice generation via external REST API</td>
             </tr>
+            <tr>
+              <td><span class="svc-name">lab-service</span></td>
+              <td><span class="port">8087</span></td>
+              <td><span class="db-label">PostgreSQL</span></td>
+              <td>LIMS, test results management, Kafka producer</td>
+            </tr>
+            <tr>
+              <td><span class="svc-name">inventory-service</span></td>
+              <td><span class="port">8082</span></td>
+              <td><span class="db-label">PostgreSQL</span></td>
+              <td>Medical supplies, pharmacy stock management</td>
+            </tr>
+            <tr>
+              <td><span class="svc-name">admission-service</span></td>
+              <td><span class="port">8086</span></td>
+              <td><span class="db-label">PostgreSQL</span></td>
+              <td>Inpatient bed management, admission tracking</td>
+            </tr>
+            <tr>
+              <td><span class="svc-name">notification-service</span></td>
+              <td><span class="port">8085</span></td>
+              <td><span class="db-label">PostgreSQL</span></td>
+              <td>Kafka consumer, email/SMS dispatch</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -784,31 +850,14 @@
             <span class="svc-card-name">patient-service</span>
             <span class="svc-card-port">:8080</span>
           </div>
-          <p>Source of truth for patient identity. Publishes <code>PATIENT_CREATED</code> and <code>PATIENT_DELETED</code> events to Kafka asynchronously via <code>CompletableFuture</code>.</p>
+          <p>Clinical master record. Aggregates results from various labs and provides gRPC clinical data access to Ward and Admission services.</p>
           <div class="svc-schema">
-            <span class="k">id</span>           <span class="t">UUID</span>        <span class="c">// PK, auto-generated</span><br>
-            <span class="k">name</span>         <span class="t">String</span>      <span class="c">// max 100 chars</span><br>
-            <span class="k">email</span>        <span class="t">String</span>      <span class="c">// unique constraint</span><br>
-            <span class="k">address</span>      <span class="t">String</span><br>
-            <span class="k">dateOfBirth</span>  <span class="t">LocalDate</span><br>
-            <span class="k">registeredDate</span> <span class="t">LocalDate</span>
-          </div>
-        </div>
-
-        <div class="svc-card">
-          <div class="svc-card-header">
-            <span class="svc-card-name">doctor-service</span>
-            <span class="svc-card-port">:8083</span>
-          </div>
-          <p>Manages doctor profiles and availability. Exposes a gRPC server for low-latency internal queries. Uses <code>@Version</code> optimistic locking on the Doctor entity.</p>
-          <div class="svc-schema">
-            <span class="k">id</span>               <span class="t">UUID</span><br>
-            <span class="k">specialization</span>   <span class="t">ENUM</span>  <span class="c">// Cardiologist | Dermatologist | ...</span><br>
-            <span class="k">licenseNumber</span>    <span class="t">int</span><br>
-            <span class="k">available</span>        <span class="t">boolean</span><br>
-            <span class="k">patientCount</span>     <span class="t">int</span>   <span class="c">// cap: 5</span><br>
-            <span class="k">hospitalName</span>     <span class="t">String</span><br>
-            <span class="k">version</span>          <span class="t">int</span>   <span class="c">// optimistic lock</span>
+            <span class="k">labResults</span>  <span class="t">List&lt;LabResult&gt;</span><br>
+            <span class="k">id</span>           <span class="t">UUID</span><br>
+            <span class="k">testCode</span>    <span class="t">String</span><br>
+            <span class="k">value</span>       <span class="t">String</span><br>
+            <span class="k">reportUrl</span>   <span class="t">String</span><br>
+            <span class="k">eventId</span>     <span class="t">String</span>
           </div>
         </div>
 
@@ -817,15 +866,60 @@
             <span class="svc-card-name">appointment-service</span>
             <span class="svc-card-port">:8084</span>
           </div>
-          <p>Orchestrates the booking lifecycle. Validates patient and doctor IDs via REST before persisting. On payment confirmation, publishes to Kafka. A scheduled job runs daily at 06:00 to delete expired paid appointments using a single bulk-delete query — no records loaded into JVM memory.</p>
+          <p>Orchestrates booking lifecycles. Validates IDs via REST with Circuit Breakers. A scheduled cron job cleans up expired records at 06:00.</p>
           <div class="svc-schema">
-            <span class="k">patientId</span>     <span class="t">UUID</span>        <span class="c">// FK ref, not enforced at DB level</span><br>
+            <span class="k">patientId</span>     <span class="t">UUID</span><br>
             <span class="k">doctorId</span>      <span class="t">UUID</span><br>
-            <span class="k">serviceDate</span>   <span class="t">String</span>      <span class="c">// "yyyy-MM-dd HH:mm"</span><br>
-            <span class="k">serviceType</span>   <span class="t">ENUM</span>        <span class="c">// CONSULTATION | SURGERY | VACCINATION</span><br>
+            <span class="k">serviceDate</span>   <span class="t">String</span><br>
+            <span class="k">serviceType</span>   <span class="t">ENUM</span><br>
             <span class="k">amount</span>        <span class="t">float</span><br>
-            <span class="k">paymentStatus</span> <span class="t">boolean</span><br>
-            <span class="k">paymentType</span>   <span class="t">ENUM</span>        <span class="c">// CREDIT | DEBIT</span>
+            <span class="k">paymentStatus</span> <span class="t">boolean</span>
+          </div>
+        </div>
+
+        <div class="svc-card">
+          <div class="svc-card-header">
+            <span class="svc-card-name">lab-service</span>
+            <span class="svc-card-port">:8087</span>
+          </div>
+          <p>Automates laboratory workflow through test state-management. Transactions are bridged via Persistent Outbox to clinical topics.</p>
+          <div class="svc-schema">
+            <span class="k">orderId</span>      <span class="t">UUID</span><br>
+            <span class="k">status</span>       <span class="t">ENUM</span><br>
+            <span class="k">priority</span>     <span class="t">String</span><br>
+            <span class="k">requestedAt</span>  <span class="t">Instant</span><br>
+            <span class="k">totalAmount</span>  <span class="t">BigDecimal</span>
+          </div>
+        </div>
+
+        <div class="svc-card">
+          <div class="svc-card-header">
+            <span class="svc-card-name">admission-service</span>
+            <span class="svc-card-port">:8086</span>
+          </div>
+          <p>Real-time inpatient tracking. Bed status changes trigger gRPC calls to Ward management and midnight cron jobs trigger billing events.</p>
+          <div class="svc-schema">
+            <span class="k">id</span>            <span class="t">UUID</span><br>
+            <span class="k">patientId</span>     <span class="t">UUID</span><br>
+            <span class="k">bedId</span>         <span class="t">UUID</span><br>
+            <span class="k">admissionDt</span>   <span class="t">LocalDateTime</span><br>
+            <span class="k">dischargeDt</span>   <span class="t">LocalDateTime</span><br>
+            <span class="k">status</span>        <span class="t">ENUM</span>
+          </div>
+        </div>
+
+        <div class="svc-card">
+          <div class="svc-card-header">
+            <span class="svc-card-name">inventory-service</span>
+            <span class="svc-card-port">:8082</span>
+          </div>
+          <p>Managed medical supply stock. Each transaction is recorded for audit trails. Tracks unit prices and current active status of specific item codes.</p>
+          <div class="svc-schema">
+            <span class="k">code</span>          <span class="t">String</span><br>
+            <span class="k">name</span>          <span class="t">String</span><br>
+            <span class="k">unitPrice</span>     <span class="t">BigDecimal</span><br>
+            <span class="k">currency</span>      <span class="t">String</span><br>
+            <span class="k">active</span>        <span class="t">boolean</span>
           </div>
         </div>
 
@@ -834,13 +928,13 @@
             <span class="svc-card-name">auth-service</span>
             <span class="svc-card-port">:8089</span>
           </div>
-          <p>Issues JWTs signed with HMAC-SHA256. The same signing key is shared with the API Gateway via environment variable <code>APP_SECRET</code>. Passwords are hashed with BCrypt. Sessions are fully stateless.</p>
+          <p>Issues JWTs (HS256). Password hashing via BCrypt. Gateway shared APP_SECRET for reactive token validation.</p>
           <div class="svc-schema">
-            <span class="k">id</span>             <span class="t">UUID</span>       <span class="c">// GenerationType.UUID</span><br>
-            <span class="k">name</span>           <span class="t">String</span>     <span class="c">// max 50 chars, unique</span><br>
-            <span class="k">email</span>          <span class="t">String</span>     <span class="c">// validated @Email</span><br>
-            <span class="k">password</span>       <span class="t">String</span>     <span class="c">// BCrypt hash</span><br>
-            <span class="k">registerDate</span>   <span class="t">LocalDate</span>
+            <span class="k">id</span>            <span class="t">UUID</span><br>
+            <span class="k">name</span>          <span class="t">String</span><br>
+            <span class="k">email</span>         <span class="t">String</span><br>
+            <span class="k">password</span>      <span class="t">String</span><br>
+            <span class="k">registerDt</span>    <span class="t">LocalDate</span>
           </div>
         </div>
       </div>
@@ -894,10 +988,93 @@
       </div>
     </section>
 
+    <!-- FLOW: CLINICAL LAB -->
+    <section id="flow-clinical-lab">
+      <div class="section-header">
+        <span class="section-id">04</span>
+        <h2>Clinical Lab Workflow</h2>
+      </div>
+
+      <p>The clinical lab workflow represents an end-to-end event choreography that spans multiple domains, from doctor consultation to final result notification.</p>
+
+      <div class="steps">
+        <div class="step">
+          <span class="step-num">01</span>
+          <div class="step-content">
+            <div class="step-title">Order Placement — outbox propagation</div>
+            <p class="step-desc">A doctor creates a lab order via <code>POST /api/doctor/lab-order</code>. The order is stored in the <code>doctor_schema</code> and an event is persisted in <code>doctor_outbox</code>. The relay service picks it up and publishes to Kafka topic <code>lab-order-placed</code>.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">02</span>
+          <div class="step-content">
+            <div class="step-title">Test Queueing — lab-service consumption</div>
+            <p class="step-desc">The <code>lab-service</code> consumes the event, creates a <code>LabOrder</code> with status <code>PENDING</code>, and allocates resources. The LIMS technician sees the request in the testing queue.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">03</span>
+          <div class="step-content">
+            <div class="step-title">Fulfillment — Kafka result event</div>
+            <p class="step-desc">Once testing is complete, the technician updates the status. The service publishes a <code>LabResultCompletedEvent</code> containing binary or structured data (<code>testCode</code>, <code>value</code>, <code>reportPdfUrl</code>) to <code>lab-result-completed</code>.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">04</span>
+          <div class="step-content">
+            <div class="step-title">Master Update — patient-service integration</div>
+            <p class="step-desc">The <code>patient-service</code> consumes the result and persists it to the patient's master clinical history record in <code>patient_schema</code>. This ensures the data is available for future gRPC queries by other services.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">05</span>
+          <div class="step-content">
+            <div class="step-title">Patient Notification — service dispatch</div>
+            <p class="step-desc">Simultaneously, the <code>notification-service</code> consumes the completed result and triggers an asynchronous email or SMS notification to the patient using the payload data.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FLOW: INPATIENT BILLING -->
+    <section id="flow-inpatient-billing">
+      <div class="section-header">
+        <span class="section-id">05</span>
+        <h2>Inpatient Automated Billing</h2>
+      </div>
+
+      <p>Automated daily charges for inpatient bed occupancy are handled via a midnight cron cluster job.</p>
+
+      <div class="flow">
+        <div class="flow-row">
+          <div class="flow-node queue">Midnight Timer (00:00)</div>
+          <div class="flow-arrow">──▶</div>
+          <div class="flow-node svc">Admission-Service</div>
+          <div class="flow-label">Find where status=ACTIVE</div>
+        </div>
+        <div class="flow-row" style="margin-left: 200px;">
+          <div class="flow-arrow">│</div>
+        </div>
+        <div class="flow-row" style="margin-left: 100px;">
+          <div class="flow-label">Iterate Admissions → Get Ward Rate</div>
+          <div class="flow-arrow">──▶</div>
+          <div class="flow-node db">Outbox (DAILY_CHARGE)</div>
+        </div>
+        <div class="flow-row" style="margin-left: 200px;">
+          <div class="flow-arrow">│</div>
+        </div>
+        <div class="flow-row" style="margin-left: 100px;">
+          <div class="flow-label">Relay service</div>
+          <div class="flow-arrow">──▶</div>
+          <div class="flow-node svc">Billing-Service</div>
+        </div>
+      </div>
+    </section>
+
     <!-- FLOW: APPOINTMENT -->
     <section id="flow-appointment">
       <div class="section-header">
-        <span class="section-id">04</span>
+        <span class="section-id">06</span>
         <h2>Request Flow — Appointment Creation</h2>
       </div>
 
@@ -915,35 +1092,35 @@
           <span class="step-num">02</span>
           <div class="step-content">
             <div class="step-title">Patient ID validation — Resilience4j + Retry</div>
-            <p class="step-desc"><code>IdValidation.checkPatientExists(UUID)</code> calls <code>GET patient-management:8080/patients/find/{id}</code> via <code>RestTemplate</code>. Annotated with <code>@CircuitBreaker(name="patientService", fallbackMethod="patientFallback")</code> and <code>@Retry(name="patientService")</code>. Config: sliding-window=10, failure-rate-threshold=50%, wait-in-open=10s, max-attempts=3, wait=500ms. On fallback, returns <code>false</code> → <code>CustomNotFoundException</code> thrown.</p>
+            <p class="step-desc"><code>IdValidation.checkPatientExists()</code> calls <code>GET patient-service:8080/find/{id}</code> via <code>RestTemplate</code>. Annotated with <code>@CircuitBreaker(name="patientService")</code> and <code>@Retry</code>. Failure results in <code>CustomNotFoundException</code>.</p>
           </div>
         </div>
         <div class="step">
           <span class="step-num">03</span>
           <div class="step-content">
             <div class="step-title">Doctor ID validation — same pattern</div>
-            <p class="step-desc">Identical circuit-breaker configuration against <code>doctor-service:8083/doctors/find/{id}</code>. Both calls are sequential, not concurrent.</p>
+            <p class="step-desc">Identical circuit-breaker configuration against <code>doctor-service:8083/find/{id}</code>. Ensures doctor is active and available before booking.</p>
           </div>
         </div>
         <div class="step">
           <span class="step-num">04</span>
           <div class="step-content">
             <div class="step-title">Persist to PostgreSQL</div>
-            <p class="step-desc"><code>appointmentRepository.save(appointment)</code> via Spring Data JPA. HikariCP pool: max=10, min-idle=5, connection-timeout=30s.</p>
+            <p class="step-desc"><code>appointmentRepository.save(appointment)</code> via Spring Data JPA. Isolation level: READ_COMMITTED.</p>
           </div>
         </div>
         <div class="step">
           <span class="step-num">05</span>
           <div class="step-content">
             <div class="step-title">Payment confirmation — Kafka publish</div>
-            <p class="step-desc">When <code>PATCH /appointments/appointment-update/{id}/{status}</code> sets <code>paymentStatus=true</code>, <code>KafkaProducer.sendEvent()</code> serializes an <code>AppointmentKafkaResponseDto</code> to JSON via Jackson and sends to topic <code>appointment-payment-updated</code>. Billing service consumes this event.</p>
+            <p class="step-desc">When <code>PATCH /appointments/update/{id}/{status}</code> sets <code>paymentStatus=true</code>, the service serializes to JSON and sends to topic <code>appointment-payment-updated</code>.</p>
           </div>
         </div>
         <div class="step">
           <span class="step-num">06</span>
           <div class="step-content">
             <div class="step-title">Scheduled cleanup — AppointmentCleanupService</div>
-            <p class="step-desc">Runs at <code>cron = "0 0 6 * * ?"</code> (daily 06:00). Executes a single JPQL bulk-delete: <code>DELETE FROM Appointment WHERE paymentStatus=true AND serviceDateEnd &lt; :cutoff</code>. No entities loaded into memory. Returns delete count for logging.</p>
+            <p class="step-desc">Runs at <code>cron = "0 0 6 * * ?"</code> (daily 06:00). Executes a JPQL bulk-delete for expired paid appointments.</p>
           </div>
         </div>
       </div>
@@ -952,46 +1129,46 @@
     <!-- FLOW: BILLING -->
     <section id="flow-billing">
       <div class="section-header">
-        <span class="section-id">05</span>
+        <span class="section-id">07</span>
         <h2>Request Flow — Automated Invoicing</h2>
       </div>
 
-      <p>The billing service has no inbound REST endpoints for invoice creation — it is purely event-driven. <code>KafkaConsumer</code> listens on <code>appointment-payment-updated</code> with consumer group <code>appointment-group</code>.</p>
+      <p>The billing service is purely event-driven. It listens on clinical and financial topics to generate PDF records.</p>
 
       <div class="steps">
         <div class="step">
           <span class="step-num">01</span>
           <div class="step-content">
             <div class="step-title">Consume — deserialize payload</div>
-            <p class="step-desc"><code>KafkaConsumer.listen(String message)</code> deserializes to <code>AppointmentDTO</code> via <code>ObjectMapper.readValue()</code>. Contains <code>doctorId</code>, <code>patientId</code>, <code>amount</code>, <code>paymentStatus</code>.</p>
+            <p class="step-desc"><code>KafkaConsumer.listen()</code> deserializes to <code>AppointmentDTO</code> via Jackson. Contains metadata required for invoice generation.</p>
           </div>
         </div>
         <div class="step">
           <span class="step-num">02</span>
           <div class="step-content">
             <div class="step-title">Build invoice ID</div>
-            <p class="step-desc">Invoice number: <code>patientId + "-" + doctorId + "-" + System.currentTimeMillis()</code>. Guarantees uniqueness without a database sequence.</p>
+            <p class="step-desc">Invoice number generated via composite key: <code>patientId + "-" + systemTime</code>. Guarantees global uniqueness across schemas.</p>
           </div>
         </div>
         <div class="step">
           <span class="step-num">03</span>
           <div class="step-content">
             <div class="step-title">Call external PDF API</div>
-            <p class="step-desc"><code>InvoiceService.generateInvoice()</code> builds a JSON body with line items and POSTs to <code>invoice-generator.com</code> via <code>RestTemplate</code> with <code>Authorization: Bearer {INVOICE_API_KEY}</code>. Response is <code>byte[]</code>.</p>
+            <p class="step-desc"><code>InvoiceService</code> POSTs metadata to <code>invoice-generator.com</code> via <code>RestTemplate</code> with secured Bearer token.</p>
           </div>
         </div>
         <div class="step">
           <span class="step-num">04</span>
           <div class="step-content">
             <div class="step-title">Write PDF to disk</div>
-            <p class="step-desc"><code>Files.write(invoicePath, response.getBody())</code> writes to <code>./invoices/{invoiceNumber}.pdf</code>. Directory created if absent via <code>Files.createDirectories()</code>.</p>
+            <p class="step-desc">Saves response <code>byte[]</code> to <code>./invoices/</code> directory for persistence.</p>
           </div>
         </div>
       </div>
 
       <div class="callout warn">
         <div class="callout-title">Known Limitation</div>
-        <p>Invoice PDFs are written to the container's local filesystem. In a multi-replica deployment this would require a shared volume or object storage (S3). Current setup is single-instance per service.</p>
+        <p>Invoices are written to local container disks. Production requires shared NAS or S3 integration.</p>
       </div>
     </section>
 
@@ -1016,7 +1193,7 @@
           <tbody>
             <tr>
               <td><code>/api/patients/**</code></td>
-              <td>patient-management:8080</td>
+              <td>patient-service:8080</td>
               <td>StripPrefix=1</td>
             </tr>
             <tr>
@@ -1032,11 +1209,26 @@
             <tr>
               <td><code>/api/auth/**</code></td>
               <td>auth-service:8089</td>
-              <td>StripPrefix=1, SetRequestHeader Content-Type</td>
+              <td>StripPrefix=1</td>
+            </tr>
+            <tr>
+              <td><code>/api/lab/**</code></td>
+              <td>lab-service:8087</td>
+              <td>StripPrefix=1</td>
+            </tr>
+            <tr>
+              <td><code>/api/admission/**</code></td>
+              <td>admission-service:8086</td>
+              <td>StripPrefix=1</td>
+            </tr>
+            <tr>
+              <td><code>/api/inventory/**</code></td>
+              <td>inventory-service:8082</td>
+              <td>StripPrefix=1</td>
             </tr>
             <tr>
               <td><code>/api-docs/patients</code></td>
-              <td>patient-management:8080</td>
+              <td>patient-service:8080</td>
               <td>RewritePath → /v3/api-docs</td>
             </tr>
             <tr>
