@@ -8,4 +8,5 @@ import java.util.UUID;
 
 public interface UnbilledChargeRepository extends JpaRepository<UnbilledCharge, UUID> {
     Optional<UnbilledCharge> findBySourceTypeAndSourceOrderId(String sourceType, UUID sourceOrderId);
+    java.util.List<UnbilledCharge> findByPatientIdAndStatus(UUID patientId, String status);
 }

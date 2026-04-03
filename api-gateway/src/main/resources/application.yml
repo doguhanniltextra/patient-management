@@ -45,6 +45,18 @@ spring:
             - Path=/api/labs/**
           filters:
             - StripPrefix=1
+        - id: inventory-service-route
+          uri: ${INVENTORY_SERVICE_URL:http://inventory-service:8088}
+          predicates:
+            - Path=/api/inventory/**
+          filters:
+            - StripPrefix=1
+        - id: admission-service-route
+          uri: ${ADMISSION_SERVICE_URL:http://admission-service:8086}
+          predicates:
+            - Path=/api/admissions/**
+          filters:
+            - StripPrefix=1
 
 logging:
   level:

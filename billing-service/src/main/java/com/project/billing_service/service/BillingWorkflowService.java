@@ -142,4 +142,81 @@ public class BillingWorkflowService {
         charge.setCreatedAt(LocalDateTime.now().toInstant(java.time.ZoneOffset.UTC));
         unbilledChargeRepository.save(charge);
     }
+
+    @Transactional
+    public void createUnbilledInventoryCharge(UUID patientId, UUID itemId, Integer quantity, BigDecimal unitPrice, String currency, UUID eventId) {
+        if (unbilledChargeRepository.findBySourceTypeAndSourceOrderId("INVENTORY", eventId).isPresent()) {
+            return;
+        }
+        UnbilledCharge charge = new UnbilledCharge();
+        charge.setPatientId(patientId);
+        charge.setSourceType("INVENTORY");
+        charge.setSourceOrderId(eventId);
+        charge.setAmount(unitPrice.multiply(BigDecimal.valueOf(quantity)));
+        charge.setCurrency(currency);
+        charge.setStatus("OPEN");
+        charge.setCreatedAt(LocalDateTime.now().toInstant(java.time.ZoneOffset.UTC));
+        unbilledChargeRepository.save(charge);
+    }
+
+    @Transactional
+    public void createUnbilledBedCharge(UUID patientId, UUID admissionId, BigDecimal amount, String currency, UUID eventId) {
+        if (unbilledChargeRepository.findBySourceTypeAndSourceOrderId("BED", eventId).isPresent()) {
+            return;
+        }
+        UnbilledCharge charge = new UnbilledCharge();
+        charge.setPatientId(patientId);
+        charge.setSourceType("BED");
+        charge.setSourceOrderId(eventId);
+        charge.setAmount(amount);
+        charge.setCurrency(currency);
+        charge.setStatus("OPEN");
+        charge.setCreatedAt(LocalDateTime.now().toInstant(java.time.ZoneOffset.UTC));
+        unbilledChargeRepository.save(charge);
+    }
+
+    @Transactional
+    public void finalizeDischargeBilling(UUID patientId, UUID admissionId) {
+        List<UnbilledCharge> openCharges = unbilledChargeRepository.findByPatientIdAndStatus(patientId, "OPEN");
+        
+        if (openCharges.isEmpty()) {
+            log.info("No open charges found for patient {} at discharge.", patientId);
+            return;
+        }
+
+        BigDecimal totalAmount = openCharges.stream()
+                .map(UnbilledCharge::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        // Generate final invoice for inpatient stay
+        UUID invoiceId = UUID.randomUUID();
+        String invoiceNumber = "IP-" + admissionId.toString().substring(0, 8);
+        
+        // For simplicity, we'll assume NO_INSURANCE or default for now
+        // This could be improved by fetching patient insurance data.
+        String invoicePdfPath = invoiceService.generateInvoice(
+                "Hospital Facility",
+                "Patient " + patientId,
+                totalAmount,
+                invoiceNumber
+        ).toAbsolutePath().toString();
+
+        Invoice invoice = new Invoice();
+        invoice.setInvoiceId(invoiceId);
+        invoice.setDoctorId(UUID.randomUUID()); // Inpatient case might skip specific doctor or use lead doctor
+        invoice.setPatientId(patientId);
+        invoice.setTotalAmount(totalAmount);
+        invoice.setPatientOwes(totalAmount); // Assuming no insurance discount for MVP
+        invoice.setInsuranceOwes(BigDecimal.ZERO);
+        invoice.setInvoicePdfUrl(invoicePdfPath);
+        invoiceRepository.save(invoice);
+
+        // Mark all charges as BILLED
+        for (UnbilledCharge charge : openCharges) {
+            charge.setStatus("BILLED");
+            unbilledChargeRepository.save(charge);
+        }
+
+        log.info("Final invoice {} generated for patient {} upon discharge.", invoiceNumber, patientId);
+    }
 }

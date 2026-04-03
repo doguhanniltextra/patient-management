@@ -118,6 +118,7 @@ services:
       APPOINTMENT_SERVICE_URL: http://appointment-service:8084
       BILLING_SERVICE_URL: http://billing-service:8081
       LAB_SERVICE_URL: http://lab-service:8087
+      INVENTORY_SERVICE_URL: http://inventory-service:8088
 
     volumes:
       - ./api-gateway/src:/app/src
@@ -343,6 +344,68 @@ services:
       timeout: 5s
       retries: 5
 
+  inventory-service:
+    <<: *java-resources
+    build:
+      context: .
+      dockerfile: inventory-service/Dockerfile
+    container_name: inventory-service
+    restart: unless-stopped
+    ports:
+      - "8088:8088"
+    depends_on:
+      postgresql:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SERVER_PORT: 8088
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/patient_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres123
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    volumes:
+      - ./inventory-service/src:/app/src
+    networks:
+      - patient-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8088/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  admission-service:
+    <<: *java-resources
+    build:
+      context: .
+      dockerfile: admission-service/Dockerfile
+    container_name: admission-service
+    restart: unless-stopped
+    ports:
+      - "8086:8086"
+    depends_on:
+      postgresql:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SERVER_PORT: 8086
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/patient_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres123
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    volumes:
+      - ./admission-service/src:/app/src
+    networks:
+      - patient-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8086/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
 
   # ============================================================================
   # MONITORING
@@ -379,6 +442,8 @@ services:
       - appointment-service
       - billing-service
       - lab-service
+      - inventory-service
+      - admission-service
 
 
   # Grafana - Metrics visualization
@@ -413,7 +478,6 @@ volumes:
     driver: local
   postgresql-data:
     driver: local
-
   prometheus-data:
     driver: local
   grafana-data:
@@ -422,4 +486,6 @@ volumes:
 # Network configuration
 networks:
   patient-network:
+    driver: bridge
+  lab-network:
     driver: bridge

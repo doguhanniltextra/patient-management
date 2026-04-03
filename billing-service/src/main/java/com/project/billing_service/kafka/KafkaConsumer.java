@@ -48,4 +48,50 @@ public class KafkaConsumer {
             log.error("Failed to process lab order event", e);
         }
     }
+
+    @KafkaListener(topics = KafkaTopics.INVENTORY_ITEM_CONSUMED, groupId = "billing-inventory-group")
+    public void listenInventoryConsumption(String message) {
+        try {
+            JsonNode event = objectMapper.readTree(message);
+            billingWorkflowService.createUnbilledInventoryCharge(
+                    java.util.UUID.fromString(event.get("patientId").asText()),
+                    java.util.UUID.fromString(event.get("itemId").asText()),
+                    event.get("quantity").asInt(),
+                    new java.math.BigDecimal(event.get("unitPriceSnapshot").asText()),
+                    event.get("currency").asText(),
+                    java.util.UUID.fromString(event.get("eventId").asText())
+            );
+        } catch (Exception e) {
+            log.error("Failed to process inventory consumption event", e);
+        }
+    }
+
+    @KafkaListener(topics = KafkaTopics.ADMISSION_BED_CHARGE, groupId = "billing-admission-group")
+    public void listenBedCharge(String message) {
+        try {
+            JsonNode event = objectMapper.readTree(message);
+            billingWorkflowService.createUnbilledBedCharge(
+                    java.util.UUID.fromString(event.get("patientId").asText()),
+                    java.util.UUID.fromString(event.get("admissionId").asText()),
+                    new java.math.BigDecimal(event.get("amount").asText()),
+                    event.get("currency").asText(),
+                    java.util.UUID.fromString(event.get("eventId").asText())
+            );
+        } catch (Exception e) {
+            log.error("Failed to process bed charge event", e);
+        }
+    }
+
+    @KafkaListener(topics = KafkaTopics.ADMISSION_DISCHARGED, groupId = "billing-admission-group")
+    public void listenDischarge(String message) {
+        try {
+            JsonNode event = objectMapper.readTree(message);
+            billingWorkflowService.finalizeDischargeBilling(
+                    java.util.UUID.fromString(event.get("patientId").asText()),
+                    java.util.UUID.fromString(event.get("admissionId").asText())
+            );
+        } catch (Exception e) {
+            log.error("Failed to process patient discharge event", e);
+        }
+    }
 }

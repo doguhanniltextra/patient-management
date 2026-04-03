@@ -18,6 +18,8 @@
         <module>billing-service</module>
         <module>doctor-service</module>
         <module>lab-service</module>
+        <module>inventory-service</module>
+        <module>admission-service</module>
         <module>patient-management</module>
     </modules>
 </project>
