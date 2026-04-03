@@ -1,0 +1,18 @@
+name: CI - Patient Service
+
+on:
+  push:
+    branches: [ "master" ]
+    paths:
+      - 'patient-management/**'
+      - '.github/workflows/patient-service.yml'
+      - 'patient-management-bom/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: ./.github/workflows/_docker-build.yml
+    with:
+      service-name: patient-service
+      context: ./patient-management
+      dockerfile: ./patient-management/Dockerfile

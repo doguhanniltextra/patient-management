@@ -1,0 +1,18 @@
+name: CI - Admission Service
+
+on:
+  push:
+    branches: [ "master" ]
+    paths:
+      - 'admission-service/**'
+      - '.github/workflows/admission-service.yml'
+      - 'patient-management-bom/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: ./.github/workflows/_docker-build.yml
+    with:
+      service-name: admission-service
+      context: ./admission-service
+      dockerfile: ./admission-service/Dockerfile
