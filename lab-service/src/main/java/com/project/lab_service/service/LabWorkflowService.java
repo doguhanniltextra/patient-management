@@ -1,11 +1,15 @@
 package com.project.lab_service.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.lab_service.dto.LabOrderPlacedEvent;
 import com.project.lab_service.dto.LabResultCompletedEvent;
 import com.project.lab_service.model.LabOrder;
 import com.project.lab_service.model.LabOrderStatus;
+import com.project.lab_service.model.LabOutboxEvent;
 import com.project.lab_service.model.TestResult;
 import com.project.lab_service.repository.LabOrderRepository;
+import com.project.lab_service.repository.LabOutboxRepository;
 import com.project.lab_service.repository.TestResultRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
@@ -19,12 +23,17 @@ import java.util.UUID;
 public class LabWorkflowService {
     private final LabOrderRepository labOrderRepository;
     private final TestResultRepository testResultRepository;
-    private final LabResultEventProducer eventProducer;
+    private final LabOutboxRepository labOutboxRepository;
+    private final ObjectMapper objectMapper;
 
-    public LabWorkflowService(LabOrderRepository labOrderRepository, TestResultRepository testResultRepository, LabResultEventProducer eventProducer) {
+    public LabWorkflowService(LabOrderRepository labOrderRepository, 
+                              TestResultRepository testResultRepository, 
+                              LabOutboxRepository labOutboxRepository,
+                              ObjectMapper objectMapper) {
         this.labOrderRepository = labOrderRepository;
         this.testResultRepository = testResultRepository;
-        this.eventProducer = eventProducer;
+        this.labOutboxRepository = labOutboxRepository;
+        this.objectMapper = objectMapper;
     }
 
     @Transactional
@@ -70,7 +79,34 @@ public class LabWorkflowService {
             testResultRepository.save(result);
         }
 
-        eventProducer.publish(saved, results, reportUrl, correlationId);
+        enqueueOutboxEvent(saved, results, reportUrl, correlationId);
         return saved;
+    }
+
+    private void enqueueOutboxEvent(LabOrder order, List<LabResultCompletedEvent.ResultItem> items, String reportUrl, String correlationId) {
+        LabResultCompletedEvent event = new LabResultCompletedEvent();
+        event.eventId = UUID.randomUUID().toString();
+        event.eventVersion = "v1";
+        event.occurredAt = Instant.now();
+        event.orderId = order.getOrderId();
+        event.patientId = order.getPatientId();
+        event.patientEmail = order.getPatientEmail();
+        event.patientPhone = order.getPatientPhone();
+        event.doctorId = order.getDoctorId();
+        event.results = items;
+        event.reportPdfUrl = reportUrl;
+        event.completedAt = order.getCompletedAt();
+        event.correlationId = correlationId;
+
+        try {
+            LabOutboxEvent outboxEvent = new LabOutboxEvent();
+            outboxEvent.setAggregateType("LAB_ORDER");
+            outboxEvent.setAggregateId(order.getOrderId().toString());
+            outboxEvent.setEventType("LAB_RESULT_COMPLETED");
+            outboxEvent.setPayloadJson(objectMapper.writeValueAsString(event));
+            labOutboxRepository.save(outboxEvent);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to serialize lab result event for outbox", e);
+        }
     }
 }
