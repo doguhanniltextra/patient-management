@@ -6,7 +6,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "doctor_notification", uniqueConstraints = @UniqueConstraint(columnNames = {"eventId"}))
+@Table(name = "doctor_notifications", schema = "doctor_schema", uniqueConstraints = @UniqueConstraint(columnNames = {"eventId"}))
 public class DoctorNotification {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

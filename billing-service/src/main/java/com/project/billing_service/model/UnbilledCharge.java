@@ -7,7 +7,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "unbilled_charge", uniqueConstraints = @UniqueConstraint(columnNames = {"sourceType", "sourceOrderId"}))
+@Table(name = "unbilled_charge", schema = "billing_schema", uniqueConstraints = @UniqueConstraint(columnNames = {"sourceType", "sourceOrderId"}))
 public class UnbilledCharge {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

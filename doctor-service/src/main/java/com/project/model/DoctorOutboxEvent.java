@@ -6,7 +6,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "doctor_outbox_event")
+@Table(name = "doctor_outbox_events", schema = "doctor_schema")
 public class DoctorOutboxEvent {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

@@ -7,7 +7,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "doctor_lab_order")
+@Table(name = "doctor_lab_orders", schema = "doctor_schema")
 public class DoctorLabOrder {
     @Id
     private UUID orderId;

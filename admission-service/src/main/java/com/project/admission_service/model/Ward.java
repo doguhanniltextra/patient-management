@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
-@Table(name = "wards")
+@Table(name = "wards", schema = "admission_schema")
 public class Ward {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

@@ -10,6 +10,8 @@ public class LabResultCompletedEvent {
     public Instant occurredAt;
     public UUID orderId;
     public UUID patientId;
+    public String patientEmail;
+    public String patientPhone;
     public UUID doctorId;
     public List<ResultItem> results;
     public String reportPdfUrl;

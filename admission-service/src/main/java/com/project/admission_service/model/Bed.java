@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "beds")
+@Table(name = "beds", schema = "admission_schema")
 public class Bed {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

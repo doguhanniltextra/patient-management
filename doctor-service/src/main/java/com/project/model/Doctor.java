@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 
 @Entity
+@Table(name = "doctors", schema = "doctor_schema")
 public class Doctor {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

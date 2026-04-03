@@ -96,6 +96,8 @@ public class AdmissionService {
             PatientDischargedEvent event = new PatientDischargedEvent();
             event.setEventId(UUID.randomUUID().toString());
             event.setPatientId(admission.getPatientId());
+            event.setPatientEmail("patient-" + admission.getPatientId() + "@example.com");
+            event.setPatientPhone("555-0100");
             event.setAdmissionId(admission.getId());
 
             AdmissionOutboxEvent outboxEvent = new AdmissionOutboxEvent();

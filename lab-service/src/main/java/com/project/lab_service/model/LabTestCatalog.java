@@ -7,7 +7,7 @@ import jakarta.persistence.Table;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "lab_test_catalog")
+@Table(name = "lab_test_catalog", schema = "lab_schema")
 public class LabTestCatalog {
     @Id
     private String testCode;

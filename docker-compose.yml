@@ -407,6 +407,38 @@ services:
       timeout: 5s
       retries: 5
 
+  notification-service:
+    <<: *java-resources
+    build:
+      context: .
+      dockerfile: notification-service/Dockerfile
+    container_name: notification-service
+    restart: unless-stopped
+    ports:
+      - "8090:8090"
+    depends_on:
+      postgresql:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SERVER_PORT: 8090
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/patient_db?currentSchema=notification_schema&reWriteBatchedInserts=true
+      SPRING_DATASOURCE_USERNAME: notification_user
+      SPRING_DATASOURCE_PASSWORD: notification_pass_123
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      PATIENT_SERVICE_URL: http://patient-management:8080
+    volumes:
+      - ./notification-service/src:/app/src
+    networks:
+      - patient-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8090/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
 
   # ============================================================================
   # MONITORING

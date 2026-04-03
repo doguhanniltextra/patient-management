@@ -21,5 +21,6 @@
         <module>inventory-service</module>
         <module>admission-service</module>
         <module>patient-management</module>
+        <module>notification-service</module>
     </modules>
 </project>

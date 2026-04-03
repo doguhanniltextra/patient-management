@@ -8,6 +8,7 @@ import java.time.LocalTime;
 import java.util.UUID;
 
 @Entity
+@Table(name = "shifts", schema = "doctor_schema")
 public class Shift {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

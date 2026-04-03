@@ -7,12 +7,14 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "lab_order")
+@Table(name = "lab_order", schema = "lab_schema")
 public class LabOrder {
     @Id
     @Column(nullable = false, updatable = false)
     private UUID orderId;
     private UUID patientId;
+    private String patientEmail;
+    private String patientPhone;
     private UUID doctorId;
     @Enumerated(EnumType.STRING)
     private LabOrderStatus status;
@@ -26,6 +28,10 @@ public class LabOrder {
     public void setOrderId(UUID orderId) { this.orderId = orderId; }
     public UUID getPatientId() { return patientId; }
     public void setPatientId(UUID patientId) { this.patientId = patientId; }
+    public String getPatientEmail() { return patientEmail; }
+    public void setPatientEmail(String patientEmail) { this.patientEmail = patientEmail; }
+    public String getPatientPhone() { return patientPhone; }
+    public void setPatientPhone(String patientPhone) { this.patientPhone = patientPhone; }
     public UUID getDoctorId() { return doctorId; }
     public void setDoctorId(UUID doctorId) { this.doctorId = doctorId; }
     public LabOrderStatus getStatus() { return status; }

@@ -76,4 +76,34 @@ BEGIN
     GRANT ALL ON SCHEMA audit_schema TO audit_user;
     ALTER USER audit_user SET search_path = audit_schema;
 
+    -- Notification Service
+    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'notification_user') THEN
+        CREATE USER notification_user WITH PASSWORD 'notification_pass_123';
+    END IF;
+    CREATE SCHEMA IF NOT EXISTS notification_schema AUTHORIZATION notification_user;
+    GRANT ALL ON SCHEMA notification_schema TO notification_user;
+    ALTER USER notification_user SET search_path = notification_schema;
+
 END $$;
+
+-- Explicitly create Notification Template table in case notification-service hasn't yet
+CREATE TABLE IF NOT EXISTS notification_schema.notification_templates (
+    id UUID PRIMARY KEY,
+    template_code VARCHAR(255) NOT NULL UNIQUE,
+    channel VARCHAR(255) NOT NULL,
+    subject VARCHAR(255) NOT NULL,
+    body TEXT NOT NULL,
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Ensure notification_user can access the table
+GRANT ALL ON TABLE notification_schema.notification_templates TO notification_user;
+
+-- Seed Templates
+INSERT INTO notification_schema.notification_templates (id, template_code, channel, subject, body, created_at, updated_at)
+VALUES 
+(gen_random_uuid(), 'LAB_RESULT_READY', 'EMAIL', 'Your Lab Results are Ready', 'Dear Patient, your lab results for order [(${patientId})] are now available at: [(${reportUrl})]', now(), now()),
+(gen_random_uuid(), 'APPOINTMENT_CONFIRMATION', 'EMAIL', 'Appointment Confirmation', 'Dear Patient, your appointment is confirmed for [(${appointmentDate})].', now(), now()),
+(gen_random_uuid(), 'HOSPITAL_DISCHARGE', 'EMAIL', 'Discharge Summary', 'Dear Patient, you have been discharged. Admission ID: [(${admissionId})]. Get well soon!', now(), now())
+ON CONFLICT (template_code) DO NOTHING;

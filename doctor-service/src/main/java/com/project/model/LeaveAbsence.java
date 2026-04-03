@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
+@Table(name = "leave_absences", schema = "doctor_schema")
 public class LeaveAbsence {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

@@ -33,6 +33,8 @@ public class LabWorkflowService {
         order.setOrderId(event.orderId);
         order.setDoctorId(event.doctorId);
         order.setPatientId(event.patientId);
+        order.setPatientEmail(event.patientEmail);
+        order.setPatientPhone(event.patientPhone);
         order.setRequestedAt(event.occurredAt != null ? event.occurredAt : Instant.now());
         order.setStatus(LabOrderStatus.QUEUED);
         order.setPriority("NORMAL");

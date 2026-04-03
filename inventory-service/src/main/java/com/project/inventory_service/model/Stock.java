@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "inventory_stocks")
+@Table(name = "stocks", schema = "inventory_schema")
 @Data
 @Builder
 @NoArgsConstructor

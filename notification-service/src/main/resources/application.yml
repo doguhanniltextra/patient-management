@@ -1,0 +1,53 @@
+server:
+  port: 8090
+
+spring:
+  application:
+    name: notification-service
+  
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/patient_db?currentSchema=notification_schema}
+    username: ${SPRING_DATASOURCE_USERNAME:notification_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:notification_pass_123}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        default_schema: notification_schema
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: notification-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  endpoint:
+    health:
+      show-details: always
+
+# Custom properties (No hard-coded endpoints)
+services:
+  patient-service:
+    url: ${PATIENT_SERVICE_URL:http://localhost:8080}
+
+logging:
+  level:
+    root: INFO
+    com.project.notification_service: DEBUG

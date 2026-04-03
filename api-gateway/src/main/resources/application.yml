@@ -57,6 +57,12 @@ spring:
             - Path=/api/admissions/**
           filters:
             - StripPrefix=1
+        - id: notification-service-route
+          uri: ${NOTIFICATION_SERVICE_URL:http://notification-service:8090}
+          predicates:
+            - Path=/api/notifications/**
+          filters:
+            - StripPrefix=1
 
 logging:
   level:

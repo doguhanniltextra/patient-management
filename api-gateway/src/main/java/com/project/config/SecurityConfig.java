@@ -45,6 +45,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/auth/**", "/api/auth/**", "/actuator/**").permitAll()
+                        .pathMatchers("/api/notifications/**").hasAuthority("ROLE_ADMIN")
                         .anyExchange().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter(), SecurityWebFiltersOrder.AUTHENTICATION)

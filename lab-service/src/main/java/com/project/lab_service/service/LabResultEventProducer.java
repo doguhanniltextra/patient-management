@@ -28,6 +28,8 @@ public class LabResultEventProducer {
         event.occurredAt = Instant.now();
         event.orderId = order.getOrderId();
         event.patientId = order.getPatientId();
+        event.patientEmail = order.getPatientEmail();
+        event.patientPhone = order.getPatientPhone();
         event.doctorId = order.getDoctorId();
         event.results = items;
         event.reportPdfUrl = reportUrl;
