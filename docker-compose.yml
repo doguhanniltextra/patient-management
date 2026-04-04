@@ -87,6 +87,40 @@ services:
       timeout: 5s
       retries: 5
 
+  # MongoDB - Audit Log Storage
+  audit-mongodb:
+    image: mongo:6.0
+    container_name: audit-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+    networks:
+      - patient-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Logstash - Log Processor (Kafka -> MongoDB)
+  logstash:
+    image: logstash:8.12.0
+    container_name: logstash
+    restart: unless-stopped
+    depends_on:
+      kafka:
+        condition: service_healthy
+      audit-mongodb:
+        condition: service_healthy
+    volumes:
+      - ./monitoring/logstash/pipeline:/usr/share/logstash/pipeline:ro
+    environment:
+      LS_JAVA_OPTS: "-Xmx512m -Xms512m"
+    networks:
+      - patient-network
+
 
 
   # ============================================================================
@@ -514,6 +548,8 @@ volumes:
   prometheus-data:
     driver: local
   grafana-data:
+    driver: local
+  mongodb-data:
     driver: local
 
 # Network configuration

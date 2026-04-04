@@ -32,12 +32,18 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      observation-enabled: true
+    listener:
+      observation-enabled: true
 
 management:
+  tracing:
+    sampling:
+      probability: 1.0
   endpoints:
     web:
       exposure:
-        include: health,prometheus
+        include: health,info,prometheus,metrics
   endpoint:
     health:
       show-details: always
