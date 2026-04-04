@@ -19,53 +19,56 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-    public class InvoiceService {
+public class InvoiceService {
 
-        private static final Logger log = LoggerFactory.getLogger(InvoiceService.class);
-        private final RestTemplate restTemplate;
-        private final InvoiceValidator invoiceValidator;
+    private static final Logger log = LoggerFactory.getLogger(InvoiceService.class);
+    private final RestTemplate restTemplate;
+    private final InvoiceValidator invoiceValidator;
 
-        @Value("${invoice.api.key}")
-        private String apiKey;
+    @Value("${invoice.api.key}")
+    private String apiKey;
 
-        @Value("${invoice.api.url}")
-        private String API_URL;
+    @Value("${invoice.api.url}")
+    private String API_URL;
 
-        public InvoiceService(RestTemplate restTemplate, InvoiceValidator invoiceValidator) {
-            this.restTemplate = restTemplate;
-            this.invoiceValidator = invoiceValidator;
-        }
+    @Value("${app.invoice.storage.path}")
+    private String invoiceStoragePath;
 
-        public Path generateInvoice(String doctorName, String patientName, BigDecimal amount, String invoiceNumber) {
-            log.info("Generate Invoice Method Triggered");
+    public InvoiceService(RestTemplate restTemplate, InvoiceValidator invoiceValidator) {
+        this.restTemplate = restTemplate;
+        this.invoiceValidator = invoiceValidator;
+    }
 
-            Map<String, Object> body = invoiceValidator.getStringObjectMapForBody(doctorName, patientName, invoiceNumber);
+    public Path generateInvoice(String doctorName, String patientName, BigDecimal amount, String invoiceNumber) {
+        log.info("Generate Invoice Method Triggered");
 
-            List<Map<String, Object>> items = new ArrayList<>();
-            Map<String, Object> item = invoiceValidator.getStringObjectMapForItem(amount);
-            items.add(item);
-            body.put("items", items);
-            log.info(items.toString());
+        Map<String, Object> body = invoiceValidator.getStringObjectMapForBody(doctorName, patientName, invoiceNumber);
 
-            HttpHeaders headers = new HttpHeaders();
+        List<Map<String, Object>> items = new ArrayList<>();
+        Map<String, Object> item = invoiceValidator.getStringObjectMapForItem(amount);
+        items.add(item);
+        body.put("items", items);
+        log.info(items.toString());
 
-            headers.set("Authorization", "Bearer " + apiKey);
-            headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpHeaders headers = new HttpHeaders();
 
-            HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
+        headers.set("Authorization", "Bearer " + apiKey);
+        headers.setContentType(MediaType.APPLICATION_JSON);
 
-            ResponseEntity<byte[]> response = restTemplate.postForEntity(API_URL, request, byte[].class);
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
 
-            invoiceValidator.createInvoiceGenerationError(response);
+        ResponseEntity<byte[]> response = restTemplate.postForEntity(API_URL, request, byte[].class);
 
-            Path invoiceDir = Paths.get("invoices");
+        invoiceValidator.createInvoiceGenerationError(response);
 
-            invoiceValidator.createCannotCreateInvoiceDirectoryError(invoiceDir);
+        Path invoiceDir = Paths.get(invoiceStoragePath);
 
-            Path invoicePath = invoiceDir.resolve(invoiceNumber + ".pdf");
+        invoiceValidator.createCannotCreateInvoiceDirectoryError(invoiceDir);
 
-            invoiceValidator.createFailedToSaveInvoicePDFError(invoicePath, response);
+        Path invoicePath = invoiceDir.resolve(invoiceNumber + ".pdf");
 
-            return invoicePath;
+        invoiceValidator.createFailedToSaveInvoicePDFError(invoicePath, response);
+
+        return invoicePath;
     }
 }

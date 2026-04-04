@@ -21,7 +21,7 @@ public class KafkaConsumer {
         this.billingWorkflowService = billingWorkflowService;
     }
 
-    @KafkaListener(topics = KafkaTopics.APPOINTMENT_PAYMENT_UPDATED, groupId = KafkaTopics.APPOINTMENT_GROUP)
+    @KafkaListener(topics = "${kafka.topics.appointment-payment-updated:" + KafkaTopics.APPOINTMENT_PAYMENT_UPDATED + "}", groupId = "${kafka.groups.appointment:" + KafkaTopics.APPOINTMENT_GROUP + "}")
     public void listen(String message) throws Exception {
         AppointmentDTO appointment = objectMapper.readValue(message, AppointmentDTO.class);
         log.info(LogMessages.LISTENER_RECEIVED_MESSAGE, appointment);
@@ -29,7 +29,7 @@ public class KafkaConsumer {
         log.info(LogMessages.INVOICE_GENERATED, appointment.getPatientId());
     }
 
-    @KafkaListener(topics = KafkaTopics.LAB_ORDER_PLACED, groupId = KafkaTopics.LAB_ORDER_GROUP)
+    @KafkaListener(topics = "${kafka.topics.lab-order-placed:" + KafkaTopics.LAB_ORDER_PLACED + "}", groupId = "${kafka.groups.billing-lab-order:" + KafkaTopics.LAB_ORDER_GROUP + "}")
     public void listenLabOrder(String message) throws Exception {
         JsonNode event = objectMapper.readTree(message);
         billingWorkflowService.createUnbilledLabCharge(
@@ -40,7 +40,7 @@ public class KafkaConsumer {
         );
     }
 
-    @KafkaListener(topics = KafkaTopics.INVENTORY_ITEM_CONSUMED, groupId = "billing-inventory-group")
+    @KafkaListener(topics = "${kafka.topics.inventory-item-consumed:" + KafkaTopics.INVENTORY_ITEM_CONSUMED + "}", groupId = "billing-inventory-group")
     public void listenInventoryConsumption(String message) throws Exception {
         JsonNode event = objectMapper.readTree(message);
         billingWorkflowService.createUnbilledInventoryCharge(
@@ -53,7 +53,7 @@ public class KafkaConsumer {
         );
     }
 
-    @KafkaListener(topics = KafkaTopics.ADMISSION_BED_CHARGE, groupId = "billing-admission-group")
+    @KafkaListener(topics = "${kafka.topics.admission-bed-charge:" + KafkaTopics.ADMISSION_BED_CHARGE + "}", groupId = "billing-admission-group")
     public void listenBedCharge(String message) throws Exception {
         JsonNode event = objectMapper.readTree(message);
         billingWorkflowService.createUnbilledBedCharge(
@@ -65,12 +65,13 @@ public class KafkaConsumer {
         );
     }
 
-    @KafkaListener(topics = KafkaTopics.ADMISSION_DISCHARGED, groupId = "billing-admission-group")
+    @KafkaListener(topics = "${kafka.topics.admission-discharged:" + KafkaTopics.ADMISSION_DISCHARGED + "}", groupId = "billing-admission-group")
     public void listenDischarge(String message) throws Exception {
         JsonNode event = objectMapper.readTree(message);
         billingWorkflowService.finalizeDischargeBilling(
                 java.util.UUID.fromString(event.get("patientId").asText()),
-                java.util.UUID.fromString(event.get("admissionId").asText())
+                java.util.UUID.fromString(event.get("admissionId").asText()),
+                java.util.UUID.fromString(event.get("doctorId").asText())
         );
     }
 }

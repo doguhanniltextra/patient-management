@@ -12,6 +12,7 @@ public class Admission {
     private UUID id;
     
     private UUID patientId;
+    private UUID doctorId;
     private UUID bedId;
     private LocalDateTime admissionDate;
     private LocalDateTime dischargeDate;
@@ -45,6 +46,14 @@ public class Admission {
 
     public void setPatientId(UUID patientId) {
         this.patientId = patientId;
+    }
+
+    public UUID getDoctorId() {
+        return doctorId;
+    }
+
+    public void setDoctorId(UUID doctorId) {
+        this.doctorId = doctorId;
     }
 
     public UUID getBedId() {

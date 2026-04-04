@@ -28,11 +28,9 @@ public class AuthValidator {
         user.setEmail(registerRequestDto.getEmail());
         user.setRegisterDate(registerRequestDto.getRegisterDate());
 
-        // Hardening for E2E tests: automatically grant admin role to test accounts
-        if (registerRequestDto.getName() != null && registerRequestDto.getName().endsWith("_Admin")) {
-            user.getRoles().add(com.project.auth_service.entity.Role.ADMIN);
-            user.getRoles().add(com.project.auth_service.entity.Role.RECEPTIONIST);
-            user.getRoles().add(com.project.auth_service.entity.Role.DOCTOR);
+        // Roles must be explicitly provided in the request or default to PATIENT
+        if (registerRequestDto.getRoles() != null && !registerRequestDto.getRoles().isEmpty()) {
+            user.getRoles().addAll(registerRequestDto.getRoles());
         } else {
             user.getRoles().add(com.project.auth_service.entity.Role.PATIENT);
         }

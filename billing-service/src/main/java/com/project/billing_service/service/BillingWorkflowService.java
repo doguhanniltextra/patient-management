@@ -176,7 +176,7 @@ public class BillingWorkflowService {
     }
 
     @Transactional
-    public void finalizeDischargeBilling(UUID patientId, UUID admissionId) {
+    public void finalizeDischargeBilling(UUID patientId, UUID admissionId, UUID doctorId) {
         List<UnbilledCharge> openCharges = unbilledChargeRepository.findByPatientIdAndStatus(patientId, "OPEN");
         
         if (openCharges.isEmpty()) {
@@ -203,7 +203,7 @@ public class BillingWorkflowService {
 
         Invoice invoice = new Invoice();
         invoice.setInvoiceId(invoiceId);
-        invoice.setDoctorId(UUID.randomUUID()); // Inpatient case might skip specific doctor or use lead doctor
+        invoice.setDoctorId(doctorId); // Use actual doctorId from admission
         invoice.setPatientId(patientId);
         invoice.setTotalAmount(totalAmount);
         invoice.setPatientOwes(totalAmount); // Assuming no insurance discount for MVP

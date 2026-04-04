@@ -38,7 +38,7 @@ public class AppointmentValidator {
     }
 
 
-    public static AppointmentKafkaResponseDto getAppointmentKafkaResponseDto(boolean status, Appointment appointment, PatientInfoDTO patientInfo) {
+    public AppointmentKafkaResponseDto getAppointmentKafkaResponseDto(boolean status, Appointment appointment, PatientInfoDTO patientInfo) {
         String providerType = "NONE";
         String providerName = "NONE";
         if (patientInfo != null && patientInfo.getInsuranceInfo() != null) {
@@ -74,6 +74,7 @@ public class AppointmentValidator {
         return appointmentRepository.findById(id)
                 .orElseThrow(() -> new CustomNotFoundException("Appointment not found: " + id));
     }
+
     public List<Appointment> getAppointments(List<Appointment> allAppointments, LocalDateTime now, DateTimeFormatter formatter) {
         List<Appointment> outdated = allAppointments.stream()
                 .filter(a -> {
@@ -81,15 +82,14 @@ public class AppointmentValidator {
                         LocalDateTime endDate = LocalDateTime.parse(a.getServiceDateEnd(), formatter);
                         return endDate.isBefore(now);
                     } catch (Exception e) {
-
                         return false;
                     }
                 })
                 .toList();
         return outdated;
     }
-    public static LocalDateTime getLocalDateTime() {
-        LocalDateTime now = LocalDateTime.now();
-        return now;
+
+    public LocalDateTime getLocalDateTime() {
+        return LocalDateTime.now();
     }
 }

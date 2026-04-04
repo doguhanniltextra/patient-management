@@ -8,6 +8,7 @@ public class PatientDischargedEvent {
     private String patientEmail;
     private String patientPhone;
     private UUID admissionId;
+    private UUID doctorId;
 
     public PatientDischargedEvent() {
     }
@@ -50,5 +51,13 @@ public class PatientDischargedEvent {
 
     public void setAdmissionId(UUID admissionId) {
         this.admissionId = admissionId;
+    }
+
+    public UUID getDoctorId() {
+        return doctorId;
+    }
+
+    public void setDoctorId(UUID doctorId) {
+        this.doctorId = doctorId;
     }
 }

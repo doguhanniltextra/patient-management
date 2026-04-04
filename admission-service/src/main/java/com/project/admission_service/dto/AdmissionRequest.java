@@ -4,6 +4,7 @@ import java.util.UUID;
 
 public class AdmissionRequest {
     private UUID patientId;
+    private UUID doctorId;
     private UUID wardId;
 
     public AdmissionRequest() {
@@ -23,5 +24,13 @@ public class AdmissionRequest {
 
     public void setWardId(UUID wardId) {
         this.wardId = wardId;
+    }
+
+    public UUID getDoctorId() {
+        return doctorId;
+    }
+
+    public void setDoctorId(UUID doctorId) {
+        this.doctorId = doctorId;
     }
 }

@@ -14,6 +14,7 @@ import com.project.patient_service.kafka.KafkaProducer;
 import com.project.patient_service.model.Patient;
 import com.project.patient_service.repository.PatientRepository;
 import com.project.patient_service.helper.UserValidator;
+import com.project.patient_service.utils.SanitizationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -48,6 +49,10 @@ public class PatientService {
 
     public CreatePatientServiceResponseDto createPatient(CreatePatientServiceRequestDto patientRequestDTO) throws EmailAlreadyExistsException {
 
+        // Sanitize sensitive input fields
+        patientRequestDTO.setName(SanitizationUtils.sanitize(patientRequestDTO.getName()));
+        patientRequestDTO.setAddress(SanitizationUtils.sanitize(patientRequestDTO.getAddress()));
+
         userValidator.CheckEmailIsExistsOrNotForCreatePatient(patientRequestDTO, patientRepository);
 
         Patient patient = userValidator.getPatientForCreatePatient(patientRequestDTO);
@@ -63,6 +68,10 @@ public class PatientService {
     }
 
     public UpdatePatientServiceResponseDto updatePatient(UUID id, UpdatePatientServiceRequestDto updatePatientServiceRequestDto) {
+        // Sanitize sensitive input fields
+        updatePatientServiceRequestDto.setName(SanitizationUtils.sanitize(updatePatientServiceRequestDto.getName()));
+        updatePatientServiceRequestDto.setAddress(SanitizationUtils.sanitize(updatePatientServiceRequestDto.getAddress()));
+
         Patient patient = userValidator.getPatientForUpdateMethod(id, patientRepository);
 
         userValidator.checkEmailIsExistsOrNotForUpdatePatient(id, updatePatientServiceRequestDto, patientRepository);

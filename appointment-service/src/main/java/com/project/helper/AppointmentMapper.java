@@ -7,7 +7,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AppointmentMapper {
-    public static CreateAppointmentServiceResponseDto getCreateAppointmentServiceResponseDto(CreateAppointmentServiceRequestDto createAppointmentServiceRequestDto) {
+
+    public CreateAppointmentServiceResponseDto getCreateAppointmentServiceResponseDto(CreateAppointmentServiceRequestDto createAppointmentServiceRequestDto) {
         CreateAppointmentServiceResponseDto appointmentServiceResponseDto = new CreateAppointmentServiceResponseDto();
         appointmentServiceResponseDto.setDoctorId(createAppointmentServiceRequestDto.getDoctorId());
         appointmentServiceResponseDto.setPatientId(createAppointmentServiceRequestDto.getPatientId());
@@ -20,7 +21,7 @@ public class AppointmentMapper {
         return appointmentServiceResponseDto;
     }
 
-    public static Appointment getAppointment(CreateAppointmentServiceRequestDto createAppointmentServiceRequestDto) {
+    public Appointment getAppointment(CreateAppointmentServiceRequestDto createAppointmentServiceRequestDto) {
         Appointment appointment = new Appointment();
         appointment.setId(createAppointmentServiceRequestDto.getId());
         appointment.setAmount(createAppointmentServiceRequestDto.getAmount());
@@ -34,7 +35,7 @@ public class AppointmentMapper {
         return appointment;
     }
 
-    public static void updateAppointmentExtracted(Appointment appointment, Appointment existingAppointment) {
+    public void updateAppointmentExtracted(Appointment appointment, Appointment existingAppointment) {
         existingAppointment.setPatientId(appointment.getPatientId());
         existingAppointment.setDoctorId(appointment.getDoctorId());
         existingAppointment.setServiceDate(appointment.getServiceDate());
@@ -44,7 +45,7 @@ public class AppointmentMapper {
         existingAppointment.setPaymentType(appointment.getPaymentType());
     }
 
-    public static CreateAppointmentServiceRequestDto getCreateAppointmentServiceRequestDto(Appointment appointment) {
+    public CreateAppointmentServiceRequestDto getCreateAppointmentServiceRequestDto(Appointment appointment) {
         CreateAppointmentServiceRequestDto requestDto = new CreateAppointmentServiceRequestDto();
         requestDto.setId(appointment.getId());
         requestDto.setDoctorId(appointment.getDoctorId());
@@ -57,7 +58,4 @@ public class AppointmentMapper {
         requestDto.setPaymentType(appointment.getPaymentType());
         return requestDto;
     }
-
-
-
 }
